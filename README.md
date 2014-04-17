@@ -1,6 +1,8 @@
 Federation AM API
 =================
 
+[![Build Status](https://travis-ci.org/tubav/federation-am-api.svg?branch=master)](https://travis-ci.org/tubav/federation-am-api)
+
 Standardisation spec of the Federation Aggregate Manager API for testbeds.
 
 Setup
