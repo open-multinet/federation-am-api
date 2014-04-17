@@ -1,0 +1,195 @@
+== Basic AM Call Concepts
+
+=== XmlRpc over HTTPS with Client Authentication
+
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
+
+The AM API is provided via XML-RPC over an SSL connection.
+Aggregate Managers shall require client side certificates to authenticate users, accepting only certificates that comply with the adopted GENI certificates standards. This API therefore assumes that users have already been authenticated, and that the aggregate manager has available the client certificate to identify the user. 
+
+[[ReturnStructure]]
+=== Return Structure
+
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
+
+.Reply template (JSON syntax)
+[source]
+------------------
+{
+    "output": "Error output of call",
+    "code": {
+              ":code": 0
+            },
+    "value": "result of call"
+}
+------------------
+
+All AM API methods return a +struct+, with at least three members. +code+, +value+, and +output+ together provide the standard return from all AM API methods.
+
++code+::
+    A struct indicating the success or failure of this call at the Aggregate Manager. It consists of 1 required field and 2 optional fields.
+[source]
+      struct code = {
+           int :code;
+           [optional: string am_type;]
+           [optional: int am_code;]
+      }
+
++value+::
+    Method-specific. Required on success. Optional on error. 
+
++output+::
+    On failure or error, this is required. Optional on success. This is an XML-RPC string with a human readable message explaining the result. Specifically, this might include an error string, a stacktrace, or other useful messages to help the experimenter resolve or report the failure or error. It is not defined on success, though aggregates are free to use it. 
+
+
+Implementations can add additional members to the return struct as desired. The prefix +:+ (single colon with nothing in front of it) is reserved for members that are part of this API specification. Implementations should choose an appropriate prefix to avoid conflicts. Aggregates should document any additional return values.
+
+Aggregates shall return consistent values for :code as described here. Aggregates wishing to be more specific may use the am_type and am_code values.
+
+Success is always indicated using a :code value of 0.
+
+On one of the error or failure cases listed in the table below, aggregates shall return the indicated error code.
+Elements in code:
+
++:code+::
+    An integer supplying the GENI standard return code indicating the success or failure of this call. Error codes are standardized and defined in the attached XML document Download. Codes may be negative. A success return is defined as :code of 0. 
+
++am_type+::
+    Optional. A (case insensitive) string indicating the type of Aggregate Manager running locally. For example, orca. When an aggregate wants to return an aggregate specific return code in the am_code field, they supply an am_type to qualify the kind of aggregate specific return code they are supplying. This is the namespace of the aggregate specific return code. This field is optional: aggregates are not required to supply an aggregate specific return code, and clients need not look at it. This code further qualifies the kind of error or success that the aggregate is returning, as primarily defined by the value of :code. Standard values for am_type are defined in the attached XML document Download. 
+
++am_code+::
+    An integer supplying the more specific return code, relative to the aggregate type specified in am_type. This integer may be negative. Aggregates should document these codes publicly. This API does not specify how or where that documentation should be provided. 
+
+Aggregates are encouraged to use code values and output messages that help experimenters and tools distinguish between bad input, other experimenter error, temporary server errors, or server bugs.
+
+[[ErrorCodes]]
+==== Error Codes
+
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
+
+GENI standard error codes are documented in the link:http://groups.geni.net/geni/attachment/wiki/GAPI_AM_API_V3/CommonConcepts/geni-error-codes.xml[attached XML document], and listed below.
+|=======
+| 0  |  SUCCESS      | "Success"
+| 1  |  BADARGS      | "Bad Arguments: malformed arguments"
+| 2  |  ERROR    | "Error (other)"
+| 3  |  FORBIDDEN    | "Operation Forbidden: eg supplied credentials do not provide sufficient privileges (on given slice)"
+| 4  |  BADVERSION   | "Bad Version (eg of RSpec)"
+| 5  |  SERVERERROR      | "Server Error"
+| 6  |  TOOBIG   | "Too Big (eg request RSpec)"
+| 7  |  REFUSED      | "Operation Refused"
+| 8  |  TIMEDOUT     | "Operation Timed Out"
+| 9  |  DBERROR      | "Database Error"
+| 10 |  RPCERROR     | "RPC Error"
+| 11 |  UNAVAILABLE      | "Unavailable (eg server in lockdown)"
+| 12 |  SEARCHFAILED     | "Search Failed (eg for slice)"
+| 13 |  UNSUPPORTED      | "Operation Unsupported"
+| 14 |  BUSY     | "Busy (resource, slice); try again later"
+| 15 |  EXPIRED      | "Expired (eg slice)"
+| 16 |  INPROGRESS   | "In Progress"
+| 17 |  ALREADYEXISTS    | "Already Exists (eg the slice}"
+| 24 |  VLAN_UNAVAILABLE     | "VLAN tag(s) requested not available (likely stitching failure)"
+| 25 |  INSUFFICIENT_BANDWIDTH   | "Requested capacity for link(s) not available"
+|=======
+
+Aggregates are similarly encouraged to provide hints on how to fix bad requests using the value entry to experimenters on error or failures. For example, a failed Renew call that failed because you are not allowed to renew your sliver that far in the future, might return a new date string in the value field that would be allowed. Similarly, a failed Allocate call might return a modified request RSpec in the value field.
+
+Note that a malformed XML-RPC request should still raise an XML-RPC Fault, and other Faults dictated by the XML-RPC specification should still be raised. Aggregates should avoid raising an error (XML-RPC Fault) for application layer errors or any other cases where the XML-RPC specification does not require a Fault, but rather should attempt to return this struct, providing any error messages and stack traces in the output field or other additional fields. Certain XML-RPC errors may be returned using Faults or otherwise by the XML-RPC layer, or may more properly be returned using this struct in the application layer. In such cases, servers should use error codes with negative values. Selected such errors are listed below:
+
+|=======
+|-32001 | SERVERBUSY | "Server is (temporarily) too busy; try again later"
+|=======
+
+Note also that servers may respond with other HTTP error codes, and clients must be prepared to deal with those situations. Specifically, a server that is busy might return HTTP code 503, or just refuse the connection. 
+
+
+*TODO: Add example in full XML*
+
+*TODO: Add some examples. These can be the same as examples later on in the document (but the corresponding example below will only include the date in the +value+ field).*
+
+
+
+
+[[Credentials]]
+=== Credential Array Argument
+
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
+
+See link:general.html[General Concepts] and link:credential-sfa.html[SFA Credentials] and link:credential-abac.html[ABAC Credentials] for more information on credentials. 
+
+Many methods take an array of credentials to authorize the caller to perform the given operation with the given arguments. 
+This array argument is actually an array of structures specifying the credential type and version, as well as the actual string credential.
+
+.Credentials array +struct+
+[source]
+------------
+credentials = [
+   {
+    :type: <string, case insensitive>, 
+    :version: <string containing an integer>,
+    :value: <string>,
+    <others>
+   }
+]
+------------
+
+Each credential (in +:value+) is defined as a signed document. A given list of credentials may contain credentials in multiple formats. The list may be empty. A given authorization policy at an AM may require 0, 1, or many credentials. Aggregates are required to allow credentials which are not used by local authorization policy or engines, using only credentials locally relevant.
+
+* An AM must pick credentials out of the list that it understands and be robust to receiving credentials it does not understand.
+* Aggregates can identify and use valid slice and user credentials by matching against the schema defined in link:http://groups.geni.net/geni/wiki/GeniApiCredentials[GeniApiCredentials].
+* AMs are required to continue to accept current-format credentials as specified in link:[GeniApiCredentials].
+** In particular, a single standard slice credential remains sufficient for most authorization policies. 
+* Other credential formats acceptable by some aggregates might include  link:http://abac.deterlab.net/[ABAC] x509 Attribute certificates as defined ilink:http://groups.geni.net/geni/wiki/TIEDABACCredential[here], for example.
+* AMs may get other authorization material from other sources: EG a future Credential Store service. 
+
+At least one subset of the credentials (e.g. a single SFA style slice credential) must authorize operations for the slice specified in slice_urn if that is an argument, or for the slice that contains the named slivers, if sliver urns are an argument, or a valid set of administrative credentials with sufficient privileges. When sliver_urns are supplied, all such slivers must belong to the same slice, over which the given credential set provides access. Methods that do not take a slice urn or sliver urns, but do take credentials, are interpreted to require credentials that authorize the user generally. For example, an SFA style user credential must be supplied. Credentials must be valid (signed by a valid GENI certificate authority either directly or by chain, not expired, and grant privileges to the client identified by the SSL client certificate). Each method requires specific privileges, which must be granted by the provided credentials. Note that the semantics of this argument is not clear: most implementations require a single credential to provide all needed privileges. Alternative interpretations might, for example, accumulate privileges from each valid credential to determine overall caller permissions. For details on GENI AM API format credentials, see link:http://groups.geni.net/geni/wiki/GeniApiCredentials[the GENI wiki].
+
+Aggregates must advertise the type(s) of credentials they support, using a new entry in GetVersion:
+
+:credential_types = <a list of structs>: [
+  {
+   :type: <string, case insensitive>,
+   :version: <string containing an integer>,
+   <others fields optionally. EG A URL for more info, or a schema>
+  }
+]
+
+"sfa" slice credentials as defined before AM API version 3 will have type=geni_sfa and version=2. "sfa" slice credentials as of AM API version 3 will be type=geni_sfa, version=3. Note: AM API v3 adds requirements on URNs and certificates, as well as credentials. A credential is only geni_sfa version 3 if all contained certificates and URNs are AM API v3 compliant. Experimenters with existing certificates that are not AM API v3 compliant will only get geni_sfa version 2 credentials, unless they first get a new user certificate. As a result, most aggregates should accept both geni_sfa version 3 and version 2 credentials.
+
+link:http://abac.deterlab.net/[ABAC] credentials as of AM API version 3 will be type=geni_abac, version=1. These are fully specified link:http://groups.geni.net/geni/wiki/TIEDABACCredential[here] (we use version 1.1 from that page).
+
+For example, an aggregate that accepts ABAC credentials, SFA slice credentials that were issued prior to AM API v3, and SFA slice credentials from AM API version 3, would include this in GetVersion:
+
+.Credentials array example
+[source]
+------------
+:credential_types = [
+  {
+   :type = "geni_sfa",
+   :version = "2"
+  },
+  {
+   :type="geni_sfa",
+   :version = "3"
+  },
+  {
+   :type="geni_abac",
+   :version="1"
+  }
+]
+------------
+
+
+[[OptionsArgument]]
+=== Options Argument
+
+An XmlRpc +struct+. This is the last argument of all calls in this API. For GetVersion only, this argument is optional and thus may be omitted. In all other calls, it is required, but may be empty.
+
+The struct contains +string+ keys, mapped onto values. The type of these values depends on the specific option.
+
+All direct arguments to calls are mandatory, and the +options+ argument allows for optional arguments to be added. +options+ may always be left empty by clients.
+
+This API specifies some options that should be supported by each AM. These are prefixed with +:+. AM's may also support additional options, if they follow these rules:
+* They should document these options
+* They should choose an appropriate prefix. There is a colon between the prefix and the option name. *TODO example*
+* Clients are never required to provide such options. The AM will document the default value they assume for each new option.
+

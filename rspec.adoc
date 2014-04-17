@@ -1,0 +1,11 @@
+= Rspec
+
+TODO
+
+*TODO refer to other 4 documents*
+
+- link:federation-am-api.html[AM API]
+- link:credential-sfa.html[SFA Credentials]
+- link:credential-abac.html[ABAC Credentials]
+- link:general.html[General] Architecture & Concepts, Identifiers (URN etc.), "where does AM fit into this?"
+

@@ -1,0 +1,61 @@
+[[Describe]]
+=== Describe
+
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
+ Retrieve a manifest RSpec describing the resources contained by the named entities, e.g. a single slice or a set of the slivers in a slice. This listing and description should be sufficiently descriptive to allow experimenters to use the resources.
+
+.Call Syntax
+[source]
+----------------
+Describe(string urns[], struct credentials[], struct options[])
+----------------
+
+The following members are available for use in the options parameter. All aggregate managers are required to honor these options.:
+
+{
+  boolean :compressed <optional>;
+  struct :rspec_version {
+    string type; # case insensitive
+    string version; # case insensitive
+  };
+}
+
+Note that all options may be omitted by the client except for :rspec_version which is required.
+
+For details on the options, see the Details page.
+
+This method is part of what ListResources used to do in previous versions of the AM API, and is similar to ProtoGENI  `Resolve`.
+
+As described here, the :single_allocation return from GetVersion advertises whether or not a client may invoke this method on only some of the slivers in a given :allocation_state in a given slice (default is false - the client may operate on only some of the slivers in a given state).
+
+==== Return
+
+On success, the value field of the return struct will contain a struct:
+
+***********************************
+[horizontal]
+XmlRpc type::
+[source]
+{
+   ":rspec": <geni.rspec, a Manifest RSpec>
+   ":urn": <string slice urn of the containing slice>
+   ":slivers": [
+               {
+                  ":sliver_urn": <string sliver urn>
+                  ":expires": <dateTime.rfc3339 allocation expiration string, as in :expires from SliversStatus>,
+                  ":allocation_status": <string sliver state - e.g. :allocated or :provisioned >,
+                  ":operational_status": <string sliver operational state>,
+                  ":error": <optional string. The field may be omitted entirely but may not be null/None, explaining any failure for a sliver.>
+               },
+               ...
+         ]
+}
+***********************************
+
+Note that the manifest RSpec for allocated slivers may contain less detail than for provisioned slivers. Aggregates are expected to combine the manifests of all requested slivers into a single manifest RSpec. Note that a manifest returned here for only some of the slivers in a slice at this aggregate may contain references to resources not described in this manifest because they are in other slivers.
+
+If a slice urn is supplied and there are no slivers in the given slice at this aggregate, then :rspec shall be a valid manifest RSpec, containing zero (0) node or link elements - that is, specifying no resources. :slivers may be an empty array, or may be an array of previous slivers that have since been deleted or expired. Calling Describe on one or more sliver URNs that are unknown, deleted or expired shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR :code).
+
+Manifests are not necessarily static. In general, the manifest of a given sliver should be static once it has reached the operational state :ready (e.g., fully booted). However, this API does not require that to be true.
+
+See the Common Concepts page about the credentials, rspec, and urns arguments, and also for details on allocation states, operational states, and datetime values. See GeniApiIdentifiers for details on URN structure. 
