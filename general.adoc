@@ -1,0 +1,23 @@
+= General
+
+*TODO refer to other 4 documents*
+
+- link:federation-am-api.html[AM API]
+- link:rspec.html[Rspec]
+- link:credential-sfa.html[SFA Credentials]
+- link:credential-abac.html[ABAC Credentials]
+
+== Architecture & Concepts
+
+TODO
+
+TODO "where does AM fit into this?"
+
+== Identifiers
+
+TODO (urns etc)
+
+== History?
+
+TODO
+
