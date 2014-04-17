@@ -10,8 +10,8 @@ clean:
 	rm -f $(HTML)
 
 checker:
-	@bin="asciidoc" && which $$bin > /dev/null || echo "ERROR: Please install '$$bin' first."
-	@bin="source-highlight" && which $$bin > /dev/null || echo "ERROR: Please install '$$bin' first."
+	@bin="asciidoc" && command -v $$bin > /dev/null || (echo "ERROR: Please install '$$bin' first." && exit 1)
+	@bin="source-highlight" && command -v $$bin > /dev/null || (echo "ERROR: Please install '$$bin' first." && exit 1)
 
 %.html: %.adoc
 	asciidoc -a theme=compact -a data-uri -a icons -a toc2 $(<F)
