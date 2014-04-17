@@ -3,7 +3,7 @@
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
 
-Delete the named slivers, making them geni_unallocated. Resources are stopped if necessary, and both de-provisioned and de-allocated. No further AM API operations may be performed on slivers that have been deleted.
+Delete the named slivers, making them :unallocated. Resources are stopped if necessary, and both de-provisioned and de-allocated. No further AM API operations may be performed on slivers that have been deleted.
 
 .Call Syntax
 [source]
@@ -15,27 +15,42 @@ This operation used to be called DeleteSliver in earlier versions of this API. T
 
 This operation is similar to ProtoGENI's  DeleteSliver operation and to  SFA's DeleteSlice operation (sec. 6.2.3).
 
-Options include: geni_best_effort
+As described here, the :single_allocation return from GetVersion advertises whether or not a client may invoke this method on only some of the slivers in a given :allocation_state in a given slice (default is false - the client may operate on only some of the slivers in a given state).
 
-As described here, the geni_single_allocation return from GetVersion advertises whether or not a client may invoke this method on only some of the slivers in a given geni_allocation_state in a given slice (default is false - the client may operate on only some of the slivers in a given state).
+==== Option: +:best_effort+
 
-Return: On success, the value field of the return struct will contain a list of structs:
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Optional 
+XmlRpc type:: +boolean+
+Default: false
+***********************************
 
+==== Return
+
+On success, the value field of the return struct will contain a list of structs:
+
+***********************************
+[horizontal]
+XmlRpc type::
+[source]
 [
   {
-   geni_sliver_urn: <string>,
-   geni_allocation_status: <string>,
-   geni_expires: <dateTime.rfc3339 when the sliver expires from its current state>,
-   [optional: 'geni_error': string indicating any AM failure deleting the sliver. The field may be omitted but may not be null/None.]
+   ":sliver_urn": <string>,
+   ":allocation_status": <string>,
+   ":expires": <dateTime.rfc3339 when the sliver expires from its current state>,
+   [optional: ':error': string indicating any AM failure deleting the sliver. The field may be omitted but may not be null/None.]
   },
   ...
 ]
+***********************************
 
-Note that this method should return a struct for each deleted sliver, with the URN of the deleted sliver, the allocation state geni_unallocated, and the time when the sliver was previously set to expire. This method may also return an empty list, if no slivers are at this aggregate in the specified slice.
+Note that this method should return a struct for each deleted sliver, with the URN of the deleted sliver, the allocation state :unallocated, and the time when the sliver was previously set to expire. This method may also return an empty list, if no slivers are at this aggregate in the specified slice.
 
 Note that aggregates will automatically delete slivers whose expiration time is reached.
 
-Calling Delete() on an unknown, expired or deleted sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED, or ERROR) (unless geni_best_effort is true, in which case the method may succeed and return a geni_error for each sliver that failed). Attempting to Delete a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or `EXPIRED); details are aggregate specific.
+Calling Delete() on an unknown, expired or deleted sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED, or ERROR) (unless :best_effort is true, in which case the method may succeed and return a :error for each sliver that failed). Attempting to Delete a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or `EXPIRED); details are aggregate specific.
 
-See the Common Concepts page for details on allocation and operational states, operations on individual slivers, geni_best_effort, sliver expiration times, urns, and credentials. 
+See the Common Concepts page for details on allocation and operational states, operations on individual slivers, :best_effort, sliver expiration times, urns, and credentials. 
 

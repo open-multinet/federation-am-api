@@ -75,6 +75,7 @@ Requested sliver expiration time
 Supported by the server:: Mandatory
 Included by client:: Optional 
 XmlRpc type:: +boolean+
+Default: false
 ***********************************
 
 Do all slivers fail if any single sliver fails?
