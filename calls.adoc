@@ -1,0 +1,252 @@
+== Specific Calls
+
+TODO
+
+=== GetVersion
+
+TODO
+
+=== Allocate
+
+TODO
+
+=== Provision
+
+TODO
+
+=== PerformperationalAction
+
+TODO
+
+=== Status
+
+TODO
+
+=== Describe
+
+TODO
+
+=== Renew
+
+TODO
+
+[NOTE]
+====================================================
+_Wim Van de Meerssche:_
+
+There is an issue regarding the return value of Renew, in the cases mutliple
+slivers are renewed. See https://github.com/wvdemeer/federation-am-api/issues/1
+====================================================
+
+=== Delete
+
+TODO
+
+=== Shutdown
+
+TODO
+
+[[ListResources]]
+=== ListResources
+
+Return a listing and description of available resources at this aggregate. The resource listing and description provides sufficient information for clients to select among available resources. These listings are known as advertisement RSpecs.
+
+.ListResources Call Syntax
+[source]
+----------------
+ListResources(array credentials, struct rspec_version, struct options)
+----------------
+
+Options defined in this API are:
+
+* +boolean :available+
+* +boolean :compressed+
+
+Return type: +string+
+
+==== Argument 1:  +credentials+
+
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Mandatory
+XmlRpc type::  +array of struct+
+***********************************
+
+A list of credentials, see <<Credentials>>. When using SFA style credentials, this list must include a valid user credential, granting rights to the caller of the method. 
+
+NOTE: _Wim Van de Meerssche:_ Are slice credentials allowed or
+disallowed as authorization for +ListResources+? Or is it always policy of the testbed, with minimum allowed being a user credential of a user at a trusted root.
+
+==== Argument 2: +rspec_version+
+
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Mandatory
+XmlRpc type:: 
+[source]
+  struct {
+      string type;    # case insensitive
+      string version; # case insensitive
+  }
+***********************************
+
+////////////////////////////////////
+[NOTE]
+[caption="Details", icon=None]
+====================================
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Mandatory
+XmlRpc type:: 
+[source]
+  struct {
+      string type;    # case insensitive
+      string version; # case insensitive
+  }
+====================================
+////////////////////////////////////
+
+An XML-RPC struct indicating the type and version of Advertisement RSpec to
+return. The struct contains 2 members, type and version. type and version are
+case-insensitive strings, matching those in +:ad_rspec_versions+ as returned
+by +GetVersion+ at this aggregate. Aggregates should return a :code of 4
+(BADVERSION) if the requested RSpec version is not one advertised as supported
+in +GetVersion+. 
+
+TODO: add link to rspec document 
+
+==== Argument 3:  +options+
+
+A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+
+==== Option: +:available+
+
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Optional 
+XmlRpc type:: +boolean+
+***********************************
+
+An XML-RPC boolean value indicating whether the caller is interested in all resources or available resources. If this value is true (1), the result should contain only available resources. If this value is false (0) or unspecified, both available and allocated resources should be returned. The Aggregate Manager is free to limit visibility of certain resources based on the credentials parameter.
+
+[[OptionCompressed]]
+==== Option: +:compressed+
+
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Optional 
+XmlRpc type:: +boolean+
+***********************************
+
+////////////////////////////////////
+[NOTE]
+[caption="Details", icon=None]
+====================================
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Optional 
+XmlRpc type:: +boolean+
+====================================
+////////////////////////////////////
+
+An XML-RPC boolean value indicating whether the caller would like the result
+to be compressed. If the value is true (1), the returned resource list will be
+compressed according to RFC 1950. If the value is false (0) or unspecified.
+Note: compressed or not, the XML-RPC return type of the +ListResources+ value field will always be text.
+
+==== Return: Advertisement RSpec
+
+***********************************
+[horizontal]
+XmlRpc type:: +string+
+***********************************
+
+////////////////////////////////////
+[NOTE]
+[caption="Details", icon=None]
+====================================
+[horizontal]
+XmlRpc type:: +string+
+====================================
+////////////////////////////////////
+
++ListResources+ returns the standard return struct from all AM API methods (output, value, code). See <<ReturnStructure,Return Structure>>.
+
+The value contains an XmlRpc +string+ containing an Advertisement RSpec, or an XmlRpc +string+ containing a compressed RSpec (see <<OptionCompressed,+:compressed+ option>>).
+The returned advertisement RSpec lists and describes resources at this aggregate. Depending on the arguments, these may be all local resources, or only available local resources.
+
+NOTE: _Wim Van de Meerssche:_ When +compressed+ this returns an +string+ containing base64 encoded
+binary data. The binary data is the compressed rspec. This is a bit strange,
+because XmlRpc has a <base64> type, which could be used instead of a string.
+This is implemented this way on aggregates. The reason for this might be that
+is is not implemented correctly in some XmlRpc libraries? Does anyone have
+more info? In any case, *this should be documented clearly, including an
+example (in actual XML, not JSON)*. It might be an option to document this as
+`Servers should send a +string+ containing a base64 encoded compressed rspec.
+Clients should expect EITHER this +string+ or a +base64+ and work in both
+cases.'
+
+NOTE: _Wim Van de Meerssche:_ This brings up something similar: Dates are encoded with RFC3339 and send as XmlRpc +string+ type.
+However, XmlRpc has a +dateTime.iso8601+ type. Why? Library support again?
+Again *this should be very clearly documented, with examples*. Also again, we
+might require the sender (client or server, depending on call) to do a
+specific thing, and require the receiver to handle both cases.
+
+==== Errors
+
+See <<ErrorCodes,Error Codes>> for general errors.
+There are no special cases for the +ListResources+ call.
+
+NOTE: _Wim Van de Meerssche:_ I don't think there is a need to describe
+errors specifically for +ListResources+. The way they are described in general
+should be enough here, there is nothing specific about the errors that 
+ListResources can generate.
+
+==== Examples
+.Example Request (JSON syntax)
+[source]
+------------
+[
+   [
+      {
+      ":type": "geni_sfa",
+      ":version": "3",
+      ":value": "<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+             <signed-credential ...  (Actual credential ommited)
+             </signed-credential>"
+      }
+   ],
+   {
+   ":available": true,
+   ":rspec_version": {
+          "version": "3",
+          "type": "geni"
+          },
+   ":compressed": false
+   }
+]
+-----------------
+
+.Example reply (JSON syntax)
+[source]
+------------------
+{
+"output": "",
+"code": {
+             ":code": 0
+        },
+"value": "<?xml version="1.0" encoding="UTF-8"?>
+              <rspec xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                     xmlns="http://www.geni.net/resources/rspec/3" 
+                     xsi:schemaLocation="http://www.geni.net/resources/rspec/3 http://www.geni.net/resources/rspec/3/ad.xsd " 
+                     type="advertisement" 
+                     expires="2014-03-17T14:53:37Z" >
+                    ... (actual RSpec ommited)
+          </rspec>"
+}
+------------------
+
