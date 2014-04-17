@@ -1,4 +1,90 @@
+[[Allocate]]
 === Allocate
 
-TODO
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
 
+Allocate resources as described in a request RSpec argument to a slice with the named URN. On success, one or more slivers are allocated, containing resources satisfying the request, and assigned to the given slice. This method returns a listing and description of the resources reserved for the slice by this operation, in the form of a manifest RSpec. Allocated slivers are held for an aggregate-determined period. Clients must Renew or Provision slivers before the expiration time (given in the return struct), or the aggregate will automatically Delete them. Aggregates should implement Allocate() as quick, cheap, and not impacting provisioned resources, such that it can be readily undone. Allocate is an all or nothing request: if the aggregate cannot completely satisfy the request RSpec, it should fail the request entirely.
+
+.Call Syntax
+[source]
+----------------
+Allocate(string slice_urn,
+         struct credentials[],
+         geni.rspec rspec,
+         struct options)
+----------------
+
+This is the first part of what CreateSliver used to do in previous versions of the AM API. The second part is now done by Provision, and the final part is done by PerformOperationalAction. See above for an overview of this process.
+
+This operation is similar to ProtoGENI's  GetTicket operation.
+
+As described here, the :allocate return from GetVersion advertises when a client may legally call Allocate (only once at a time per slice, whenever desired, or multiple times only if the requested resources do not interact).
+
+==== Argument 1: +slice_urn+
+
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Mandatory
+XmlRpc type::  +string+
+String content type::  URN
+***********************************
+
+The URN of the slice to which the resources specified in rspec will be allocated. For details on GENI AM API URN identifiers, see the GENI wiki page.
+
+==== Argument 2: +rspec+
+
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Mandatory
+XmlRpc type::  +string+
+String content type::  RSpec
+***********************************
+
+An RSpec matching the  GENI standard request RSpec schema containing the resources that the caller is requesting for allocation to the slice specified in slice_urn. See the Common Concepts page.
+
+==== Argument 3: +credentials+
+
+The standard authorization argument. See <<Credentials, the Credentials section>>
+
+==== Argument 4:  +options+
+
+A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+
+==== Option: +:end_time+
+
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Optional 
+XmlRpc type:: +string+
+String content type::  RFC 3339 date
+***********************************
+
+The requested expiration of all new slivers, may be ignored by aggregates.
+
+==== Return value 
+
+On success, the value field of the return struct will contain a struct:
+***********************************
+[horizontal]
+XmlRpc type::
+[source]
+    {
+     :rspec: <geni.rspec manifest of newly allocated slivers>,
+     :slivers: [
+            {
+                      :sliver_urn: <string sliver urn>
+                      :expires: <dateTime.rfc3339 allocation expiration string, as in :expires from Status>,
+                      :allocation_status: <string sliver state - e.g. :allocated>
+            },
+            ...
+        ]
+    }
+***********************************
+
+The manifest is a manifest RSpec of only newly allocated slivers, using the schema matching the input request schema (as required on the Common Concepts page).
+
+
+See the Common Concepts page for details on :end_time, RSpecs, expiration dateTime, and allocation states. 

@@ -1,4 +1,42 @@
+[[Status]]
 === Status
 
-TODO
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
 
+Get the status of a sliver or slivers belonging to a single slice at the given aggregate. Status may include other dynamic reservation or instantiation information as required by the resource type and aggregate. This method is used to provide updates on the state of the resources after the completion of Provision, which began to asynchronously provision the resources. This should be relatively dynamic data, not descriptive data as returned in the manifest RSpec.
+
+.Call Syntax
+[source]
+----------------
+Status(string urns[], struct credentials[], struct options)
+----------------
+
+This operation used to be called SliverStatus in earlier versions of the AM API. geni_slivers has replaced geni_resources and geni_sliver_urn replaces geni_urn. geni_status is replaced with 2 fields, geni_allocation_status and geni_operational_status.
+
+This method has no required options.
+
+Return: On success, the value field of the return struct will contain a struct:
+
+{
+  geni_urn: <slice URN>
+  geni_slivers: [ 
+                    { geni_sliver_urn: <sliver URN>
+                      geni_allocation_status: <string, eg provisioned>
+                      geni_operational_status: <string, eg ready>
+                      geni_expires: <dateTime.rfc3339 of individual sliver expiration>
+                      geni_error: <string, eg '' - not null/None and not optional>,
+                     },
+                    { geni_sliver_urn: <sliver URN>
+                      geni_allocation_status: <string, eg provisioned>
+                      geni_operational_status: <string, eg ready>
+                      geni_expires: <dateTime.rfc3339 of individual sliver expiration>
+                      geni_error: <string, eg '' - not null/None and not optional>,
+                      }
+                  ]
+}
+
+Note that aggregates may return other information, such as details on sliver contents, etc.
+
+Calling Status() on an unknown, deleted or expired sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR) (unless geni_best_effort is true, in which case the method may succeed, but return a geni_error for each sliver that failed). Attempting to get Status() for a slice (no slivers identified) with no current slivers at this aggregate may return an empty list for geni_slivers, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or EXPIRED). Note therefore that geni_slivers may be an empty list.
+
+See the Common Concepts page for details on allocation and operational states, sliver expiration times, urns, and credentials. 

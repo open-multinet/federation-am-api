@@ -1,4 +1,119 @@
+[[Provision]]
 === Provision
 
-TODO
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
 
+Request that the named :allocated slivers be made :provisioned, instantiating or otherwise realizing the resources, such that they have a valid :operational_status and may possibly be made :ready for experimenter use. This operation is synchronous, but may start a longer process, such as creating and imaging a virtual machine.
+
+.Call Syntax
+[source]
+----------------
+Provision(string urns[], struct credentials[],  
+          struct rspec_version, struct options)
+----------------
+
+This operation is part of what CreateSliver used to do. The first part of what CreateSliver did is now in Allocate(). Note that resources are not necessarily ready for experimenter use after the work that this function initiates finally completes. Consult the :operational_status, and the advertised operational state machine. Consider calling PerformOperationalAction, e.g. with the command name :start.
+
+The operation is similar to ProtoGENI's  RedeemTicket method.
+
+As described here, the :single_allocation return from GetVersion advertises whether or not a client may invoke this method on only some of the slivers in a given :allocation_state in a given slice (default is false - the client may operate on only some of the slivers in a given state).
+
+When only a slice URN is supplied (no specific sliver URNs), this method applies only to the slivers currently in the :allocated allocation state.
+
+==== Argument 1:  +urns+
+
+*TODO*
+
+==== Argument 2:  +credentials+
+
+The standard authorization argument. See <<Credentials, the Credentials section>>.
+
+==== Argument 3: +rspec_version+
+
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Mandatory
+XmlRpc type:: 
+[source]
+  struct {
+      string type;    # case insensitive
+      string version; # case insensitive
+  }
+***********************************
+
+An XML-RPC struct indicating the type and version of Manifest RSpec to
+return. The struct contains 2 members, type and version. type and version are
+case-insensitive strings, matching those in +:ad_rspec_versions+ as returned
+by +GetVersion+ at this aggregate. Aggregates should return a :code of 4
+(BADVERSION) if the requested RSpec version is not one advertised as supported
+in +GetVersion+. 
+The following option is required. All aggregate managers are required to honor this option. This field is used to specify the format of the returned manifest RSpec, as in the Describe() method. See the Details page and the Common Concepts page for more information:
+
+==== Argument 4:  +options+
+
+A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+
+
+==== Option: +:end_time+
+
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Optional 
+XmlRpc type:: +string+
+String content type::  RFC 3339 date
+***********************************
+
+Requested sliver expiration time
+
+
+==== Option: +:best_effort+
+
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Optional 
+XmlRpc type:: +boolean+
+***********************************
+
+Do all slivers fail if any single sliver fails?
+
+==== Option: +:users+
+
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Optional 
+XmlRpc type:: array of struct
+***********************************
+Resource login information. See the Common Concepts page. 
+
+
+==== Return value
+
+Return: On success, the value field of the return struct will contain a struct:
+
+***********************************
+[horizontal]
+XmlRpc type::
+[source]
+  ":rspec": <geni.rspec, RSpec manifest>,
+  ":slivers": 
+  [
+    {
+     ":sliver_urn": <string>,
+     ":allocation_status": <string>,
+     ":operational_status": <string>,
+     ":expires": <dateTime.rfc3339 when the sliver expires from its current state>,
+     ":error": <optional string. The field may be omitted entirely but may not be null/None, explaining any failure to Provision this sliver.>
+    },
+    ...
+  ],
+***********************************
+
+The returned manifest must be in the format specified by the :rspec_version option. The returned manifest covers only newly provisioned slivers. Use Describe to get a manifest of all provisioned slivers. When :best_effort is true, all requested slivers are returned, but some slivers may have failed (:allocation_status will remain :allocated). Check :error for details. Attempting to Provision an unknown or expired sliver when :best_effort is false shall result in an error (SEARCHFAILED or EXPIRED or ERROR :code). Attempting to Provision a slice (no slivers identified) with no current slivers at this aggregate shall return an error (SEARCHFAILED).
+
+Note that previously allocated slivers may have expired (been deleted) by the time you call Provision.
+
+See the Common Concepts page for details on allocation and operational states, operations on individual slivers, :best_effort, sliver expiration times, urns, credentials, rspecs, and :users. 
