@@ -12,10 +12,18 @@ Setup
 ```bash
     $ brew install asciidoc source-highlight
 ```
+* Ubuntu
+```bash
+    $ apt-get install asciidoc source-highlight
+```
 
 Run
 ---
 * OS X
 ```bash
     $ make clean all && open federation-am-api.html
+```
+* Ubuntu
+```bash
+    $ make clean all && xdg-open federation-am-api.html
 ```
