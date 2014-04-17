@@ -1,0 +1,3 @@
+script: make clean all
+before_script:
+ - sudo apt-get install asciidoc source-highlight
