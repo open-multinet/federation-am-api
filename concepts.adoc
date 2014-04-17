@@ -1,0 +1,54 @@
+== Basic Concepts
+
+TODO
+
+=== HTTPS with Client Authentication
+
+TODO
+
+=== XmlRpc
+
+TODO
+
+[[ReturnStructure]]
+=== Return Structure
+
+TODO: describe return structure
+
+.Reply template (JSON syntax)
+[source]
+------------------
+{
+    "output": "Error output of call",
+    "code": {
+              ":code": 0
+            },
+    "value": "result of call"
+}
+------------------
+
+TODO: Add example in full XML
+
+TODO: Add some examples. These can be the same as examples later on in the
+document.
+
+[[ErrorCodes]]
+==== Error Codes
+
+TODO
+
+
+
+[[Credentials]]
+=== Credential Array Argument
+
+TODO
+
+=== Rspec Versions
+
+TODO
+
+[[OptionsArgument]]
+=== Options Argument
+
+NOTE: TODO: Explain. Basically comes down to: `The +options+ argument contains only optional arguments, direct arguments are always required.'
