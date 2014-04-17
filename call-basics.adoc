@@ -1,4 +1,4 @@
-== Basic Concepts
+== Basic AM Call Concepts
 
 TODO
 
@@ -51,5 +51,14 @@ TODO
 [[OptionsArgument]]
 === Options Argument
 
-NOTE: TODO: Explain. Basically comes down to: `The +options+ argument contains only optional arguments, direct arguments are always required.'
+An XmlRpc +struct+. This is the last argument of all calls in this API. For GetVersion only, this argument is optional and thus may be omitted. In all other calls, it is required, but may be empty.
+
+The struct contains +string+ keys, mapped onto values. The type of these values depends on the specific option.
+
+All direct arguments to calls are mandatory, and the +options+ argument allows for optional arguments to be added. +options+ may always be left empty by clients.
+
+This API specifies some options that should be supported by each AM. These are prefixed with +:+. AM's may also support additional options, if they follow these rules:
+* They should document these options
+* They should choose an appropriate prefix. There is a colon between the prefix and the option name. *TODO example*
+* Clients are never required to provide such options. The AM will document the default value they assume for each new option.
 

@@ -11,14 +11,12 @@ v0.1, March 2014: First example
 Work in progress
 ====================================================
 
+*TODO refer to other 4 documents*
 
-== Architecture and concepts
-
-TODO
-
-=== History
-
-TODO
+- link:rspec.html[Rspec]
+- link:credential-sfa.html[SFA Credentials]
+- link:credential-abac.html[ABAC Credentials]
+- link:general.html[General] Architecture & Concepts, Identifiers (URN etc.), "where does AM fit into this?"
 
 include::call-basics.adoc[tabsize=4]
 
