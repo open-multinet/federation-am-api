@@ -5,6 +5,10 @@
 
 Perform the named operational action on the named slivers, possibly changing the :operational_status of the named slivers. E.G. 'start' a VM. For valid operations and expected states, consult the state diagram advertised in the aggregate's advertisement RSpec.
 
+Operational actions modify the running state of the resource, not the nature of the resources in the reservation. To add or remove resources from the reservation, use Delete and Allocate. 
+Operational actions, and the states that result, are resource type and aggregate specific. Aggregates advertise these in the advertisement RSpec.
+Example actions include +:start+ (boot a computer), +:restart+ (reboot a computer), and +:stop+ (power down a computer). 
+
 .Call Syntax
 [source]
 ----------------
@@ -16,7 +20,25 @@ This operation is similar to ProtoGENI functions like StartSliver, StopSliver, a
 
 Aggregate Managers SHOULD return an error code of 13 (UNSUPPORTED) if they do not support a given action for a given resource. An AM SHOULD constrain actions based on the current operational state of the resource. This is a fast synchronous operation, and MAY start long-running sliver transitions whose status can be queried using Status. This method should only be called, and is only valid, when the sliver is fully allocated (operational status is not :pending_allocation).
 
-While the action argument may be aggregate and sliver type specific (none are required for all aggregates and sliver types), this API does define three common actions that AMs should support if possible: :start, :stop, and :restart. Calling PerformOperationalAction with the action :start corresponds to the final part of what CreateSliver did in AM API v2. For more information, see the Common Concepts page section on operational actions.
+While the action argument may be aggregate and sliver type specific (none are required for all aggregates and sliver types), this API does define three common actions that AMs should support if possible: :start, :stop, and :restart. 
+
+NOTE: Calling PerformOperationalAction with the action :start corresponds to the final part of what CreateSliver did in AM API v2. 
+
+==== Argument 1:  +urns+
+
+*TODO*
+
+==== Argument 2:  +credentials+
+
+The standard authorization argument. See <<Credentials, the Credentials section>>.
+
+==== Argument 3:  +action+
+
+*TODO*
+
+==== Argument 4:  +options+
+
+A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 ==== Option: +:best_effort+
 

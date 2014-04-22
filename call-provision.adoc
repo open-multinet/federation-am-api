@@ -3,7 +3,11 @@
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
 
-Request that the named :allocated slivers be made :provisioned, instantiating or otherwise realizing the resources, such that they have a valid :operational_status and may possibly be made :ready for experimenter use. This operation is synchronous, but may start a longer process, such as creating and imaging a virtual machine.
+Request that the named +:allocated+ slivers be made +:provisioned+, instantiating or otherwise realizing the resources, such that they have a valid +:operational_status+ and may possibly be made +:ready+ for experimenter use. This operation is synchronous, but may start a longer process, such as creating and imaging a virtual machine.
+
+Redeem a reservation, requesting that the listed slivers move from +:allocated+ to +:provisioned+. Only when slivers are provisioned are the resources 'instantiated' and made ready for operational use. Note that at some aggregates and for some resource types, this operation may be a no-op. At other aggregates, this operation starts a long running process (e.g. loading an image on a machine and booting it). Tools should monitor the sliver status (by calling Status), looking for an operational state other than +:pending_allocation+. Depending on the resource type, that next state may differ. See the advertisement RSpec for the resource type specific operational states and actions.
+
+As with the +Allocate+ method, some aggregates may not support provisioning only some reserved resources.
 
 .Call Syntax
 [source]
@@ -12,7 +16,7 @@ Provision(string urns[], struct credentials[],
           struct rspec_version, struct options)
 ----------------
 
-This operation is part of what CreateSliver used to do. The first part of what CreateSliver did is now in Allocate(). Note that resources are not necessarily ready for experimenter use after the work that this function initiates finally completes. Consult the :operational_status, and the advertised operational state machine. Consider calling PerformOperationalAction, e.g. with the command name :start.
+NOTE: This operation is part of what CreateSliver used to do. The first part of what CreateSliver did is now in Allocate(). Note that resources are not necessarily ready for experimenter use after the work that this function initiates finally completes. Consult the :operational_status, and the advertised operational state machine. Consider calling PerformOperationalAction, e.g. with the command name :start.
 
 The operation is similar to ProtoGENI's  RedeemTicket method.
 
@@ -48,7 +52,8 @@ case-insensitive strings, matching those in +:ad_rspec_versions+ as returned
 by +GetVersion+ at this aggregate. Aggregates should return a :code of 4
 (BADVERSION) if the requested RSpec version is not one advertised as supported
 in +GetVersion+. 
-The following option is required. All aggregate managers are required to honor this option. This field is used to specify the format of the returned manifest RSpec, as in the Describe() method. See the Details page and the Common Concepts page for more information:
+
+All aggregate managers are required to honor this option. This field is used to specify the format of the returned manifest RSpec, as in the Describe() method. See the Details page and the Common Concepts page for more information:
 
 ==== Argument 4:  +options+
 
@@ -65,8 +70,7 @@ XmlRpc type:: +string+
 String content type::  RFC 3339 date
 ***********************************
 
-Requested sliver expiration time
-
+As with the Allocate method, experimenters may request a sliver expiration time; aggregates may allow the operation while ignoring the requested expiration time or granting a different expiration time. 
 
 ==== Option: +:best_effort+
 
@@ -90,6 +94,7 @@ XmlRpc type:: array of struct
 ***********************************
 Resource login information. See the Common Concepts page. 
 
+Some resource types allow experimenter access. The +:users+ option allows specifying login key material to be installed on the resources (e.g. SSH public keys). 
 
 ==== Return value
 

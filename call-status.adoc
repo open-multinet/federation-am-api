@@ -5,15 +5,29 @@
 
 Get the status of a sliver or slivers belonging to a single slice at the given aggregate. Status may include other dynamic reservation or instantiation information as required by the resource type and aggregate. This method is used to provide updates on the state of the resources after the completion of Provision, which began to asynchronously provision the resources. This should be relatively dynamic data, not descriptive data as returned in the manifest RSpec.
 
+In contrast to Describe, Status is used to query dynamic state information about slivers. Aggregates may include detailed configuration information at their own discretion.
+
 .Call Syntax
 [source]
 ----------------
 Status(string urns[], struct credentials[], struct options)
 ----------------
 
-This operation used to be called SliverStatus in earlier versions of the AM API. :slivers has replaced :resources and :sliver_urn replaces :urn. :status is replaced with 2 fields, :allocation_status and :operational_status.
+NOTE: This operation used to be called SliverStatus in earlier versions of the AM API. :slivers has replaced :resources and :sliver_urn replaces :urn. :status is replaced with 2 fields, :allocation_status and :operational_status.
 
-This method has no required options.
+==== Argument 1:  +urns+
+
+*TODO*
+
+==== Argument 2:  +credentials+
+
+The standard authorization argument. See <<Credentials, the Credentials section>>.
+
+==== Argument 3:  +options+
+
+A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+
+This method has no options that are required to be supported by AM's.
 
 ==== Return
 

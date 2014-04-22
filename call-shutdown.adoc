@@ -20,3 +20,7 @@ Return: On success, the value field of the return struct will contain: XML-RPC b
 If the given slice has no resources locally, or was previously Shutdown, return shall be true, indicating the slice is shut down.
 
 See the Common Concepts page for details on the credentials argument. 
+
+This operation is for operator use, to stop a misbehaving resource. Once shut down, the slivers are not available for experimenter use. The underlying resources may be returned to the pool of available resources, depending on resource type and aggregate implementation.
+
+This method returns true (1), unless the resources remain running in the slice after this operation. 
