@@ -105,3 +105,18 @@ If a slice urn is supplied and there are no slivers in the given slice at this a
 Manifests are not necessarily static. In general, the manifest of a given sliver should be static once it has reached the operational state :ready (e.g., fully booted). However, this API does not require that to be true.
 
 See the Common Concepts page about the credentials, rspec, and urns arguments, and also for details on allocation states, operational states, and datetime values. See GeniApiIdentifiers for details on URN structure. 
+
+
+==== Return Codes and Errors
+
+The +Describe+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR and UNAVAILABLE. See <<ErrorCodes,Error Codes>> for general errors.
+
+Additionally, the +Describe+ call can return the following error codes:
+[horizontal]
+FORBIDDEN:: Credential does not grant permission to a slice or sliver specified in the +urns+ argument. Or the slice has been shut down.
+BADVERSION:: Bad Version of manifest RSpec requested with the rspec_version argument.
+UNSUPPORTED:: The aggregate does not permit operations on individual slivers in the same slice of this form. *TODO what does this exactly mean? Is this so?* 
+EXPIRED:: The slice and/or sliver has expired.
+SEARCHFAILED:: The slice or sliver does not exist at this AM.
+BUSY:: Slice or sliver is temporarily locked, try again later
+

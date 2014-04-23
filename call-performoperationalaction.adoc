@@ -78,3 +78,19 @@ Note that PerformOperationalAction may return an empty list, if no slivers were 
 The optional :resource_status field MAY be returned for each sliver which contains a resource-specific status that may be more nuanced than the options for :operational_status.
 
 See the Common Concepts page for details on allocation and operational states, operational methods, operations on individual slivers, :best_effort, sliver expiration times, urns, and credentials. 
+
+==== Return Codes and Errors
+
+The +PerformOperationalAction+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR and UNAVAILABLE. See <<ErrorCodes,Error Codes>> for general errors.
+
+Additionally, the +PerformOperationalAction+ call can return the following error codes:
+[horizontal]
+FORBIDDEN:: Credential does not grant permission to a slice or sliver specified in the +urns+ argument. Or the slice has been shut down.
+BADVERSION:: Bad Version of manifest RSpec requested with the rspec_version argument.
+UNSUPPORTED:: The aggregate does not support the given operation for the given resource(s) in their current state 
+EXPIRED:: The sliver has expired.
+SEARCHFAILED:: The slice or sliver does not exist at this AM.
+BUSY:: Slice or sliver is temporarily locked, try again later
+INPROGRESS::  Requested operation is already in progress 
+
+

@@ -123,3 +123,16 @@ The returned manifest must be in the format specified by the :rspec_version opti
 Note that previously allocated slivers may have expired (been deleted) by the time you call Provision.
 
 See the Common Concepts page for details on allocation and operational states, operations on individual slivers, :best_effort, sliver expiration times, urns, credentials, rspecs, and :users. 
+==== Return Codes and Errors
+
+The +Provision+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR and UNAVAILABLE. See <<ErrorCodes,Error Codes>> for general errors.
+
+Additionally, the +Provision+ call can return the following error codes:
+[horizontal]
+FORBIDDEN:: Credential does not grant permission to a slice or sliver specified in the +urns+ argument. Or the slice/sliver does not have permission to allocate resources at this slice. Or the slice has been shut down.
+BADVERSION:: Bad Version of manifest RSpec requested with the +rspec_version+ argument.
+UNSUPPORTED:: The aggregate does not permit operations on individual slivers in the same slice of this form. See the +:single_allocation+ and +:allocate: options of +GetVersion+ for more information.
+EXPIRED:: The slivers has expired.
+SEARCHFAILED:: The slice or sliver does not exist at this AM.
+BUSY:: Slice or sliver is temporarily locked, try again later
+

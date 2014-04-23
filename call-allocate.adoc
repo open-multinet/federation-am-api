@@ -91,4 +91,14 @@ XmlRpc type::
 The manifest is a manifest RSpec of only newly allocated slivers, using the schema matching the input request schema (as required on the Common Concepts page).
 
 
-See the Common Concepts page for details on :end_time, RSpecs, expiration dateTime, and allocation states. 
+==== Return Codes and Errors
+
+The +Allocate+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR and UNAVAILABLE. See <<ErrorCodes,Error Codes>> for general errors.
+
+Additionally, the +Allocate+ call can return the following error codes:
+[horizontal]
+FORBIDDEN:: Credential does not grant permission to a slice specified in the slice URN argument. Or the slice does not have permission to allocate resources at this slice. Or the slice has been shut down.
+BADVERSION:: Bad Version of RSpec provided in the rspec argument.
+TOOBIG:: Request is too big to be satisfied.
+UNSUPPORTED:: The aggregate does not permit multiple allocations to the same slice of this form. See the +:single_allocation+ options of +GetVersion+ for more information.
+

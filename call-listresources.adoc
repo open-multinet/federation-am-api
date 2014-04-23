@@ -150,13 +150,13 @@ specific thing, and require the receiver to handle both cases.
 
 ==== Return Codes and Errors
 
-See <<ErrorCodes,Error Codes>> for general errors.
-There are no special cases for the +ListResources+ call.
+The +ListResources+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR and UNAVAILABLE. See <<ErrorCodes,Error Codes>> for general errors.
 
-NOTE: _Wim Van de Meerssche:_ I don't think there is a need to describe
-errors specifically for +ListResources+. The way they are described in general
-should be enough here, there is nothing specific about the errors that 
-ListResources can generate.
+Additionally, the +ListResources+ call can return the following error codes:
+[horizontal]
+FORBIDDEN:: Credential does not grant permission to list resources on this aggregate
+BADVERSION:: Bad Version of Advertisement RSpec requested
+
 
 ==== Examples
 .Example Request (JSON syntax)

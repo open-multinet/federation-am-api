@@ -101,6 +101,99 @@ Note that a malformed XML-RPC request should still raise an XML-RPC Fault, and o
 
 Note also that servers may respond with other HTTP error codes, and clients must be prepared to deal with those situations. Specifically, a server that is busy might return HTTP code 503, or just refuse the connection. 
 
+NOTE: *TODO the details below have been added. The format of this info should be improved. These descriptions should be completed and expanded. The differences between errors should be made as clear as possible.*
+
+Detailed description of each error.
+
+SUCCESS::
+   Error Nr: 0
+   Calls;; all
+   Meaning;; Not an error: the call was successful. A return can be found in the +value+ field. 
+BADARGS:: 
+   Error Nr: 1
+   Calls;; all
+   Meaning;; One of the required arguments is badly formed or missing
+ERROR::  
+   Error Nr: 2
+   Calls;; all
+   Meaning;; Internal error
+FORBIDDEN::
+   Error Nr;; 3
+   Calls;; all except GetVersion
+   Related Argument;; credentials 
+   Meaning;; Operation Forbidden: eg supplied credentials do not provide sufficient privileges (on given slice)
+BADVERSION::
+   Error Nr;; 4
+   Calls;; ListResources, Provision, Describe 
+   Related Argument;; rspec_version
+   Meaning;; Bad Version (eg of RSpec) 
+SERVERERROR::  
+   Error Nr: 5
+   Calls;; all
+   Meaning;; Server error
+TOOBIG::
+   Error Nr;; 6
+   Calls;; Allocate 
+   Related Argument;; rspec
+   Meaning;; Too Big (eg request RSpec)
+REFUSED::
+   Error Nr;; 7
+   Calls;; 
+   Meaning;; Operation Refused
+TIMEDOUT::
+   Error Nr;; 8
+   Calls;; 
+   Meaning;; Operation Timed Out
+DBERROR::
+   Error Nr;; 9
+   Calls;; 
+   Meaning;; Database Error
+RPCERROR::
+   Error Nr;; 10
+   Calls;; 
+   Meaning;; RPC Error
+UNAVAILABLE::  
+   Error Nr: 11
+   Calls;; all
+   Meaning;; Unavailable (eg server in lockdown)
+SEARCHFAILED::
+   Error Nr;; 12
+   Calls;; 
+   Related Argument;; urns 
+   Meaning;; Search Failed (eg for slice)
+UNSUPPORTED::
+   Error Nr;; 13
+   Calls;; 
+   Related Argument;; urns 
+   Meaning;; Operation Unsupported
+BUSY::
+   Error Nr;; 14
+   Calls;; 
+   Related Argument;; urns 
+   Meaning;; Busy (resource, slice); try again later
+EXPIRED::
+   Error Nr;; 15
+   Calls;; 
+   Related Argument;; urns 
+   Meaning;; Expired (eg slice)
+INPROGRESS::
+   Error Nr;; 16
+   Calls;; 
+   Meaning;; In Progress
+ALREADYEXISTS::
+   Error Nr;; 17
+   Calls;; 
+   Meaning;; Already Exists (eg the slice}
+VLAN_UNAVAILABLE::
+   Error Nr;; 24
+   Calls;; 
+   Meaning;; VLAN tag(s) requested not available (likely stitching failure)
+INSUFFICIENT_BANDWIDTH::
+   Error Nr;; 25
+   Calls;; 
+   Meaning;; Requested capacity for link(s) not available
+
+
 
 *TODO: Add example in full XML*
 

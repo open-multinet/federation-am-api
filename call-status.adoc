@@ -61,3 +61,17 @@ Note that aggregates may return other information, such as details on sliver con
 Calling Status() on an unknown, deleted or expired sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR) (unless :best_effort is true, in which case the method may succeed, but return a :error for each sliver that failed). Attempting to get Status() for a slice (no slivers identified) with no current slivers at this aggregate may return an empty list for :slivers, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or EXPIRED). Note therefore that :slivers may be an empty list.
 
 See the Common Concepts page for details on allocation and operational states, sliver expiration times, urns, and credentials. 
+
+==== Return Codes and Errors
+
+The +Status+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR and UNAVAILABLE. See <<ErrorCodes,Error Codes>> for general errors.
+
+Additionally, the +Status+ call can return the following error codes:
+[horizontal]
+FORBIDDEN:: Credential does not grant permission to a slice or sliver specified in the +urns+ argument. Or the slice has been shut down.
+BADVERSION:: Bad Version of manifest RSpec requested with the rspec_version argument.
+UNSUPPORTED:: The aggregate does not permit operations on individual slivers in the same slice of this form. *TODO what does this exactly mean? Is this so?* 
+EXPIRED:: The slice and/or sliver has expired.
+SEARCHFAILED:: The slice or sliver does not exist at this AM.
+BUSY:: Slice or sliver is temporarily locked, try again later
+
