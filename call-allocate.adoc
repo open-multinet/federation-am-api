@@ -48,7 +48,7 @@ An RSpec matching the  GENI standard request RSpec schema containing the resourc
 
 ==== Argument 3: +credentials+
 
-The standard authorization argument. See <<Credentials, the Credentials section>>
+The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>
 
 ==== Argument 4:  +options+
 

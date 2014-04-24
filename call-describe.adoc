@@ -31,7 +31,7 @@ The :single_allocation return from GetVersion advertises whether or not a client
 
 ==== Argument 2:  +credentials+
 
-The standard authorization argument. See <<Credentials, the Credentials section>>.
+The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
 
 For this and other methods that take a slice URN or list of sliver URNs, when using SFA style credentials, this list must include a valid slice credential, granting rights to the caller of the method over the given slice. See the Common Concepts page. 
 

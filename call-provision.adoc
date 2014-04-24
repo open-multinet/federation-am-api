@@ -30,7 +30,7 @@ When only a slice URN is supplied (no specific sliver URNs), this method applies
 
 ==== Argument 2:  +credentials+
 
-The standard authorization argument. See <<Credentials, the Credentials section>>.
+The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
 
 ==== Argument 3: +rspec_version+
 
@@ -74,13 +74,7 @@ As with the Allocate method, experimenters may request a sliver expiration time;
 
 ==== Option: +:best_effort+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Optional 
-XmlRpc type:: +boolean+
-Default: false
-***********************************
+See <<CommonOptionBestEffort>>
 
 Do all slivers fail if any single sliver fails?
 
@@ -95,6 +89,23 @@ XmlRpc type:: array of struct
 Resource login information. See the Common Concepts page. 
 
 Some resource types allow experimenter access. The +:users+ option allows specifying login key material to be installed on the resources (e.g. SSH public keys). 
+
+Clients may omit this option. Aggregates should honor this option for any resource that accepts the provided login keys, and ignore it for other resources. This option is an array of user structs, which contain information about the users that might login to the sliver that the AM needs to know about. For example, this option is the mechanism by which users supply their SSH public keys, permitting SSH login to allocated nodes. In such cases, the corresponding manifest RSpec will contain the ssh-users element on each such node, showing the login username and applicable public keys. Aggregates accepting this option for a resource are expected to install all supplied SSH keys - creating separate login accounts for each supplied user if possible. When this option is supplied, each struct must include the key +keys+, which is an array of strings and can be empty. The struct must also include the key +urn+, which is the user’s URN string. For example:
+
+.Example
+[source]
+------------------
+[
+  {
+    urn: urn:publicid:IDN+geni.net:gcf+user+alice
+    keys: [<ssh key>, <ssh key>]
+  },
+  {
+    urn: urn:publicid:IDN+geni.net:gcf+user+bob
+    keys: [<ssh key>]
+  }
+]
+------------------
 
 ==== Return value
 

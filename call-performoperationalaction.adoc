@@ -30,7 +30,7 @@ NOTE: Calling PerformOperationalAction with the action :start corresponds to the
 
 ==== Argument 2:  +credentials+
 
-The standard authorization argument. See <<Credentials, the Credentials section>>.
+The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
 
 ==== Argument 3:  +action+
 
@@ -42,13 +42,7 @@ A struct containting optional arguments, indexed by name. See <<OptionsArgument,
 
 ==== Option: +:best_effort+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Optional 
-XmlRpc type:: +boolean+
-Default: false
-***********************************
+See <<CommonOptionBestEffort>>
 
 Default is false (action applies to all slivers equally or none; the method returns an error code without changing the operational state if any sliver fails).
 

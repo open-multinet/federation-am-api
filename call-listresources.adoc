@@ -25,7 +25,7 @@ Included by client:: Mandatory
 XmlRpc type::  +array of struct+
 ***********************************
 
-A list of credentials, see <<Credentials, the Credentials section>>. When using SFA style credentials, this list must include a valid user credential, granting rights to the caller of the method. 
+A list of credentials, see <<CommonArgumentCredentials, the Credentials section>>. When using SFA style credentials, this list must include a valid user credential, granting rights to the caller of the method. 
 
 NOTE: _Wim Van de Meerssche:_ Are slice credentials allowed or
 disallowed as authorization for +ListResources+? Or is it always policy of the testbed, with minimum allowed being a user credential of a user at a trusted root.

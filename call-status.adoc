@@ -21,13 +21,15 @@ NOTE: This operation used to be called SliverStatus in earlier versions of the A
 
 ==== Argument 2:  +credentials+
 
-The standard authorization argument. See <<Credentials, the Credentials section>>.
+The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
 
 ==== Argument 3:  +options+
 
 A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 This method has no options that are required to be supported by AM's.
+
+*TODO the original AMv3 text speaks about +geni_best_effort+ in the return value description of the Status call. This is inconsistent with the sentence above.*
 
 ==== Return
 

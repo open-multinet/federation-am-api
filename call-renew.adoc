@@ -30,7 +30,7 @@ Renew requests a changed expiration for one or more slivers in a slice. At some 
 
 ==== Argument 2:  +credentials+
 
-The standard authorization argument. See <<Credentials, the Credentials section>>.
+The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
 
 ==== Argument 3: +expiration_time+
 
@@ -44,15 +44,9 @@ A struct containting optional arguments, indexed by name. See <<OptionsArgument,
 
 ==== Option: +:best_effort+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Optional 
-XmlRpc type:: +boolean+
-Default: false
-***********************************
+See <<CommonOptionBestEffort>>
 
-Specifying whether the client prefers all included slivers to be renewed or none, or wants a partial success if possible. See the Common Concepts page under :best_effort and Operations on Individual Slivers.
+Specifying whether the client prefers all included slivers to be renewed or none, or wants a partial success if possible.
 
 ==== Return
 
