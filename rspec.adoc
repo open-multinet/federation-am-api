@@ -1,4 +1,8 @@
-= Rspec
+Federation AM API RSpec
+=======================
+TODO_ADD_Federation_AM_API_Author
+v0.1, April 2014: First draft
+:language: python
 
 TODO
 
@@ -9,3 +13,51 @@ TODO
 - link:credential-abac.html[ABAC Credentials]
 - link:general.html[General] Architecture & Concepts, Identifiers (URN etc.), "where does AM fit into this?"
 
+
+== User login information - Manifest Rspec Extension
+
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
+*TODO this section should be moved to the rspec document?*
+
+Many GENI reservable resources allow experimenters to log in to the resource to control it. Aggregates shall use a new RSpec extension to include all login information in manifest RSpecs. This extension is version controlled in the GENI RSpec git repository. This extension is hosted at geni.net.
+
+The extension adds information to the <services> tag, which already has the <login> tag.
+
+The <login> tag tells you the kind of authentication (ssh), the port, and the username. The new extension adds an entry per login username
+
+- URN of the user
+- 1 or more public SSH keys that can be used under that login 
+
+Note that one of the <user:services_user login>s in the extension duplicates the default username already in the base <login> tag. The extension allows specifying the keys usable with that login username.
+
+.Example
+[source]
+------------------
+  <services>
+    <login authentication="ssh-keys" hostname="pc27.emulab.net" port="22" username="flooby"/>
+    <ssh-user:services_user login="flooby" user_urn="http://urn:publicid:IDN+jonlab.tbres.emulab.net+user+flooby">
+      <ssh-user:public_key>asdfasdfasdf;lkasdf=foo@bar</ssh-user:public_key>
+      <ssh-user:public_key>asdfasdfasdf;lkjasdf;lasdf=foobar@barfoo</ssh-user:public_key>
+    </ssh-user:services_user>
+    <ssh-user:services_user login="io" user_urn="http://urn:publicid:IDN+jonlab.tbres.emulab.net+user+io">
+      <ssh-user:public_key>asdfasdfasdf;lkasdf=foo@bar</ssh-user:public_key>
+      <ssh-user:public_key>asdfasdfasdf;lkjasdf;lasdf=foobar@barfoo</ssh-user:public_key>
+    </ssh-user:services_user>
+  </services>
+------------------
+
+And the RNC schema:
+
+# An extension for describing user login credentials in the manifest
+
+default namespace = "http://www.geni.net/resources/rspec/ext/user/1"
+
+# This is meant to extend the services element
+Services = element services_user {
+  attribute login { string } &
+  attribute user_urn { string }? &
+  element public_key { string }*
+}
+
+# Both of the above are start elements.
+start = Services

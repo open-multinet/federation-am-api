@@ -46,6 +46,8 @@ String content type::  RSpec
 
 An RSpec matching the  GENI standard request RSpec schema containing the resources that the caller is requesting for allocation to the slice specified in slice_urn. These are expected to be consistent with the resources returned by a previous invocation of ListResources. If this RSpec is in a format not listed as supported by +GetVersion+, then the aggregate will return an error of +BADVERSION (4)+.
 
+For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Document].
+
 ==== Argument 3: +credentials+
 
 The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>
@@ -56,17 +58,7 @@ A struct containting optional arguments, indexed by name. See <<OptionsArgument,
 
 ==== Option: +:end_time+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Optional 
-XmlRpc type:: +string+
-String content type::  RFC 3339 date
-***********************************
-
-The requested expiration of all new slivers, may be ignored by aggregates.
-
-If +:end_time+ is supplied, the experimenter is requesting a particular sliver reservation expiration date. Local policy may however dictate the expiration date. The AM therefore may ignore this argument; the Allocate call should still succeed, even if the date argument cannot be satisfied. 
+See <<CommonOptionEndTime, +:end_time+ option>> for details.
 
 ==== Return value 
 
@@ -76,8 +68,8 @@ On success, the value field of the return struct will contain a struct:
 XmlRpc type::
 [source]
     {
-     :rspec: <geni.rspec manifest of newly allocated slivers>,
-     :slivers: [
+     ":rspec" : <geni.rspec manifest of newly allocated slivers>,
+     ":slivers" : [
             {
                       :sliver_urn: <string sliver urn>
                       :expires: <dateTime.rfc3339 allocation expiration string, as in :expires from Status>,

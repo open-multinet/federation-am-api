@@ -26,6 +26,7 @@ The reason is that this method should be understandable by clients expecting any
 
 This API does not list any options that need to be supported. However, servers do need to support the +options+ argument itself: they should not treat its presence as an error, and ignore any options in it they do not support.
 
+[[GetVersionReturnValue]]
 ==== Return Value:
 
 +GetVersion+ returns the standard return struct from all AM API methods (output, value, code). See <<ReturnStructure,Return Structure>>.
@@ -82,11 +83,54 @@ Value;; +string+ - Absolute URL to the XML-RPC server implementing that version 
 +
 There is always at least one entry in this list: The called version itself.
 
-+:single_allocation+:: *TODO*
++:single_allocation+:: See the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section.
 
-+:allocate+:: *TODO*
++:allocate+:: See the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section.
 
-+:credential_types+:: *TODO*
++:credential_types+:: See also the <<CommonArgumentCredentials, +credentials argument+ details>>.
+Aggregates advertise the type(s) of credentials they support.
++
+[source]
+------------
+<a list of structs>: [
+  {
+   :type: <string, case insensitive>,
+   :version: <string containing an integer>,
+   <others fields optionally. EG A URL for more info, or a schema>
+  }
+]
+------------
++
+"sfa" slice credentials as defined before AM API version 3 will have type=geni_sfa and version=2. "sfa" slice credentials as of AM API version 3 will be type=geni_sfa, version=3. Note: AM API v3 adds requirements on URNs and certificates, as well as credentials. A credential is only geni_sfa version 3 if all contained certificates and URNs are AM API v3 compliant. Experimenters with existing certificates that are not AM API v3 compliant will only get geni_sfa version 2 credentials, unless they first get a new user certificate. As a result, most aggregates should accept both geni_sfa version 3 and version 2 credentials.
++
+link:http://abac.deterlab.net/[ABAC] credentials as of AM API version 3 will be type=geni_abac, version=1. These are fully specified link:http://groups.geni.net/geni/wiki/TIEDABACCredential[here] (we use version 1.1 from that page).
++
+For example, an aggregate that accepts ABAC credentials, SFA slice credentials that were issued prior to AM API v3, and SFA slice credentials from AM API version 3, would include this in GetVersion:
++
+.Credentials array example
+[source]
+------------
+:credential_types = [
+  {
+   :type = "geni_sfa",
+   :version = "2"
+  },
+  {
+   :type="geni_sfa",
+   :version = "3"
+  },
+  {
+   :type="geni_abac",
+   :version="1"
+  }
+]
+------------
+
+
+
+
+
+
 
 +:request_rspec_versions+:: 
      An array of data structures indicating the RSpec types accepted by this AM in a request. The contract for RSpec versions is described with links to further reading on the Common Concepts page. Per that contract, AMs will produce manifest RSpecs with a schema that is based on the given request type and version. 
@@ -94,7 +138,7 @@ There is always at least one entry in this list: The called version itself.
 +:ad_rspec_versions+::
     An array of data structures indicating what types of RSpec advertisements may be produced by this AM in ListResources. 
 
-For more details on RSpecs and RSpec versions, see *TODO: refer to rspec document here*.
+For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Document].
 The elements used within +:request_rspec_versions+ and +:ad_rspec_versions+:
 
 +type+::

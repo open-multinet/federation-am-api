@@ -37,26 +37,7 @@ For this and other methods that take a slice URN or list of sliver URNs, when us
 
 ==== Argument 3: +rspec_version+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Mandatory
-XmlRpc type:: 
-[source]
-  struct {
-      string type;    # case insensitive
-      string version; # case insensitive
-  }
-***********************************
-
-An XML-RPC struct indicating the type and version of Manifest RSpec to
-return. The struct contains 2 members, type and version. type and version are
-case-insensitive strings, matching those in +:ad_rspec_versions+ as returned
-by +GetVersion+ at this aggregate. Aggregates should return a :code of 4
-(BADVERSION) if the requested RSpec version is not one advertised as supported
-in +GetVersion+. 
-
-All aggregate managers are required to honor this option. This field is used to specify the format of the returned manifest RSpec.
+See <<CommonArgumentRspecVersion, +rspec_version+ argument>> for details.
 
 ==== Argument 4:  +options+
 

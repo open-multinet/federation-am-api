@@ -199,28 +199,6 @@ INSUFFICIENT_BANDWIDTH::
 
 *TODO: Add some examples. These can be the same as examples later on in the document (but the corresponding example below will only include the date in the +value+ field).*
 
-
-
-
-
-=== RSpec data type
-
-*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
-
-Throughout this API, multiple arguments and returns are labeled as an RSpec. These fields shall be understood as XML documents following one of the schemas advertised in the return from GetVersion. All such RSpecs must pass an XML schema validator, must list all used schemas and namespaces within the document, using schemas that are publicly available. The GetVersion return advertises schemas for advertisement and request RSpecs; the schemas for manifest RSpecs are assumed to be available at the same base URL, but using a corresponding manifest schema.
-
-A fully GENI AM API compliant aggregate will always support the GENI standard schemas for RSpecs, available at http://www.geni.net/resources/rspec. As of 4/2012, the current GENI RSpec version is 3 (type is geni, case insensitive). Aggregates are free to use an alternate format internally, but must accept and produce compliant RSpecs on demand.
-
-More information on GENI RSpecs is available  on the ProtoGENI wiki.
-
-The Aggregate Manager (AM) API requires this contract: Aggregates advertise the type and version of RSpec formats that they support. If available, they specify the schema, namespace and extensions combination which is the authoritative definition of that format. Clients of the API should understand that combination in order to know how to understand the resources available at that aggregate.
-
-If an aggregate advertises a particular type/version (optionally defined with a combination of schema, namespace and extensions) in the +:ad_rspec_versions+ attribute of GetVersion, then it promises to send a correct Advertisement RSpec in response to a ListResources call which supplies a +:rspec_version+ option containing that type/version. (+:rspec_version+ is a struct with 2 members, type and version. type and version are case-insensitive strings, matching those in +:ad_rspec_versions).+
-
-If an Aggregate advertises a particular type/version (optionally defined with a combination of schema, namespace and extensions) in the +:request_rspec_versions+ attribute of GetVersion then it promises to correctly honor an Allocate (was CreateSliver in API v2) call containing a request RSpec in the given format, and then to return a Manifest RSpec in the corresponding format (i.e. a GENI format request is answered with a GENI format manifest). The aggregate also promises to send a correctly formatted Manifest RSpec in response to a Describe or Provision call which supplies a valid slice URN or list of sliver URNs and an +:rspec_version+ option containing that supported type/version.
-
-In this API, such RSpec fields are labeled as type geni.rspec. 
-
 [[OperationsOnIndividualSlivers]]
 === Operations on Individual Slivers
 
@@ -230,25 +208,25 @@ A Sliver is an aggregate defined grouping of resources within a slice at this ag
 
 One or more slivers are created by an aggregate when the experimenter tool calls Allocate(). This API encourages aggregates to independently manage each sliver, allowing experimenters to selectively Delete, Renew, or Provision each sliver. As such, these methods take a list of sliver urns (or a slice urn), and return a struct reporting results for each sliver URN independently. However, slivers at an aggregate may have interdependencies, and an individual aggregate may not be able to independently manage each sliver, without also modifying other related slivers. This API defines a number of aggregate configuration options returned by GetVersion, and an option to many methods, allowing aggregates to advertise their behavior, and experimenters to request particular behavior.
 
-    +:single_allocation:+ <XML-RPC boolean 1/0, default 0>: When true (not default), and performing one of (Describe, Allocate, Renew, Provision, Delete), such an AM requires you to include either the slice urn or the urn of all the slivers in the same state. If you attempt to run one of those operations on just some slivers in a given state, such an AM will return an error. 
++:single_allocation:+:: <XML-RPC boolean 1/0, default 0>: When true (not default), and performing one of (Describe, Allocate, Renew, Provision, Delete), such an AM requires you to include either the slice urn or the urn of all the slivers in the same state. If you attempt to run one of those operations on just some slivers in a given state, such an AM will return an error. 
 
 For example, at an AM where +:single_allocation+ is true you must Provision all +:allocated+ slivers at once. If you supply a list of sliver URNs to Provision that is only 'some' of the +:allocated+ slivers for this slice at this AM, then the AM will return an error. Similarly, such an aggregate would return an error from Describe if you request a set of sliver URNs that is only some of the +:provisioned+ slivers.
 
-    +:allocate+: A case insensitive string, one of fixed set of possible values. Default is +:single.+ This option defines whether this AM allows adding slivers to slices at an AM (i.e. calling Allocate() multiple times, without first deleting the allocated slivers). Possible values:
-        +:single+: Performing multiple Allocates without a delete is an error condition because the aggregate only supports a single sliver per slice or does not allow incrementally adding new slivers. This is the AM API v2 behavior.
-        +:disjoint+: Additional calls to Allocate must be disjoint from slivers allocated with previous calls (no references or dependencies on existing slivers). The topologies must be disjoint in that there can be no connection or other reference from one topology to the other.
-        +:many+: Multiple slivers can exist and be incrementally added, including those which connect or overlap in some way. New aggregates should strive for this capability. 
++:allocate+:: A case insensitive string, one of fixed set of possible values. Default is +:single.+ This option defines whether this AM allows adding slivers to slices at an AM (i.e. calling Allocate() multiple times, without first deleting the allocated slivers). Possible values:
+        +:single+;; Performing multiple Allocates without a delete is an error condition because the aggregate only supports a single sliver per slice or does not allow incrementally adding new slivers. This is the AM API v2 behavior.
+        +:disjoint+;; Additional calls to Allocate must be disjoint from slivers allocated with previous calls (no references or dependencies on existing slivers). The topologies must be disjoint in that there can be no connection or other reference from one topology to the other.
+        +:many+;; Multiple slivers can exist and be incrementally added, including those which connect or overlap in some way. New aggregates should strive for this capability. 
 
 Many methods also take a new option (aggregates must support it, clients do not need to supply it):
 
-   +:best_effort+: <XML-RPC boolean 1/0, default 0>
++:best_effort+:: <XML-RPC boolean 1/0, default 0>
 
 If false, the client is requesting that the aggregate either fully satisfy the request, moving all listed slivers to the desired state, or fully fail the request, leaving all slivers in their original state and returning an appropriate error code. If the aggregate cannot guarantee all or nothing success or failure given the included slivers and resource types, the aggregate shall fail the request, returning an appropriate error code (UNSUPPORTED). If this option is true, then some slivers may transition to the new state, and some not. Experimenters must examine the return closely to know the state of their slivers - such methods will return data about all requested slivers. Aggregates may optionally return +:error+ for each sliver for which the operation failed, to indicate further details. Note that Allocate is always all-or-nothing.
 
 It is expected that many aggregates will implement one of the following combinations of options:
 
-    Accept requests for +:best_effort+ = true, and advertise +:allocate+ = +:many,+ +:single_allocation+ = false (E.G. FOAM, PlanetLab).
-    Operate as though all requests were +:best_effort+ = false, and advertise +:allocate+ = +:disjoint,+ +:single_allocation+ = true (E.G. ProtoGENI). 
+- Accept requests for +:best_effort+ = true, and advertise +:allocate+ = +:many,+ +:single_allocation+ = false (E.G. FOAM, PlanetLab).
+- Operate as though all requests were +:best_effort+ = false, and advertise +:allocate+ = +:disjoint,+ +:single_allocation+ = true (E.G. ProtoGENI). 
 
 
 
@@ -353,81 +331,6 @@ GENI defined operational actions:
 - +:stop+: This action results in the sliver becoming +:notready+ eventually. The operation may fail (move to +:failed),+ or move through some number of transition states. For example, powering down a VM. 
 
 
-
-
-=== datetime data type
-
-*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
-
-All datetime arguments and returns in this API shall be strings that conform to  RFC 3339. This represents a subset of the valid date/time strings permissible by the standard XML-RPC date/time data type,  +dateTime.iso8601+.
-
-Full date and time with explicit timezone: offset from UTC or in UTC, e.g.: +1985-04-12T23:20:50.52Z+ or +1996-12-19T16:39:57-08:00+ 
-
-In the specification of this API, this is described as +dateTime.rfc3339+.
-
-
-=== Expiration times
-
-*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
-
-Slivers have expiration times. Expiration times are set by local aggregate policy. In no case however should an aggregate set a sliver expiration to later than the expiration of the presented credentials which granted the caller authorization to invoke the method. I.E. sliver expiration is <= the expiration of the presented geni_sfa slice credential.
-
-Additionally, slivers have different durations depending on the sliver allocation state. Generally:
-
-- +:allocated+ sliver expiration times are short (minutes)
-- +:provisioned+ sliver expiration times are longer (days) 
-
-When a sliver expires, the aggregate deletes the sliver automatically. This includes stopping resources and freeing the reservation.
-
-
-=== User login information - Manifest Rspec Extension
-
-*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
-*TODO this section should be moved to the rspec document?*
-
-Many GENI reservable resources allow experimenters to log in to the resource to control it. Aggregates shall use a new RSpec extension to include all login information in manifest RSpecs. This extension is version controlled in the GENI RSpec git repository. This extension is hosted at geni.net.
-
-The extension adds information to the <services> tag, which already has the <login> tag.
-
-The <login> tag tells you the kind of authentication (ssh), the port, and the username. The new extension adds an entry per login username
-
-- URN of the user
-- 1 or more public SSH keys that can be used under that login 
-
-Note that one of the <user:services_user login>s in the extension duplicates the default username already in the base <login> tag. The extension allows specifying the keys usable with that login username.
-
-.Example
-[source]
-------------------
-  <services>
-    <login authentication="ssh-keys" hostname="pc27.emulab.net" port="22" username="flooby"/>
-    <ssh-user:services_user login="flooby" user_urn="http://urn:publicid:IDN+jonlab.tbres.emulab.net+user+flooby">
-      <ssh-user:public_key>asdfasdfasdf;lkasdf=foo@bar</ssh-user:public_key>
-      <ssh-user:public_key>asdfasdfasdf;lkjasdf;lasdf=foobar@barfoo</ssh-user:public_key>
-    </ssh-user:services_user>
-    <ssh-user:services_user login="io" user_urn="http://urn:publicid:IDN+jonlab.tbres.emulab.net+user+io">
-      <ssh-user:public_key>asdfasdfasdf;lkasdf=foo@bar</ssh-user:public_key>
-      <ssh-user:public_key>asdfasdfasdf;lkjasdf;lasdf=foobar@barfoo</ssh-user:public_key>
-    </ssh-user:services_user>
-  </services>
-------------------
-
-And the RNC schema:
-
-# An extension for describing user login credentials in the manifest
-
-default namespace = "http://www.geni.net/resources/rspec/ext/user/1"
-
-# This is meant to extend the services element
-Services = element services_user {
-  attribute login { string } &
-  attribute user_urn { string }? &
-  element public_key { string }*
-}
-
-# Both of the above are start elements.
-start = Services
-
 === Documenting Aggregate Additions
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
@@ -464,6 +367,94 @@ For example
 The entries indicate versions of the API that are supported, and URLs are absolute URLs where that version of the API is supported. 
 
 
+== Data Types
+
+This section explains how specific data types are sent using XmlRpc.
+The following primitive types are always sent using the matching XmlRpc data type:
+- +string+
+- +boolean+
+- +int+
+- +double+
+
+Note that the following types are NOT used: +base64+ and +dateTime.iso8601+.
+The +nil+ type is also not used (this is an xmlrpc extension).
+
+The +array+ and +struct+ types are used to create complex data types.
+
+
+=== Compressed data
+
+***********************************
+[horizontal]
+XmlRpc type::  +string+
+String content type:: Base64 encoded date compressed with RFC 1950 
+***********************************
+
+NOTE: _Wim Van de Meerssche:_ The +compressed+ option of ListResources makes 
+ListResources returns the rspec as a +string+ containing base64 encoded
+binary data. The binary data is the compressed rspec. This is a bit strange,
+because XmlRpc has a <base64> type, which could be used instead of a string.
+This is implemented this way on aggregates. The reason for this might be that
+is is not implemented correctly in some XmlRpc libraries? Does anyone have
+more info? In any case, *this should be documented clearly, including an
+example (in actual XML, not JSON)*.
+
+=== URN
+
+***********************************
+[horizontal]
+XmlRpc type::  +string+
+String content type:: URN
+***********************************
+
+=== Datetime data type
+
+***********************************
+[horizontal]
+XmlRpc type:: +string+
+String content type:: RFC 3339 date
+***********************************
+
+NOTE: dates are NOT sent using the XmlRpc date type!
+
+NOTE: _Wim Van de Meerssche:_  Dates are encoded with RFC3339 and send as XmlRpc +string+ type.
+However, XmlRpc has a +dateTime.iso8601+ type. Why? Has this to do with library support?
+Again *this should be very clearly documented, with examples*. 
+
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
+
+All datetime arguments and returns in this API shall be strings that conform to  RFC 3339. This represents a subset of the valid date/time strings permissible by the standard XML-RPC date/time data type,  +dateTime.iso8601+.
+
+Full date and time with explicit timezone: offset from UTC or in UTC, e.g.: +1985-04-12T23:20:50.52Z+ or +1996-12-19T16:39:57-08:00+ 
+
+In the specification of this API, this is described as +dateTime.rfc3339+.
+
+
+=== RSpec data type
+
+***********************************
+[horizontal]
+XmlRpc type:: +string+
+String content type:: RSpec 
+***********************************
+
+See the link:rspec.html[Rspec Document] for details on RSpecs.
+
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
+
+Throughout this API, multiple arguments and returns are labeled as an RSpec. These fields shall be understood as XML documents following one of the schemas advertised in the return from GetVersion. All such RSpecs must pass an XML schema validator, must list all used schemas and namespaces within the document, using schemas that are publicly available. The GetVersion return advertises schemas for advertisement and request RSpecs; the schemas for manifest RSpecs are assumed to be available at the same base URL, but using a corresponding manifest schema.
+
+A fully GENI AM API compliant aggregate will always support the GENI standard schemas for RSpecs, available at http://www.geni.net/resources/rspec. As of 4/2012, the current GENI RSpec version is 3 (type is geni, case insensitive). Aggregates are free to use an alternate format internally, but must accept and produce compliant RSpecs on demand.
+
+More information on GENI RSpecs is available  on the ProtoGENI wiki.
+
+The Aggregate Manager (AM) API requires this contract: Aggregates advertise the type and version of RSpec formats that they support. If available, they specify the schema, namespace and extensions combination which is the authoritative definition of that format. Clients of the API should understand that combination in order to know how to understand the resources available at that aggregate.
+
+If an aggregate advertises a particular type/version (optionally defined with a combination of schema, namespace and extensions) in the +:ad_rspec_versions+ attribute of GetVersion, then it promises to send a correct Advertisement RSpec in response to a ListResources call which supplies a +:rspec_version+ option containing that type/version. (+:rspec_version+ is a struct with 2 members, type and version. type and version are case-insensitive strings, matching those in +:ad_rspec_versions).+
+
+If an Aggregate advertises a particular type/version (optionally defined with a combination of schema, namespace and extensions) in the +:request_rspec_versions+ attribute of GetVersion then it promises to correctly honor an Allocate (was CreateSliver in API v2) call containing a request RSpec in the given format, and then to return a Manifest RSpec in the corresponding format (i.e. a GENI format request is answered with a GENI format manifest). The aggregate also promises to send a correctly formatted Manifest RSpec in response to a Describe or Provision call which supplies a valid slice URN or list of sliver URNs and an +:rspec_version+ option containing that supported type/version.
+
+In this API, such RSpec fields are labeled as type +geni.rspec+. 
 
 
 == Common Call Arguments, Options and Return values
@@ -475,7 +466,7 @@ This section lists the arguments, options and return values, that are common to 
 
 ***********************************
 [horizontal]
-Calls: all
+Calls:: all
 Supported by the server:: Mandatory
 Included by client:: Optional (except for +GetVersion+)
 XmlRpc type:: +struct+
@@ -528,40 +519,7 @@ Each credential (in +:value+) is defined as a signed document. A given list of c
 
 At least one subset of the credentials (e.g. a single SFA style slice credential) must authorize operations for the slice specified in slice_urn if that is an argument, or for the slice that contains the named slivers, if sliver urns are an argument, or a valid set of administrative credentials with sufficient privileges. When sliver_urns are supplied, all such slivers must belong to the same slice, over which the given credential set provides access. Methods that do not take a slice urn or sliver urns, but do take credentials, are interpreted to require credentials that authorize the user generally. For example, an SFA style user credential must be supplied. Credentials must be valid (signed by a valid GENI certificate authority either directly or by chain, not expired, and grant privileges to the client identified by the SSL client certificate). Each method requires specific privileges, which must be granted by the provided credentials. Note that the semantics of this argument is not clear: most implementations require a single credential to provide all needed privileges. Alternative interpretations might, for example, accumulate privileges from each valid credential to determine overall caller permissions. For details on GENI AM API format credentials, see link:http://groups.geni.net/geni/wiki/GeniApiCredentials[the GENI wiki].
 
-Aggregates must advertise the type(s) of credentials they support, using a new entry in GetVersion:
-
-:credential_types = <a list of structs>: [
-  {
-   :type: <string, case insensitive>,
-   :version: <string containing an integer>,
-   <others fields optionally. EG A URL for more info, or a schema>
-  }
-]
-
-"sfa" slice credentials as defined before AM API version 3 will have type=geni_sfa and version=2. "sfa" slice credentials as of AM API version 3 will be type=geni_sfa, version=3. Note: AM API v3 adds requirements on URNs and certificates, as well as credentials. A credential is only geni_sfa version 3 if all contained certificates and URNs are AM API v3 compliant. Experimenters with existing certificates that are not AM API v3 compliant will only get geni_sfa version 2 credentials, unless they first get a new user certificate. As a result, most aggregates should accept both geni_sfa version 3 and version 2 credentials.
-
-link:http://abac.deterlab.net/[ABAC] credentials as of AM API version 3 will be type=geni_abac, version=1. These are fully specified link:http://groups.geni.net/geni/wiki/TIEDABACCredential[here] (we use version 1.1 from that page).
-
-For example, an aggregate that accepts ABAC credentials, SFA slice credentials that were issued prior to AM API v3, and SFA slice credentials from AM API version 3, would include this in GetVersion:
-
-.Credentials array example
-[source]
-------------
-:credential_types = [
-  {
-   :type = "geni_sfa",
-   :version = "2"
-  },
-  {
-   :type="geni_sfa",
-   :version = "3"
-  },
-  {
-   :type="geni_abac",
-   :version="1"
-  }
-]
-------------
+The GetVersion reply advertises which credentials types are supported, using +:credential_type+. See <<GetVersionReturnValue, GetVersion Return Value>> for details.
 
 [[CommonOptionBestEffort]]
 === Common option: +:best_effort+
@@ -616,6 +574,50 @@ Related:: +expiration_time+ argument of +Renew+ call, whichis an argument, and i
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
 
 The +:end_time+ argument requests an expiration of the specified slivers. It is in dateTime.!rfc3339 format (defined above). When an explicit argument, it is required, and aggregates must honor the request to the extent local policy permits. When an option in the options struct, clients may omit the option, and AMs may choose not to or be unable to honor this option, but may still succeed the overall request.
+
+The requested expiration of all new slivers, may be ignored by aggregates.
+
+If +:end_time+ is supplied, the experimenter is requesting a particular sliver reservation expiration date. Local policy may however dictate the expiration date. The AM therefore may ignore this argument; the Allocate call should still succeed, even if the date argument cannot be satisfied. 
+
+==== Note on Expiration times
+
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
+
+Slivers have expiration times. Expiration times are set by local aggregate policy. In no case however should an aggregate set a sliver expiration to later than the expiration of the presented credentials which granted the caller authorization to invoke the method. I.E. sliver expiration is <= the expiration of the presented geni_sfa slice credential.
+
+Additionally, slivers have different durations depending on the sliver allocation state. Generally:
+
+- +:allocated+ sliver expiration times are short (minutes)
+- +:provisioned+ sliver expiration times are longer (days) 
+
+When a sliver expires, the aggregate deletes the sliver automatically. This includes stopping resources and freeing the reservation.
+
+///////////////////////////////////
+See <<CommonOptionEndTime, +:end_time+ option>> for details.
+///////////////////////////////////
+
+[[CommonArgumentRspecVersion]]
+==== Common Argument: +rspec_version+
+
+***********************************
+[horizontal]
+Name:: +rspec_version+
+Calls:: <<ListResources>>, <<Provision>>, <<Describe>> 
+Supported by the server:: Mandatory
+Included by client:: Mandatory
+XmlRpc type:: 
+[source]
+  struct {
+      string type;    # case insensitive
+      string version; # case insensitive
+  }
+***********************************
+
+An XML-RPC struct indicating the type and version of Advertisement (ListResources) or Manifest (Provision and Describe) RSpec this call will return. The struct contains 2 members, +type+ and +version+. +type+ and +version+ are case-insensitive strings, matching those in +:ad_rspec_versions+ as returned by +GetVersion+ at this aggregate. Aggregates should return a :code of 4 (BADVERSION) if the requested RSpec version is not one advertised as supported in +GetVersion+. 
+All aggregate managers are required to honor this option. 
+
+For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Document].
+
 
 === Common Return: Sliver info list
 

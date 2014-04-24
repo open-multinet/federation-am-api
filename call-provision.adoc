@@ -34,26 +34,8 @@ The standard authorization argument. See <<CommonArgumentCredentials, the Creden
 
 ==== Argument 3: +rspec_version+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Mandatory
-XmlRpc type:: 
-[source]
-  struct {
-      string type;    # case insensitive
-      string version; # case insensitive
-  }
-***********************************
+See <<CommonArgumentRspecVersion, +rspec_version+ argument>> for details.
 
-An XML-RPC struct indicating the type and version of Manifest RSpec to
-return. The struct contains 2 members, type and version. type and version are
-case-insensitive strings, matching those in +:ad_rspec_versions+ as returned
-by +GetVersion+ at this aggregate. Aggregates should return a :code of 4
-(BADVERSION) if the requested RSpec version is not one advertised as supported
-in +GetVersion+. 
-
-All aggregate managers are required to honor this option. This field is used to specify the format of the returned manifest RSpec, as in the Describe() method. See the Details page and the Common Concepts page for more information:
 
 ==== Argument 4:  +options+
 
@@ -62,19 +44,13 @@ A struct containting optional arguments, indexed by name. See <<OptionsArgument,
 
 ==== Option: +:end_time+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Optional 
-XmlRpc type:: +string+
-String content type::  RFC 3339 date
-***********************************
+See <<CommonOptionEndTime, +:end_time+ option>> for details.
 
 As with the Allocate method, experimenters may request a sliver expiration time; aggregates may allow the operation while ignoring the requested expiration time or granting a different expiration time. 
 
 ==== Option: +:best_effort+
 
-See <<CommonOptionBestEffort>>
+See <<CommonOptionBestEffort, +:best_effort+ option>> for details.
 
 Do all slivers fail if any single sliver fails?
 
