@@ -31,8 +31,8 @@ All AM API methods return a +struct+, with at least three members. +code+, +valu
 [source]
       struct code = {
            int :code;
-           [optional: string am_type;]
-           [optional: int am_code;]
+           [optional: string :am_type;]
+           [optional: int :am_code;]
       }
 
 +value+::
@@ -44,7 +44,7 @@ All AM API methods return a +struct+, with at least three members. +code+, +valu
 
 Implementations can add additional members to the return struct as desired. The prefix +:+ (single colon with nothing in front of it) is reserved for members that are part of this API specification. Implementations should choose an appropriate prefix to avoid conflicts. Aggregates should document any additional return values.
 
-Aggregates shall return consistent values for :code as described here. Aggregates wishing to be more specific may use the am_type and am_code values.
+Aggregates shall return consistent values for :code as described here. Aggregates wishing to be more specific may use the +:am_type+ and +:am_code+ values.
 
 Success is always indicated using a :code value of 0.
 
@@ -54,11 +54,11 @@ Elements in code:
 +:code+::
     An integer supplying the GENI standard return code indicating the success or failure of this call. Error codes are standardized and defined in the attached XML document Download. Codes may be negative. A success return is defined as :code of 0. 
 
-+am_type+::
-    Optional. A (case insensitive) string indicating the type of Aggregate Manager running locally. For example, orca. When an aggregate wants to return an aggregate specific return code in the am_code field, they supply an am_type to qualify the kind of aggregate specific return code they are supplying. This is the namespace of the aggregate specific return code. This field is optional: aggregates are not required to supply an aggregate specific return code, and clients need not look at it. This code further qualifies the kind of error or success that the aggregate is returning, as primarily defined by the value of :code. Standard values for am_type are defined in the attached XML document Download. 
++:am_type+::
+    Optional. A (case insensitive) string indicating the type of Aggregate Manager running locally. For example, orca. When an aggregate wants to return an aggregate specific return code in the +:am_code+ field, they supply an +:am_type+ to qualify the kind of aggregate specific return code they are supplying. This is the namespace of the aggregate specific return code. This field is optional: aggregates are not required to supply an aggregate specific return code, and clients need not look at it. This code further qualifies the kind of error or success that the aggregate is returning, as primarily defined by the value of :code. Standard values for +:am_type+ are defined in the attached XML document Download. 
 
-+am_code+::
-    An integer supplying the more specific return code, relative to the aggregate type specified in am_type. This integer may be negative. Aggregates should document these codes publicly. This API does not specify how or where that documentation should be provided. 
++:am_code+::
+    An integer supplying the more specific return code, relative to the aggregate type specified in +:am_type+. This integer may be negative. Aggregates should document these codes publicly. This API does not specify how or where that documentation should be provided. 
 
 Aggregates are encouraged to use code values and output messages that help experimenters and tools distinguish between bad input, other experimenter error, temporary server errors, or server bugs.
 
@@ -68,6 +68,7 @@ Aggregates are encouraged to use code values and output messages that help exper
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
 
 GENI standard error codes are documented in the link:http://groups.geni.net/geni/attachment/wiki/GAPI_AM_API_V3/CommonConcepts/geni-error-codes.xml[attached XML document], and listed below.
+/////////////////////////////////
 |=======
 | 0  |  SUCCESS      | "Success"
 | 1  |  BADARGS      | "Bad Arguments: malformed arguments"
@@ -90,8 +91,9 @@ GENI standard error codes are documented in the link:http://groups.geni.net/geni
 | 24 |  VLAN_UNAVAILABLE     | "VLAN tag(s) requested not available (likely stitching failure)"
 | 25 |  INSUFFICIENT_BANDWIDTH   | "Requested capacity for link(s) not available"
 |=======
+/////////////////////////////////
 
-Aggregates are similarly encouraged to provide hints on how to fix bad requests using the value entry to experimenters on error or failures. For example, a failed Renew call that failed because you are not allowed to renew your sliver that far in the future, might return a new date string in the value field that would be allowed. Similarly, a failed Allocate call might return a modified request RSpec in the value field.
+Aggregates are similarly encouraged to provide hints on how to fix bad requests using the value entry to experimenters on error or failures. For example, a failed <<Renew>> call that failed because you are not allowed to renew your sliver that far in the future, might return a new date string in the value field that would be allowed. Similarly, a failed <<Allocate>> call might return a modified request RSpec in the value field.
 
 Note that a malformed XML-RPC request should still raise an XML-RPC Fault, and other Faults dictated by the XML-RPC specification should still be raised. Aggregates should avoid raising an error (XML-RPC Fault) for application layer errors or any other cases where the XML-RPC specification does not require a Fault, but rather should attempt to return this struct, providing any error messages and stack traces in the output field or other additional fields. Certain XML-RPC errors may be returned using Faults or otherwise by the XML-RPC layer, or may more properly be returned using this struct in the application layer. In such cases, servers should use error codes with negative values. Selected such errors are listed below:
 
@@ -106,89 +108,109 @@ NOTE: *TODO the details below have been added. The format of this info should be
 Detailed description of each error.
 
 SUCCESS::
-   Error Nr: 0
+[horizontal]
+   Error Nr;; 0
    Calls;; all
    Meaning;; Not an error: the call was successful. A return can be found in the +value+ field. 
 BADARGS:: 
-   Error Nr: 1
+[horizontal]
+   Error Nr;; 1
    Calls;; all
    Meaning;; One of the required arguments is badly formed or missing
 ERROR::  
-   Error Nr: 2
+[horizontal]
+   Error Nr;; 2
    Calls;; all
    Meaning;; Internal error
 FORBIDDEN::
+[horizontal]
    Error Nr;; 3
-   Calls;; all except GetVersion
+   Calls;; all except <<GetVersion>>
    Related Argument;; credentials 
    Meaning;; Operation Forbidden: eg supplied credentials do not provide sufficient privileges (on given slice)
 BADVERSION::
+[horizontal]
    Error Nr;; 4
-   Calls;; ListResources, Provision, Describe 
+   Calls;; <<ListResources>>, <<Provision>>, <<Describe>> 
    Related Argument;; rspec_version
    Meaning;; Bad Version (eg of RSpec) 
 SERVERERROR::  
-   Error Nr: 5
+[horizontal]
+   Error Nr;; 5
    Calls;; all
    Meaning;; Server error
 TOOBIG::
+[horizontal]
    Error Nr;; 6
-   Calls;; Allocate 
+   Calls;; <<Allocate>> 
    Related Argument;; rspec
    Meaning;; Too Big (eg request RSpec)
 REFUSED::
+[horizontal]
    Error Nr;; 7
    Calls;; 
    Meaning;; Operation Refused
 TIMEDOUT::
+[horizontal]
    Error Nr;; 8
    Calls;; 
    Meaning;; Operation Timed Out
 DBERROR::
+[horizontal]
    Error Nr;; 9
    Calls;; 
    Meaning;; Database Error
 RPCERROR::
+[horizontal]
    Error Nr;; 10
    Calls;; 
    Meaning;; RPC Error
 UNAVAILABLE::  
-   Error Nr: 11
+[horizontal]
+   Error Nr;; 11
    Calls;; all
    Meaning;; Unavailable (eg server in lockdown)
 SEARCHFAILED::
+[horizontal]
    Error Nr;; 12
    Calls;; 
    Related Argument;; urns 
    Meaning;; Search Failed (eg for slice)
 UNSUPPORTED::
+[horizontal]
    Error Nr;; 13
    Calls;; 
    Related Argument;; urns 
    Meaning;; Operation Unsupported
 BUSY::
+[horizontal]
    Error Nr;; 14
    Calls;; 
    Related Argument;; urns 
    Meaning;; Busy (resource, slice); try again later
 EXPIRED::
+[horizontal]
    Error Nr;; 15
    Calls;; 
    Related Argument;; urns 
    Meaning;; Expired (eg slice)
 INPROGRESS::
+[horizontal]
    Error Nr;; 16
    Calls;; 
    Meaning;; In Progress
 ALREADYEXISTS::
+[horizontal]
    Error Nr;; 17
    Calls;; 
    Meaning;; Already Exists (eg the slice}
 VLAN_UNAVAILABLE::
+[horizontal]
    Error Nr;; 24
    Calls;; 
    Meaning;; VLAN tag(s) requested not available (likely stitching failure)
 INSUFFICIENT_BANDWIDTH::
+[horizontal]
    Error Nr;; 25
    Calls;; 
    Meaning;; Requested capacity for link(s) not available
@@ -204,24 +226,24 @@ INSUFFICIENT_BANDWIDTH::
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
 
-A Sliver is an aggregate defined grouping of resources within a slice at this aggregate, whose URN identifies the sliver, and can be used as an argument to methods such as Delete or Renew, and whose status can be independently reported in the return from Status. The AM defines 1 or more of these groupings to satisfy a given resource request for a slice. All reserved resources are directly contained by exactly 1 such sliver container, which is in precisely 1 slice.
+A Sliver is an aggregate defined grouping of resources within a slice at this aggregate, whose URN identifies the sliver, and can be used as an argument to methods such as <<Delete>> or <<Renew>>, and whose status can be independently reported in the return from <<Status>>. The AM defines 1 or more of these groupings to satisfy a given resource request for a slice. All reserved resources are directly contained by exactly 1 such sliver container, which is in precisely 1 slice.
 
-One or more slivers are created by an aggregate when the experimenter tool calls Allocate(). This API encourages aggregates to independently manage each sliver, allowing experimenters to selectively Delete, Renew, or Provision each sliver. As such, these methods take a list of sliver urns (or a slice urn), and return a struct reporting results for each sliver URN independently. However, slivers at an aggregate may have interdependencies, and an individual aggregate may not be able to independently manage each sliver, without also modifying other related slivers. This API defines a number of aggregate configuration options returned by GetVersion, and an option to many methods, allowing aggregates to advertise their behavior, and experimenters to request particular behavior.
+One or more slivers are created by an aggregate when the experimenter tool calls <<Allocate>>. This API encourages aggregates to independently manage each sliver, allowing experimenters to selectively <<Delete>>, <<Renew>>, or <<Provision>> each sliver. As such, these methods take a list of sliver urns (or a slice urn), and return a struct reporting results for each sliver URN independently. However, slivers at an aggregate may have interdependencies, and an individual aggregate may not be able to independently manage each sliver, without also modifying other related slivers. This API defines a number of aggregate configuration options returned by <<GetVersion>>, and an option to many methods, allowing aggregates to advertise their behavior, and experimenters to request particular behavior.
 
-+:single_allocation:+:: <XML-RPC boolean 1/0, default 0>: When true (not default), and performing one of (Describe, Allocate, Renew, Provision, Delete), such an AM requires you to include either the slice urn or the urn of all the slivers in the same state. If you attempt to run one of those operations on just some slivers in a given state, such an AM will return an error. 
++:single_allocation:+:: <XML-RPC boolean 1/0, default 0>: When true (not default), and performing one of (<<Describe>>, <<Allocate>>, <<Renew>>, <<Provision>>, <<Delete>>), such an AM requires you to include either the slice urn or the urn of all the slivers in the same state. If you attempt to run one of those operations on just some slivers in a given state, such an AM will return an error. 
 
-For example, at an AM where +:single_allocation+ is true you must Provision all +:allocated+ slivers at once. If you supply a list of sliver URNs to Provision that is only 'some' of the +:allocated+ slivers for this slice at this AM, then the AM will return an error. Similarly, such an aggregate would return an error from Describe if you request a set of sliver URNs that is only some of the +:provisioned+ slivers.
+For example, at an AM where +:single_allocation+ is true you must <<Provision>> all +:allocated+ slivers at once. If you supply a list of sliver URNs to <<Provision>> that is only 'some' of the +:allocated+ slivers for this slice at this AM, then the AM will return an error. Similarly, such an aggregate would return an error from <<Describe>> if you request a set of sliver URNs that is only some of the +:provisioned+ slivers.
 
-+:allocate+:: A case insensitive string, one of fixed set of possible values. Default is +:single.+ This option defines whether this AM allows adding slivers to slices at an AM (i.e. calling Allocate() multiple times, without first deleting the allocated slivers). Possible values:
++:allocate+:: A case insensitive string, one of fixed set of possible values. Default is +:single.+ This option defines whether this AM allows adding slivers to slices at an AM (i.e. calling <<Allocate>> multiple times, without first deleting the allocated slivers). Possible values:
         +:single+;; Performing multiple Allocates without a delete is an error condition because the aggregate only supports a single sliver per slice or does not allow incrementally adding new slivers. This is the AM API v2 behavior.
-        +:disjoint+;; Additional calls to Allocate must be disjoint from slivers allocated with previous calls (no references or dependencies on existing slivers). The topologies must be disjoint in that there can be no connection or other reference from one topology to the other.
+        +:disjoint+;; Additional calls to <<Allocate>> must be disjoint from slivers allocated with previous calls (no references or dependencies on existing slivers). The topologies must be disjoint in that there can be no connection or other reference from one topology to the other.
         +:many+;; Multiple slivers can exist and be incrementally added, including those which connect or overlap in some way. New aggregates should strive for this capability. 
 
-Many methods also take a new option (aggregates must support it, clients do not need to supply it):
+Many methods also take a the +:best_effort+ option (aggregates must support it, clients do not need to supply it):
 
 +:best_effort+:: <XML-RPC boolean 1/0, default 0>
 
-If false, the client is requesting that the aggregate either fully satisfy the request, moving all listed slivers to the desired state, or fully fail the request, leaving all slivers in their original state and returning an appropriate error code. If the aggregate cannot guarantee all or nothing success or failure given the included slivers and resource types, the aggregate shall fail the request, returning an appropriate error code (UNSUPPORTED). If this option is true, then some slivers may transition to the new state, and some not. Experimenters must examine the return closely to know the state of their slivers - such methods will return data about all requested slivers. Aggregates may optionally return +:error+ for each sliver for which the operation failed, to indicate further details. Note that Allocate is always all-or-nothing.
+If false, the client is requesting that the aggregate either fully satisfy the request, moving all listed slivers to the desired state, or fully fail the request, leaving all slivers in their original state and returning an appropriate error code. If the aggregate cannot guarantee all or nothing success or failure given the included slivers and resource types, the aggregate shall fail the request, returning an appropriate error code (UNSUPPORTED). If this option is true, then some slivers may transition to the new state, and some not. Experimenters must examine the return closely to know the state of their slivers - such methods will return data about all requested slivers. Aggregates may optionally return +:error+ for each sliver for which the operation failed, to indicate further details. Note that <<Allocate>> is always all-or-nothing.
 
 It is expected that many aggregates will implement one of the following combinations of options:
 
@@ -249,19 +271,19 @@ image::images/sliver-alloc-states3.jpg[Sliver Allocation States and AM API Metho
 
 States 2 and 3 (+:allocated+ and +:provisioned)+ have aggregate and possibly resource specific timeouts. By convention the +:allocated+ state timeout is typically short, to keep most resources available. The +:provisioned+ state timeout is the sliver expiration. If the client does not transition the sliver from +:allocated+ to +:provisioned+ before the end of the +:allocated+ state timeout, the sliver reverts to +:unallocated.+ If the experimenter needs more time, the experimenter should be allowed to request a renewal of either timeout. Note that typically the sliver expiration time (timeout for state 3, +:provisioned)+ will be notably longer than the timeout for state 2, +:allocated.+
 
-State 3, +:provisioned,+ is the state of the sliver allocation after the aggregate begins to instantiate the sliver. Note that fully provisioning a sliver may take noticeable time. This state also includes a timeout - the sliver expiration time (which is not necessarily related to the time it takes to provision a resource). Renew extends this timeout. For some aggregates and resource types, moving to this state from state 2 (+:allocated)+ may be a no-op.
+State 3, +:provisioned,+ is the state of the sliver allocation after the aggregate begins to instantiate the sliver. Note that fully provisioning a sliver may take noticeable time. This state also includes a timeout - the sliver expiration time (which is not necessarily related to the time it takes to provision a resource). <<Renew>> extends this timeout. For some aggregates and resource types, moving to this state from state 2 (+:allocated)+ may be a no-op.
 
 If the transition from one state to another fails, the sliver shall remain in its original state.
 
 Several AM API methods can be described in terms of transitions among allocation states.
 
-- Allocate moves 1 or more slivers from +:unallocated+ (state 1) to +:allocated+ (state 2). This method can be described as creating an instance of the state machine for each sliver. If the aggregate cannot fully satisfy the request, the whole request fails. This is a change from the AM API V2 CreateSliver, which also provisioned the resources, and 'started' them. That is Allocate does one of the three things that CreateSliver did previously.
-- Delete moves 1 or more slivers from either state 2 or 3 (+:allocated+ or +:provisioned),+ back to state 1 (+:unallocated).+ This is similar to the AM API AM API V2 DeleteSliver.
-- Renew, when given allocated slivers, requests an extended timeout for slivers in state 2 (+:allocated).+
-- Renew can also be used to request an extended timeout for slivers in state 3 (the +:provisioned+ state). That is, this method's semantics can be the same as RenewSliver from AM API v2.
-- Provision moves 1 or more slivers from state 2 (+:allocated)+ to state 3 (+:provisioned).+ This is some of what AM API V2 CreateSliver did. Note however that this does not 'start' the resources, or otherwise change their operational state. This method only fully instantiates the resources in the slice. This may be a no-op for some aggregates or resources. 
+- +Allocate+ moves 1 or more slivers from +:unallocated+ (state 1) to +:allocated+ (state 2). This method can be described as creating an instance of the state machine for each sliver. If the aggregate cannot fully satisfy the request, the whole request fails. This is a change from the AM API V2 CreateSliver, which also provisioned the resources, and 'started' them. That is <<Allocate>> does one of the three things that CreateSliver did previously.
+- <<Delete>> moves 1 or more slivers from either state 2 or 3 (+:allocated+ or +:provisioned),+ back to state 1 (+:unallocated).+ This is similar to the AM API AM API V2 DeleteSliver.
+- <<Renew>>, when given allocated slivers, requests an extended timeout for slivers in state 2 (+:allocated).+
+- <<Renew>> can also be used to request an extended timeout for slivers in state 3 (the +:provisioned+ state). That is, this method's semantics can be the same as RenewSliver from AM API v2.
+- <<Provision>> moves 1 or more slivers from state 2 (+:allocated)+ to state 3 (+:provisioned).+ This is some of what AM API V2 CreateSliver did. Note however that this does not 'start' the resources, or otherwise change their operational state. This method only fully instantiates the resources in the slice. This may be a no-op for some aggregates or resources. 
 
-When Provision fails for only some slivers, and +:best_effort+ option was supplied, the aggregate will return the status of each requested sliver individually. The +:allocation_state+ for slivers that failed will remain +:allocated.+ This typically suggests that the experimenter may retry the call. For some aggregates or resource types, the sliver may be 'dead', and Provision may never succeed. Experimenters should check +:error+ for more information.
+When <<Provision>> fails for only some slivers, and +:best_effort+ option was supplied, the aggregate will return the status of each requested sliver individually. The +:allocation_state+ for slivers that failed will remain +:allocated.+ This typically suggests that the experimenter may retry the call. For some aggregates or resource types, the sliver may be 'dead', and <<Provision>> may never succeed. Experimenters should check +:error+ for more information.
 
 These states apply to each sliver individually. Logically, the state transition methods then take a single sliver URN. For convenience, these methods accept a list of sliver URNs, or a slice URN as a simple alias for all slivers in this slice at this aggregate.
 
@@ -285,7 +307,7 @@ Note that states represent the AM's view of the operational condition of the res
 
 There is no generic busy state. Instead, AMs are encouraged to define separate similar transition states for each separate transition path, allowing experimenters to distinguish the start and end states for this transition.
 
-+Shutdown+ is not an operational state for a sliver. The Shutdown() API method applies to an entire slice.
+<<Shutdown>> is not an operational state for a sliver. The <<Shutdown>>() API method applies to an entire slice.
 
 States are generally of one of two forms:
 
@@ -298,7 +320,7 @@ Operational actions immediately change the sliver operational state (if any chan
 
 GENI defined operational states (both required and optional for aggregates):
 
-- +:pending_allocation+: Required for aggregates to support. A wait state. The sliver is still being allocated and provisioned, and other operational states are not yet valid. PerformOperationalAction may not yet be called on this sliver. For example, the sliver is in allocation state +:provisioned,+ but has not been fully provisioned (e.g., the VM has not been fully imaged). Once the sliver has been fully allocated, the AM will transition the sliver to some other valid operational state, as specified by the advertised operational state machine. This state is generally not part of the AM's advertised state machine, as it represents 'operational states not valid yet'. Common next states (and first states of operational state machines) are +:notready,+ +:ready,+ and +:failed.+
+- +:pending_allocation+: Required for aggregates to support. A wait state. The sliver is still being allocated and provisioned, and other operational states are not yet valid. <<PerformOperationalAction>> may not yet be called on this sliver. For example, the sliver is in allocation state +:provisioned,+ but has not been fully provisioned (e.g., the VM has not been fully imaged). Once the sliver has been fully allocated, the AM will transition the sliver to some other valid operational state, as specified by the advertised operational state machine. This state is generally not part of the AM's advertised state machine, as it represents 'operational states not valid yet'. Common next states (and first states of operational state machines) are +:notready,+ +:ready,+ and +:failed.+
 - +:notready+: A final state. The resource is not usable / accessible by the experimenter, and requires explicit experimenter action before it is usable/accessible by the experimenter. For some resources, +:start+ will move the resource out of this state and towards +:ready.+
 - +:configuring+: A wait state. The resource is in process of changing to +:ready,+ and on success will do so without additional experimenter action. For example, the resource may be powering on.
 - +:stopping+: A wait state. The resource is in process of changing to +:notready,+ and on success will do so without additional experimenter action. For example, the resource may be powering off.
@@ -335,7 +357,7 @@ GENI defined operational actions:
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
 
-Aggregates are free to add additional return values or input options to support aggregate or resource specific functionality, or to innovate within the bounds of the AM API. This includes adding new methods that use the same transport, interface, certificates, and credentials. Aggregates are encouraged to document any such new return values which they return or options arguments, to bootstrap coordination with clients, and provide documentation for human experimenters. One way to provide partial documentation, is to implement  XML-RPC introspection. Through the use of method help, aggregates can provide human readable text describing return values. Alternatively or additionally, aggregates may document return values as part of their return from GetVersion. This API does not specify the format for advertising those extra return values in GetVersion.
+Aggregates are free to add additional return values or input options to support aggregate or resource specific functionality, or to innovate within the bounds of the AM API. This includes adding new methods that use the same transport, interface, certificates, and credentials. Aggregates are encouraged to document any such new return values which they return or options arguments, to bootstrap coordination with clients, and provide documentation for human experimenters. One way to provide partial documentation, is to implement  XML-RPC introspection. Through the use of method help, aggregates can provide human readable text describing return values. Alternatively or additionally, aggregates may document return values as part of their return from <<GetVersion>>. This API does not specify the format for advertising those extra return values in <<GetVersion>>.
 
 
 === Supporting Multiple API Versions
@@ -346,7 +368,7 @@ Aggregates are free to support multiple versions of the AM API. They do so by pr
 
 When aggregates start supporting a new version of the API, they should keep running the old version of the API for a suitable transition period.
 
-Aggregates running multiple versions of the API must advertise the URLs and versions of the API supported using the new GetVersion return as part of the value entry:
+Aggregates running multiple versions of the API must advertise the URLs and versions of the API supported using the new <<GetVersion>> return as part of the value entry:
 
 +:api_versions+: an XML-RPC struct containing 1 or more entries of:
   Name: String containing an Integer - supported GENI AM API version
@@ -390,10 +412,10 @@ XmlRpc type::  +string+
 String content type:: Base64 encoded date compressed with RFC 1950 
 ***********************************
 
-NOTE: _Wim Van de Meerssche:_ The +compressed+ option of ListResources makes 
-ListResources returns the rspec as a +string+ containing base64 encoded
+NOTE: _Wim Van de Meerssche:_ The +compressed+ option of <<ListResources>> makes 
+<<ListResources>> returns the rspec as a +string+ containing base64 encoded
 binary data. The binary data is the compressed rspec. This is a bit strange,
-because XmlRpc has a <base64> type, which could be used instead of a string.
+because XmlRpc has a +<base64>+ type, which could be used instead of a +string+.
 This is implemented this way on aggregates. The reason for this might be that
 is is not implemented correctly in some XmlRpc libraries? Does anyone have
 more info? In any case, *this should be documented clearly, including an
@@ -442,7 +464,7 @@ See the link:rspec.html[Rspec Document] for details on RSpecs.
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
 
-Throughout this API, multiple arguments and returns are labeled as an RSpec. These fields shall be understood as XML documents following one of the schemas advertised in the return from GetVersion. All such RSpecs must pass an XML schema validator, must list all used schemas and namespaces within the document, using schemas that are publicly available. The GetVersion return advertises schemas for advertisement and request RSpecs; the schemas for manifest RSpecs are assumed to be available at the same base URL, but using a corresponding manifest schema.
+Throughout this API, multiple arguments and returns are labeled as an RSpec. These fields shall be understood as XML documents following one of the schemas advertised in the return from <<GetVersion>>. All such RSpecs must pass an XML schema validator, must list all used schemas and namespaces within the document, using schemas that are publicly available. The <<GetVersion>> return advertises schemas for advertisement and request RSpecs; the schemas for manifest RSpecs are assumed to be available at the same base URL, but using a corresponding manifest schema.
 
 A fully GENI AM API compliant aggregate will always support the GENI standard schemas for RSpecs, available at http://www.geni.net/resources/rspec. As of 4/2012, the current GENI RSpec version is 3 (type is geni, case insensitive). Aggregates are free to use an alternate format internally, but must accept and produce compliant RSpecs on demand.
 
@@ -450,9 +472,9 @@ More information on GENI RSpecs is available  on the ProtoGENI wiki.
 
 The Aggregate Manager (AM) API requires this contract: Aggregates advertise the type and version of RSpec formats that they support. If available, they specify the schema, namespace and extensions combination which is the authoritative definition of that format. Clients of the API should understand that combination in order to know how to understand the resources available at that aggregate.
 
-If an aggregate advertises a particular type/version (optionally defined with a combination of schema, namespace and extensions) in the +:ad_rspec_versions+ attribute of GetVersion, then it promises to send a correct Advertisement RSpec in response to a ListResources call which supplies a +:rspec_version+ option containing that type/version. (+:rspec_version+ is a struct with 2 members, type and version. type and version are case-insensitive strings, matching those in +:ad_rspec_versions).+
+If an aggregate advertises a particular type/version (optionally defined with a combination of schema, namespace and extensions) in the +:ad_rspec_versions+ attribute of <<GetVersion>>, then it promises to send a correct Advertisement RSpec in response to a <<ListResources>> call which supplies a +:rspec_version+ option containing that type/version. (+:rspec_version+ is a struct with 2 members, type and version. type and version are case-insensitive strings, matching those in +:ad_rspec_versions).+
 
-If an Aggregate advertises a particular type/version (optionally defined with a combination of schema, namespace and extensions) in the +:request_rspec_versions+ attribute of GetVersion then it promises to correctly honor an Allocate (was CreateSliver in API v2) call containing a request RSpec in the given format, and then to return a Manifest RSpec in the corresponding format (i.e. a GENI format request is answered with a GENI format manifest). The aggregate also promises to send a correctly formatted Manifest RSpec in response to a Describe or Provision call which supplies a valid slice URN or list of sliver URNs and an +:rspec_version+ option containing that supported type/version.
+If an Aggregate advertises a particular type/version (optionally defined with a combination of schema, namespace and extensions) in the +:request_rspec_versions+ attribute of <<GetVersion>> then it promises to correctly honor an <<Allocate>> call containing a request RSpec in the given format, and then to return a Manifest RSpec in the corresponding format (i.e. a GENI format request is answered with a GENI format manifest). The aggregate also promises to send a correctly formatted Manifest RSpec in response to a <<Describe>> or <<Provision>> call which supplies a valid slice URN or list of sliver URNs and an +:rspec_version+ option containing that supported type/version.
 
 In this API, such RSpec fields are labeled as type +geni.rspec+. 
 
@@ -468,11 +490,11 @@ This section lists the arguments, options and return values, that are common to 
 [horizontal]
 Calls:: all
 Supported by the server:: Mandatory
-Included by client:: Optional (except for +GetVersion+)
+Included by client:: Optional (except for <<GetVersion>>)
 XmlRpc type:: +struct+
 ***********************************
 
-An XmlRpc +struct+. This is the last argument of all calls in this API. For GetVersion only, this argument is optional and thus may be omitted. In all other calls, it is required, but may be empty.
+An XmlRpc +struct+. This is the last argument of all calls in this API. For <<GetVersion>> only, this argument is optional and thus may be omitted. In all other calls, it is required, but may be empty.
 
 The struct contains +string+ keys, mapped onto values. The type of these values depends on the specific option.
 
@@ -519,7 +541,7 @@ Each credential (in +:value+) is defined as a signed document. A given list of c
 
 At least one subset of the credentials (e.g. a single SFA style slice credential) must authorize operations for the slice specified in slice_urn if that is an argument, or for the slice that contains the named slivers, if sliver urns are an argument, or a valid set of administrative credentials with sufficient privileges. When sliver_urns are supplied, all such slivers must belong to the same slice, over which the given credential set provides access. Methods that do not take a slice urn or sliver urns, but do take credentials, are interpreted to require credentials that authorize the user generally. For example, an SFA style user credential must be supplied. Credentials must be valid (signed by a valid GENI certificate authority either directly or by chain, not expired, and grant privileges to the client identified by the SSL client certificate). Each method requires specific privileges, which must be granted by the provided credentials. Note that the semantics of this argument is not clear: most implementations require a single credential to provide all needed privileges. Alternative interpretations might, for example, accumulate privileges from each valid credential to determine overall caller permissions. For details on GENI AM API format credentials, see link:http://groups.geni.net/geni/wiki/GeniApiCredentials[the GENI wiki].
 
-The GetVersion reply advertises which credentials types are supported, using +:credential_type+. See <<GetVersionReturnValue, GetVersion Return Value>> for details.
+The <<GetVersion>> reply advertises which credentials types are supported, using +:credential_type+. See <<GetVersionReturnValue, GetVersion Return Value>> for details.
 
 [[CommonOptionBestEffort]]
 === Common option: +:best_effort+
@@ -535,10 +557,10 @@ Default: +false+
 ***********************************
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
-*TODO: Does +Status+ support this option?+
+*TODO: Does <<Status>> support this option?+
 *TODO: refer to <<OperationsOnIndividualSlivers, Operations on Individual Slivers>>*
 
-Clients may omit this option, but aggregates must honor the option if possible. This option modifies the way that the operation applies to all named slivers. By default (+:best_effort+=false), the operation must apply equally to all slivers, either succeeding or failing for all (returning an appropriate error code). When true, the aggregate may succeed the operation for some slivers, while failing the operation for other slivers (returning a code of SUCCESS but then explaining the per-sliver error in the appropriate +:error+ field for that sliver). This option applies to Provision, Renew, Delete, and PerformOperationalAction. Each of these methods returns a set of statuses for each requested sliver, allowing the AM to report individual results per sliver. This option does not apply to Allocate or Describe, which is always all or nothing.
+Clients may omit this option, but aggregates must honor the option if possible. This option modifies the way that the operation applies to all named slivers. By default (+:best_effort+=false), the operation must apply equally to all slivers, either succeeding or failing for all (returning an appropriate error code). When true, the aggregate may succeed the operation for some slivers, while failing the operation for other slivers (returning a code of SUCCESS but then explaining the per-sliver error in the appropriate +:error+ field for that sliver). This option applies to <<Provision>>, <<Renew>>, <<Delete>>, and <<PerformOperationalAction>>. Each of these methods returns a set of statuses for each requested sliver, allowing the AM to report individual results per sliver. This option does not apply to <<Allocate>> or <<Describe>>, which is always all or nothing.
 
 [[CommonArgumentUrns]]
 === Common argument: +urns[]+
@@ -568,7 +590,7 @@ Supported by the server:: Mandatory
 Included by client:: Optional 
 XmlRpc type:: +string+
 String content type::  RFC 3339 date
-Related:: +expiration_time+ argument of +Renew+ call, whichis an argument, and is mandatory to include by clients.
+Related:: +expiration_time+ argument of <<Renew>> call, which is an argument, and is mandatory to include by clients.
 ***********************************
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
@@ -577,7 +599,7 @@ The +:end_time+ argument requests an expiration of the specified slivers. It is 
 
 The requested expiration of all new slivers, may be ignored by aggregates.
 
-If +:end_time+ is supplied, the experimenter is requesting a particular sliver reservation expiration date. Local policy may however dictate the expiration date. The AM therefore may ignore this argument; the Allocate call should still succeed, even if the date argument cannot be satisfied. 
+If +:end_time+ is supplied, the experimenter is requesting a particular sliver reservation expiration date. Local policy may however dictate the expiration date. The AM therefore may ignore this argument; the <<Allocate>> call should still succeed, even if the date argument cannot be satisfied. 
 
 ==== Note on Expiration times
 
@@ -613,7 +635,7 @@ XmlRpc type::
   }
 ***********************************
 
-An XML-RPC struct indicating the type and version of Advertisement (ListResources) or Manifest (Provision and Describe) RSpec this call will return. The struct contains 2 members, +type+ and +version+. +type+ and +version+ are case-insensitive strings, matching those in +:ad_rspec_versions+ as returned by +GetVersion+ at this aggregate. Aggregates should return a :code of 4 (BADVERSION) if the requested RSpec version is not one advertised as supported in +GetVersion+. 
+An XML-RPC struct indicating the type and version of Advertisement (<<ListResources>>) or Manifest (<<Provision>> and <<Describe>>) RSpec this call will return. The struct contains 2 members, +type+ and +version+. +type+ and +version+ are case-insensitive strings, matching those in +:ad_rspec_versions+ as returned by <<GetVersion>> at this aggregate. Aggregates should return a :code of 4 (BADVERSION) if the requested RSpec version is not one advertised as supported in <<GetVersion>>. 
 All aggregate managers are required to honor this option. 
 
 For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Document].
@@ -633,7 +655,7 @@ For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Doc
      ":allocation_status": <string>,
      ":operational_status": <string>,
      ":expires": <dateTime.rfc3339 when the sliver expires from its current state>,
-     ":error": <optional string. The field may be omitted entirely but may not be null/None, explaining any failure to Provision this sliver.>
+     ":error": <optional string. The field may be omitted entirely but may not be null/None, explaining any failure to <<Provision>> this sliver.>
      ":resource_status" : optional string with resource-specific status in more detail than operational_status; may be omitted],
     },
     ...
@@ -644,5 +666,5 @@ For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Doc
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
 
-    A free form string (not null or None), optionally returned per sliver from several method returns (Describe, Provision, Renew, Status, PerformOperationalAction, Delete). The aggregate manager should set this to a string that could be presented to a researcher to give more detailed information about the state of the sliver if this operation fails for a given sliver. This option is used in particular where an aggregate may successfully perform the operation for some slivers, but not others. See the +:best_effort+ option above. In particular, it is not returned from Allocate, which is always all-or-nothing. Note that this field may be omitted entirely from the return in most cases, but is required in the return from Status, though it may be empty. The field if present must be a valid string, not null/None.
+    A free form string (not null or None), optionally returned per sliver from several method returns (<<Describe>>, <<Provision>>, <<Renew>>, <<Status>>, <<PerformOperationalAction>>, <<Delete>>). The aggregate manager should set this to a string that could be presented to a researcher to give more detailed information about the state of the sliver if this operation fails for a given sliver. This option is used in particular where an aggregate may successfully perform the operation for some slivers, but not others. See the +:best_effort+ option above. In particular, it is not returned from <<Allocate>>, which is always all-or-nothing. Note that this field may be omitted entirely from the return in most cases, but is required in the return from <<Status>>, though it may be empty. The field if present must be a valid string, not null/None.
 

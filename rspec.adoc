@@ -4,8 +4,6 @@ TODO_ADD_Federation_AM_API_Author
 v0.1, April 2014: First draft
 :language: python
 
-TODO
-
 *TODO refer to other 4 documents*
 
 - link:federation-am-api.html[AM API]
