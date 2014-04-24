@@ -3,7 +3,11 @@
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
 
-Request that the named :allocated slivers be made :provisioned, instantiating or otherwise realizing the resources, such that they have a valid :operational_status and may possibly be made :ready for experimenter use. This operation is synchronous, but may start a longer process, such as creating and imaging a virtual machine.
+Request that the named +:allocated+ slivers be made +:provisioned+, instantiating or otherwise realizing the resources, such that they have a valid +:operational_status+ and may possibly be made +:ready+ for experimenter use. This operation is synchronous, but may start a longer process, such as creating and imaging a virtual machine.
+
+Redeem a reservation, requesting that the listed slivers move from +:allocated+ to +:provisioned+. Only when slivers are provisioned are the resources 'instantiated' and made ready for operational use. Note that at some aggregates and for some resource types, this operation may be a no-op. At other aggregates, this operation starts a long running process (e.g. loading an image on a machine and booting it). Tools should monitor the sliver status (by calling Status), looking for an operational state other than +:pending_allocation+. Depending on the resource type, that next state may differ. See the advertisement RSpec for the resource type specific operational states and actions.
+
+As with the +Allocate+ method, some aggregates may not support provisioning only some reserved resources.
 
 .Call Syntax
 [source]
@@ -12,7 +16,7 @@ Provision(string urns[], struct credentials[],
           struct rspec_version, struct options)
 ----------------
 
-This operation is part of what CreateSliver used to do. The first part of what CreateSliver did is now in Allocate(). Note that resources are not necessarily ready for experimenter use after the work that this function initiates finally completes. Consult the :operational_status, and the advertised operational state machine. Consider calling PerformOperationalAction, e.g. with the command name :start.
+NOTE: This operation is part of what CreateSliver used to do. The first part of what CreateSliver did is now in Allocate(). Note that resources are not necessarily ready for experimenter use after the work that this function initiates finally completes. Consult the :operational_status, and the advertised operational state machine. Consider calling PerformOperationalAction, e.g. with the command name :start.
 
 The operation is similar to ProtoGENI's  RedeemTicket method.
 
@@ -26,29 +30,12 @@ When only a slice URN is supplied (no specific sliver URNs), this method applies
 
 ==== Argument 2:  +credentials+
 
-The standard authorization argument. See <<Credentials, the Credentials section>>.
+The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
 
 ==== Argument 3: +rspec_version+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Mandatory
-XmlRpc type:: 
-[source]
-  struct {
-      string type;    # case insensitive
-      string version; # case insensitive
-  }
-***********************************
+See <<CommonArgumentRspecVersion, +rspec_version+ argument>> for details.
 
-An XML-RPC struct indicating the type and version of Manifest RSpec to
-return. The struct contains 2 members, type and version. type and version are
-case-insensitive strings, matching those in +:ad_rspec_versions+ as returned
-by +GetVersion+ at this aggregate. Aggregates should return a :code of 4
-(BADVERSION) if the requested RSpec version is not one advertised as supported
-in +GetVersion+. 
-The following option is required. All aggregate managers are required to honor this option. This field is used to specify the format of the returned manifest RSpec, as in the Describe() method. See the Details page and the Common Concepts page for more information:
 
 ==== Argument 4:  +options+
 
@@ -57,26 +44,13 @@ A struct containting optional arguments, indexed by name. See <<OptionsArgument,
 
 ==== Option: +:end_time+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Optional 
-XmlRpc type:: +string+
-String content type::  RFC 3339 date
-***********************************
+See <<CommonOptionEndTime, +:end_time+ option>> for details.
 
-Requested sliver expiration time
-
+As with the Allocate method, experimenters may request a sliver expiration time; aggregates may allow the operation while ignoring the requested expiration time or granting a different expiration time. 
 
 ==== Option: +:best_effort+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Optional 
-XmlRpc type:: +boolean+
-Default: false
-***********************************
+See <<CommonOptionBestEffort, +:best_effort+ option>> for details.
 
 Do all slivers fail if any single sliver fails?
 
@@ -90,6 +64,24 @@ XmlRpc type:: array of struct
 ***********************************
 Resource login information. See the Common Concepts page. 
 
+Some resource types allow experimenter access. The +:users+ option allows specifying login key material to be installed on the resources (e.g. SSH public keys). 
+
+Clients may omit this option. Aggregates should honor this option for any resource that accepts the provided login keys, and ignore it for other resources. This option is an array of user structs, which contain information about the users that might login to the sliver that the AM needs to know about. For example, this option is the mechanism by which users supply their SSH public keys, permitting SSH login to allocated nodes. In such cases, the corresponding manifest RSpec will contain the ssh-users element on each such node, showing the login username and applicable public keys. Aggregates accepting this option for a resource are expected to install all supplied SSH keys - creating separate login accounts for each supplied user if possible. When this option is supplied, each struct must include the key +keys+, which is an array of strings and can be empty. The struct must also include the key +urn+, which is the user’s URN string. For example:
+
+.Example
+[source]
+------------------
+[
+  {
+    urn: urn:publicid:IDN+geni.net:gcf+user+alice
+    keys: [<ssh key>, <ssh key>]
+  },
+  {
+    urn: urn:publicid:IDN+geni.net:gcf+user+bob
+    keys: [<ssh key>]
+  }
+]
+------------------
 
 ==== Return value
 
@@ -118,3 +110,16 @@ The returned manifest must be in the format specified by the :rspec_version opti
 Note that previously allocated slivers may have expired (been deleted) by the time you call Provision.
 
 See the Common Concepts page for details on allocation and operational states, operations on individual slivers, :best_effort, sliver expiration times, urns, credentials, rspecs, and :users. 
+==== Return Codes and Errors
+
+The +Provision+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR and UNAVAILABLE. See <<ErrorCodes,Error Codes>> for general errors.
+
+Additionally, the +Provision+ call can return the following error codes:
+[horizontal]
+FORBIDDEN:: Credential does not grant permission to a slice or sliver specified in the +urns+ argument. Or the slice/sliver does not have permission to allocate resources at this slice. Or the slice has been shut down.
+BADVERSION:: Bad Version of manifest RSpec requested with the +rspec_version+ argument.
+UNSUPPORTED:: The aggregate does not permit operations on individual slivers in the same slice of this form. See the +:single_allocation+ and +:allocate: options of +GetVersion+ for more information.
+EXPIRED:: The slivers has expired.
+SEARCHFAILED:: The slice or sliver does not exist at this AM.
+BUSY:: Slice or sliver is temporarily locked, try again later
+

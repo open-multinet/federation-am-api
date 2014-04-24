@@ -5,6 +5,8 @@
 
 Allocate resources as described in a request RSpec argument to a slice with the named URN. On success, one or more slivers are allocated, containing resources satisfying the request, and assigned to the given slice. This method returns a listing and description of the resources reserved for the slice by this operation, in the form of a manifest RSpec. Allocated slivers are held for an aggregate-determined period. Clients must Renew or Provision slivers before the expiration time (given in the return struct), or the aggregate will automatically Delete them. Aggregates should implement Allocate() as quick, cheap, and not impacting provisioned resources, such that it can be readily undone. Allocate is an all or nothing request: if the aggregate cannot completely satisfy the request RSpec, it should fail the request entirely.
 
+At some aggregates, experimenter tools may call Allocate multiple times, to add resources to the existing reservation for the same slice. Other aggregates may limit such requests or forbid them entirely. see +:allocate+ in +GetVersion+.
+
 .Call Syntax
 [source]
 ----------------
@@ -14,11 +16,11 @@ Allocate(string slice_urn,
          struct options)
 ----------------
 
-This is the first part of what CreateSliver used to do in previous versions of the AM API. The second part is now done by Provision, and the final part is done by PerformOperationalAction. See above for an overview of this process.
+NOTE: This is the first part of what CreateSliver used to do in previous versions of the AM API. The second part is now done by Provision, and the final part is done by PerformOperationalAction. See *TODO link?* for an overview of this process.
 
 This operation is similar to ProtoGENI's  GetTicket operation.
 
-As described here, the :allocate return from GetVersion advertises when a client may legally call Allocate (only once at a time per slice, whenever desired, or multiple times only if the requested resources do not interact).
+As described here, the :allocate return from +GetVersion+ advertises when a client may legally call Allocate (only once at a time per slice, whenever desired, or multiple times only if the requested resources do not interact).
 
 ==== Argument 1: +slice_urn+
 
@@ -42,11 +44,13 @@ XmlRpc type::  +string+
 String content type::  RSpec
 ***********************************
 
-An RSpec matching the  GENI standard request RSpec schema containing the resources that the caller is requesting for allocation to the slice specified in slice_urn. See the Common Concepts page.
+An RSpec matching the  GENI standard request RSpec schema containing the resources that the caller is requesting for allocation to the slice specified in slice_urn. These are expected to be consistent with the resources returned by a previous invocation of ListResources. If this RSpec is in a format not listed as supported by +GetVersion+, then the aggregate will return an error of +BADVERSION (4)+.
+
+For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Document].
 
 ==== Argument 3: +credentials+
 
-The standard authorization argument. See <<Credentials, the Credentials section>>
+The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>
 
 ==== Argument 4:  +options+
 
@@ -54,15 +58,7 @@ A struct containting optional arguments, indexed by name. See <<OptionsArgument,
 
 ==== Option: +:end_time+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Optional 
-XmlRpc type:: +string+
-String content type::  RFC 3339 date
-***********************************
-
-The requested expiration of all new slivers, may be ignored by aggregates.
+See <<CommonOptionEndTime, +:end_time+ option>> for details.
 
 ==== Return value 
 
@@ -72,8 +68,8 @@ On success, the value field of the return struct will contain a struct:
 XmlRpc type::
 [source]
     {
-     :rspec: <geni.rspec manifest of newly allocated slivers>,
-     :slivers: [
+     ":rspec" : <geni.rspec manifest of newly allocated slivers>,
+     ":slivers" : [
             {
                       :sliver_urn: <string sliver urn>
                       :expires: <dateTime.rfc3339 allocation expiration string, as in :expires from Status>,
@@ -87,4 +83,14 @@ XmlRpc type::
 The manifest is a manifest RSpec of only newly allocated slivers, using the schema matching the input request schema (as required on the Common Concepts page).
 
 
-See the Common Concepts page for details on :end_time, RSpecs, expiration dateTime, and allocation states. 
+==== Return Codes and Errors
+
+The +Allocate+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR and UNAVAILABLE. See <<ErrorCodes,Error Codes>> for general errors.
+
+Additionally, the +Allocate+ call can return the following error codes:
+[horizontal]
+FORBIDDEN:: Credential does not grant permission to a slice specified in the slice URN argument. Or the slice does not have permission to allocate resources at this slice. Or the slice has been shut down.
+BADVERSION:: Bad Version of RSpec provided in the rspec argument.
+TOOBIG:: Request is too big to be satisfied.
+UNSUPPORTED:: The aggregate does not permit multiple allocations to the same slice of this form. See the +:single_allocation+ options of +GetVersion+ for more information.
+

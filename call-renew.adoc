@@ -14,17 +14,41 @@ Renew(string urns[],
       struct options)
 ----------------
 
-This operation used to be called RenewSliver. Use Renew(<slice_urn>) to get the equivalent functionality.
+NOTE: This operation used to be called RenewSliver. Use Renew(<slice_urn>) to get the equivalent functionality.
 
-Options include :best_effort, specifying whether the client prefers all included slivers to be renewed or none, or wants a partial success if possible. See the Common Concepts page under :best_effort and Operations on Individual Slivers.
 
 When Renew is called with :best_effort false, the entire method will fail (return non-zero :code) if any requested sliver cannot be renewed to the requested time, and all slivers will keep their original expiration time. When Renew is called with :best_effort true, some slivers may fail to be renewed. In this case, the allocation state and expiration times do not change. :error may optionally be returned by the aggregate to explain this failure.
 
 As described here, the :single_allocation return from GetVersion advertises whether or not a client may invoke this method on only some of the slivers in a given :allocation_state in a given slice (default is false - the client may operate on only some of the slivers in a given state).
 
-Arguments: expiration_time: The date-time string in  RFC 3339 format in UTC when the reservation(s) should be extended until. See the Common Concepts page.
 
-See the Common Concepts page for details on the urns and credentials arguments.
+Renew requests a changed expiration for one or more slivers in a slice. At some aggregates, this expiration may be shorter. This method applies both to slivers that are +:allocated+ and to those that are already +:provisioned+. Depending on local aggregate configuration, the aggregate may only support Renew on all current slivers in the slice, or may permit renewing only some slivers. Local policy will dictate maximum expiration times. These times are typically quite short (~ 10 minutes initially, ~120 minutes maximum) for reservations (+:allocated+), and longer for provisioned (+:provisioned+) slivers (~ 5-8 days initially). Since these expiration times are different, typically Renew is used only for slivers in the same allocation state. 
+
+==== Argument 1:  +urns+
+
+*TODO*
+
+==== Argument 2:  +credentials+
+
+The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
+
+==== Argument 3: +expiration_time+
+
+*TODO*
+
+This is the same as the <<CommonOptionEndTime, +:end_time+ option>> of Allocate and Provision, but here it is a mandatory argument.
+
+The date-time string in  RFC 3339 format in UTC when the reservation(s) should be extended until.
+
+==== Argument 4:  +options+
+
+A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+
+==== Option: +:best_effort+
+
+See <<CommonOptionBestEffort>>
+
+Specifying whether the client prefers all included slivers to be renewed or none, or wants a partial success if possible.
 
 ==== Return
 
@@ -51,3 +75,16 @@ Calling Renew on an unknown, deleted or expired sliver (by explicit URN) shall r
 It is legal to attempt to renew a sliver to a sooner expiration time than the sliver was previously due to expire. Not all aggregates will support this however.
 
 See the Common Concepts page for details on allocation and operational states, operations on individual slivers, :best_effort, sliver expiration times, urns, and credentials. 
+
+==== Return Codes and Errors
+
+The +Renew+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR and UNAVAILABLE. See <<ErrorCodes,Error Codes>> for general errors.
+
+Additionally, the +Renew+ call can return the following error codes:
+[horizontal]
+FORBIDDEN:: Credential does not grant permission to a slice or sliver specified in the +urns+ argument. Or the slice has been shut down.
+UNSUPPORTED:: The aggregate does not permit partial renewals of this form.
+EXPIRED:: The slice and/or sliver has already expired.
+SEARCHFAILED:: The slice or sliver does not exist at this AM.
+BUSY:: Slice or sliver is temporarily locked, try again later
+

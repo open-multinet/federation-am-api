@@ -20,3 +20,20 @@ Return: On success, the value field of the return struct will contain: XML-RPC b
 If the given slice has no resources locally, or was previously Shutdown, return shall be true, indicating the slice is shut down.
 
 See the Common Concepts page for details on the credentials argument. 
+
+This operation is for operator use, to stop a misbehaving resource. Once shut down, the slivers are not available for experimenter use. The underlying resources may be returned to the pool of available resources, depending on resource type and aggregate implementation.
+
+This method returns true (1), unless the resources remain running in the slice after this operation. 
+
+==== Return Codes and Errors
+
+The +Shutdown+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR and UNAVAILABLE. See <<ErrorCodes,Error Codes>> for general errors.
+
+Additionally, the +Shutdown+ call can return the following error codes:
+[horizontal]
+FORBIDDEN:: Credential does not grant permission to a slice or sliver specified in the +urns+ argument. Or the slice has been shut down.
+EXPIRED:: The slice and/or sliver has already expired.
+SEARCHFAILED:: The slice or sliver does not exist at this AM.
+BUSY:: Slice or sliver is temporarily locked, try again later
+INPROGRESS:: Shutdown already in progress
+

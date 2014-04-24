@@ -11,21 +11,34 @@ Delete the named slivers, making them :unallocated. Resources are stopped if nec
 Delete(string urns[], struct credentials[], struct options)
 ----------------
 
-This operation used to be called DeleteSliver in earlier versions of this API. To get the functionality of DeleteSliver, call Delete with the slice URN.
+NOTE: This operation used to be called +DeleteSliver+ in earlier versions of this API. To get the functionality of +DeleteSliver+, call +Delete+ with the slice URN.
 
-This operation is similar to ProtoGENI's  DeleteSliver operation and to  SFA's DeleteSlice operation (sec. 6.2.3).
+NOTE: This operation is similar to ProtoGENI's  +DeleteSliver+ operation and to  SFA's DeleteSlice operation (sec. 6.2.3).
 
-As described here, the :single_allocation return from GetVersion advertises whether or not a client may invoke this method on only some of the slivers in a given :allocation_state in a given slice (default is false - the client may operate on only some of the slivers in a given state).
+As described here, the +:single_allocation+ return from GetVersion advertises whether or not a client may invoke this method on only some of the slivers in a given +:allocation_state+ in a given slice (default is false - the client may operate on only some of the slivers in a given state).
+
+Delete the given slivers, stopping any running resources and freeing the reservation. This method applies to slivers in any state.
+
+As with the Allocate method, some aggregates may not support deleting only some slivers.
+
+
+==== Argument 1:  +urns+
+
+*TODO*
+
+==== Argument 2:  +credentials+
+
+The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
+
+==== Argument 3:  +options+
+
+A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 ==== Option: +:best_effort+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Optional 
-XmlRpc type:: +boolean+
-Default: false
-***********************************
+See <<CommonOptionBestEffort>>
+
+This operation should generally succeed for a valid sliver, despite the +:best_effort+ option. However, when +:best_effort: is supplied and is false, and an aggregate cannot delete all the named slivers, no slivers are deleted. 
 
 ==== Return
 
@@ -53,4 +66,15 @@ Note that aggregates will automatically delete slivers whose expiration time is 
 Calling Delete() on an unknown, expired or deleted sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED, or ERROR) (unless :best_effort is true, in which case the method may succeed and return a :error for each sliver that failed). Attempting to Delete a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or `EXPIRED); details are aggregate specific.
 
 See the Common Concepts page for details on allocation and operational states, operations on individual slivers, :best_effort, sliver expiration times, urns, and credentials. 
+
+==== Return Codes and Errors
+
+The +Delete+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR and UNAVAILABLE. See <<ErrorCodes,Error Codes>> for general errors.
+
+Additionally, the +Delete+ call can return the following error codes:
+[horizontal]
+FORBIDDEN:: Credential does not grant permission to a slice or sliver specified in the +urns+ argument. Or the slice has been shut down.
+EXPIRED:: The slice and/or sliver has already expired.
+SEARCHFAILED:: The slice or sliver does not exist at this AM.
+BUSY:: Slice or sliver is temporarily locked, try again later
 
