@@ -13,18 +13,18 @@ Delete(string urns[], struct credentials[], struct options)
 
 NOTE: This operation used to be called +DeleteSliver+ in earlier versions of this API. To get the functionality of +DeleteSliver+, call +Delete+ with the slice URN.
 
-NOTE: This operation is similar to ProtoGENI's  +DeleteSliver+ operation and to  SFA's DeleteSlice operation (sec. 6.2.3).
+NOTE: This operation is similar to ProtoGENI's  +DeleteSliver+ operation and to  SFA's +DeleteSlice+ operation (sec. 6.2.3).
 
-As described here, the +:single_allocation+ return from GetVersion advertises whether or not a client may invoke this method on only some of the slivers in a given +:allocation_state+ in a given slice (default is false - the client may operate on only some of the slivers in a given state).
+As described here, the +:single_allocation+ return from <<GetVersion>> advertises whether or not a client may invoke this method on only some of the slivers in a given +:allocation_state+ in a given slice (default is false - the client may operate on only some of the slivers in a given state).
 
-Delete the given slivers, stopping any running resources and freeing the reservation. This method applies to slivers in any state.
++Delete+ the given slivers, stopping any running resources and freeing the reservation. This method applies to slivers in any state.
 
-As with the Allocate method, some aggregates may not support deleting only some slivers.
+As with the <<Allocate>> method, some aggregates may not support deleting only some slivers.
 
 
 ==== Argument 1:  +urns+
 
-*TODO*
+See the <<CommonArgumentUrns, +urns+ argument>> for details.
 
 ==== Argument 2:  +credentials+
 
@@ -36,11 +36,18 @@ A struct containting optional arguments, indexed by name. See <<OptionsArgument,
 
 ==== Option: +:best_effort+
 
-See <<CommonOptionBestEffort>>
+See <<CommonOptionBestEffort, +:best_effort+ option>> for details.
 
 This operation should generally succeed for a valid sliver, despite the +:best_effort+ option. However, when +:best_effort: is supplied and is false, and an aggregate cannot delete all the named slivers, no slivers are deleted. 
 
-==== Return
+==== Return Value
+
+***********************************
+[horizontal]
+XmlRpc type:: +struct+
+***********************************
+
+See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
 
 On success, the value field of the return struct will contain a list of structs:
 
@@ -63,7 +70,7 @@ Note that this method should return a struct for each deleted sliver, with the U
 
 Note that aggregates will automatically delete slivers whose expiration time is reached.
 
-Calling Delete() on an unknown, expired or deleted sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED, or ERROR) (unless :best_effort is true, in which case the method may succeed and return a :error for each sliver that failed). Attempting to Delete a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or `EXPIRED); details are aggregate specific.
+Calling +Delete+ on an unknown, expired or deleted sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED, or ERROR) (unless :best_effort is true, in which case the method may succeed and return a :error for each sliver that failed). Attempting to +Delete+ a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or `EXPIRED); details are aggregate specific.
 
 See the Common Concepts page for details on allocation and operational states, operations on individual slivers, :best_effort, sliver expiration times, urns, and credentials. 
 

@@ -10,35 +10,35 @@
 ----------------
 Renew(string urns[],
       struct credentials[],
-      dateTime.rfc3339 expiration_time, 
+      dateTime.rfc3339 :end_time, 
       struct options)
 ----------------
 
-NOTE: This operation used to be called RenewSliver. Use Renew(<slice_urn>) to get the equivalent functionality.
+NOTE: This operation used to be called +RenewSliver+. Use +Renew+(<slice_urn>) to get the equivalent functionality.
 
 
-When Renew is called with :best_effort false, the entire method will fail (return non-zero :code) if any requested sliver cannot be renewed to the requested time, and all slivers will keep their original expiration time. When Renew is called with :best_effort true, some slivers may fail to be renewed. In this case, the allocation state and expiration times do not change. :error may optionally be returned by the aggregate to explain this failure.
+When +Renew+ is called with :best_effort false, the entire method will fail (return non-zero :code) if any requested sliver cannot be renewed to the requested time, and all slivers will keep their original expiration time. When +Renew+ is called with :best_effort true, some slivers may fail to be renewed. In this case, the allocation state and expiration times do not change. :error may optionally be returned by the aggregate to explain this failure.
 
-As described here, the :single_allocation return from GetVersion advertises whether or not a client may invoke this method on only some of the slivers in a given :allocation_state in a given slice (default is false - the client may operate on only some of the slivers in a given state).
+As described here, the :single_allocation return from <<GetVersion>> advertises whether or not a client may invoke this method on only some of the slivers in a given :allocation_state in a given slice (default is false - the client may operate on only some of the slivers in a given state).
 
 
-Renew requests a changed expiration for one or more slivers in a slice. At some aggregates, this expiration may be shorter. This method applies both to slivers that are +:allocated+ and to those that are already +:provisioned+. Depending on local aggregate configuration, the aggregate may only support Renew on all current slivers in the slice, or may permit renewing only some slivers. Local policy will dictate maximum expiration times. These times are typically quite short (~ 10 minutes initially, ~120 minutes maximum) for reservations (+:allocated+), and longer for provisioned (+:provisioned+) slivers (~ 5-8 days initially). Since these expiration times are different, typically Renew is used only for slivers in the same allocation state. 
++Renew+ requests a changed expiration for one or more slivers in a slice. At some aggregates, this expiration may be shorter. This method applies both to slivers that are +:allocated+ and to those that are already +:provisioned+. Depending on local aggregate configuration, the aggregate may only support +Renew+ on all current slivers in the slice, or may permit renewing only some slivers. Local policy will dictate maximum expiration times. These times are typically quite short (~ 10 minutes initially, ~120 minutes maximum) for reservations (+:allocated+), and longer for provisioned (+:provisioned+) slivers (~ 5-8 days initially). Since these expiration times are different, typically +Renew+ is used only for slivers in the same allocation state. 
 
 ==== Argument 1:  +urns+
 
-*TODO*
+See the <<CommonArgumentUrns, +urns+ argument>> for details.
 
 ==== Argument 2:  +credentials+
 
 The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
 
-==== Argument 3: +expiration_time+
+==== Argument 3: +:end_time+
 
-*TODO*
+See <<CommonOptionEndTime, +:end_time+>> for details. Note that here, it is a mandatory argument.
 
-This is the same as the <<CommonOptionEndTime, +:end_time+ option>> of Allocate and Provision, but here it is a mandatory argument.
-
+////////////////////////
 The date-time string in  RFC 3339 format in UTC when the reservation(s) should be extended until.
+////////////////////////
 
 ==== Argument 4:  +options+
 
@@ -46,12 +46,19 @@ A struct containting optional arguments, indexed by name. See <<OptionsArgument,
 
 ==== Option: +:best_effort+
 
-See <<CommonOptionBestEffort>>
+See <<CommonOptionBestEffort, +:best_effort+ option>> for details.
 
 Specifying whether the client prefers all included slivers to be renewed or none, or wants a partial success if possible.
 
-==== Return
+==== Return Value
 
+***********************************
+[horizontal]
+XmlRpc type:: +struct+
+***********************************
+
+See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
+ 
 On success, the value field of the return struct will contain a list of structs:
 
 ***********************************
@@ -70,7 +77,7 @@ XmlRpc type::
 ]
 ***********************************
 
-Calling Renew on an unknown, deleted or expired sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR :code) (unless :best_effort is true, in which case the method may succeed, but return a :error for each sliver that failed). Attempting to Renew a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (SEARCHFAILED or EXPIRED). Note therefore that an empty list is a valid return from this method.
+Calling +Renew+ on an unknown, deleted or expired sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR :code) (unless :best_effort is true, in which case the method may succeed, but return a :error for each sliver that failed). Attempting to +Renew+ a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (SEARCHFAILED or EXPIRED). Note therefore that an empty list is a valid return from this method.
 
 It is legal to attempt to renew a sliver to a sooner expiration time than the sliver was previously due to expire. Not all aggregates will support this however.
 

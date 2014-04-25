@@ -3,9 +3,9 @@
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
 
-Get the status of a sliver or slivers belonging to a single slice at the given aggregate. Status may include other dynamic reservation or instantiation information as required by the resource type and aggregate. This method is used to provide updates on the state of the resources after the completion of Provision, which began to asynchronously provision the resources. This should be relatively dynamic data, not descriptive data as returned in the manifest RSpec.
+Get the status of a sliver or slivers belonging to a single slice at the given aggregate. +Status+ may include other dynamic reservation or instantiation information as required by the resource type and aggregate. This method is used to provide updates on the state of the resources after the completion of <<Provision>>, which began to asynchronously provision the resources. This should be relatively dynamic data, not descriptive data as returned in the manifest RSpec.
 
-In contrast to Describe, Status is used to query dynamic state information about slivers. Aggregates may include detailed configuration information at their own discretion.
+In contrast to <<Describe>>, +Status+ is used to query dynamic state information about slivers. Aggregates may include detailed configuration information at their own discretion.
 
 .Call Syntax
 [source]
@@ -13,11 +13,11 @@ In contrast to Describe, Status is used to query dynamic state information about
 Status(string urns[], struct credentials[], struct options)
 ----------------
 
-NOTE: This operation used to be called SliverStatus in earlier versions of the AM API. :slivers has replaced :resources and :sliver_urn replaces :urn. :status is replaced with 2 fields, :allocation_status and :operational_status.
+NOTE: This operation used to be called +SliverStatus+ in earlier versions of the AM API. :slivers has replaced :resources and :sliver_urn replaces :urn. :status is replaced with 2 fields, :allocation_status and :operational_status.
 
 ==== Argument 1:  +urns+
 
-*TODO*
+See the <<CommonArgumentUrns, +urns+ argument>> for details.
 
 ==== Argument 2:  +credentials+
 
@@ -29,9 +29,16 @@ A struct containting optional arguments, indexed by name. See <<OptionsArgument,
 
 This method has no options that are required to be supported by AM's.
 
-*TODO the original AMv3 text speaks about +geni_best_effort+ in the return value description of the Status call. This is inconsistent with the sentence above.*
+*TODO the original AMv3 text speaks about +geni_best_effort+ in the return value description of the +Status+ call. This is inconsistent with the sentence above.*
 
-==== Return
+==== Return Value
+
+***********************************
+[horizontal]
+XmlRpc type:: +struct+
+***********************************
+
+See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
 
 On success, the value field of the return struct will contain a struct:
 
@@ -60,7 +67,7 @@ XmlRpc type::
 
 Note that aggregates may return other information, such as details on sliver contents, etc.
 
-Calling Status() on an unknown, deleted or expired sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR) (unless :best_effort is true, in which case the method may succeed, but return a :error for each sliver that failed). Attempting to get Status() for a slice (no slivers identified) with no current slivers at this aggregate may return an empty list for :slivers, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or EXPIRED). Note therefore that :slivers may be an empty list.
+Calling +Status+ on an unknown, deleted or expired sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR) (unless :best_effort is true, in which case the method may succeed, but return a :error for each sliver that failed). Attempting to get +Status+ for a slice (no slivers identified) with no current slivers at this aggregate may return an empty list for :slivers, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or EXPIRED). Note therefore that :slivers may be an empty list.
 
 See the Common Concepts page for details on allocation and operational states, sliver expiration times, urns, and credentials. 
 
@@ -71,7 +78,6 @@ The +Status+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR 
 Additionally, the +Status+ call can return the following error codes:
 [horizontal]
 FORBIDDEN:: Credential does not grant permission to a slice or sliver specified in the +urns+ argument. Or the slice has been shut down.
-BADVERSION:: Bad Version of manifest RSpec requested with the rspec_version argument.
 UNSUPPORTED:: The aggregate does not permit operations on individual slivers in the same slice of this form. *TODO what does this exactly mean? Is this so?* 
 EXPIRED:: The slice and/or sliver has expired.
 SEARCHFAILED:: The slice or sliver does not exist at this AM.

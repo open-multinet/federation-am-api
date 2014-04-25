@@ -5,11 +5,11 @@
 
  Retrieve a manifest RSpec describing the resources contained by the named entities, e.g. a single slice or a set of the slivers in a slice. This listing and description should be sufficiently descriptive to allow experimenters to use the resources.
 
-Describe is used to list the resources belonging to a particular reservation. The return is the standard AM API struct, with a value that is a struct that always includes a single manifest RSpec, describing the resources in the set of slivers whose URNs were supplied, or describing the entire single slice whose URN was supplied as an argument.
++Describe+ is used to list the resources belonging to a particular reservation. The return is the standard AM API struct, with a value that is a struct that always includes a single manifest RSpec, describing the resources in the set of slivers whose URNs were supplied, or describing the entire single slice whose URN was supplied as an argument.
 
 The manifest RSpec should contain all necessary details about resource identity, configuration, and access information necessary for experimenters to use the resources. As that configuration information may change as the resource becomes operationally +:ready+, this information may change. Otherwise, the manifest is mostly static.
 
-Additionally, Describe returns basic state and expiration information for all queried slivers. Valid values for +:allocation_status+ and +:operational_status+ are described on the Common Concepts page.
+Additionally, +Describe+ returns basic state and expiration information for all queried slivers. Valid values for +:allocation_status+ and +:operational_status+ are described on the Common Concepts page.
 
 
 .Call Syntax
@@ -20,24 +20,23 @@ Describe(string urns[], struct credentials[],
 ----------------
 
 
-NOTE: This method is part of what ListResources used to do in previous versions of the AM API, and is similar to ProtoGENI  `Resolve`.
+NOTE: This method is part of what +ListResources+ used to do in previous versions of the AM API, and is similar to ProtoGENI  `Resolve`.
 
 
 ==== Argument 1:  +urns+
 
-*TODO*
+See the <<CommonArgumentUrns, +urns+ argument>> for details.
 
-The :single_allocation return from GetVersion advertises whether or not a client may invoke this method on only some of the slivers in a given :allocation_state in a given slice (default is false - the client may operate on only some of the slivers in a given state).
+The +:single_allocation+ return from <<GetVersion>> advertises whether or not a client may invoke this method on only some of the slivers in a given +:allocation_state+ in a given slice (default is false - the client may operate on only some of the slivers in a given state).
 
 ==== Argument 2:  +credentials+
 
 The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
 
-For this and other methods that take a slice URN or list of sliver URNs, when using SFA style credentials, this list must include a valid slice credential, granting rights to the caller of the method over the given slice. See the Common Concepts page. 
 
 ==== Argument 3: +rspec_version+
 
-See <<CommonArgumentRspecVersion, +rspec_version+ argument>> for details.
+See the <<CommonArgumentRspecVersion, +rspec_version+ argument>> for details.
 
 ==== Argument 4:  +options+
 
@@ -55,7 +54,14 @@ Default: false
 
 *TODO*
 
-==== Return
+==== Return Value
+
+***********************************
+[horizontal]
+XmlRpc type:: +struct+
+***********************************
+
+See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
 
 On success, the value field of the return struct will contain a struct:
 
@@ -81,7 +87,7 @@ XmlRpc type::
 
 Note that the manifest RSpec for allocated slivers may contain less detail than for provisioned slivers. Aggregates are expected to combine the manifests of all requested slivers into a single manifest RSpec. Note that a manifest returned here for only some of the slivers in a slice at this aggregate may contain references to resources not described in this manifest because they are in other slivers.
 
-If a slice urn is supplied and there are no slivers in the given slice at this aggregate, then :rspec shall be a valid manifest RSpec, containing zero (0) node or link elements - that is, specifying no resources. :slivers may be an empty array, or may be an array of previous slivers that have since been deleted or expired. Calling Describe on one or more sliver URNs that are unknown, deleted or expired shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR :code).
+If a slice urn is supplied and there are no slivers in the given slice at this aggregate, then :rspec shall be a valid manifest RSpec, containing zero (0) node or link elements - that is, specifying no resources. :slivers may be an empty array, or may be an array of previous slivers that have since been deleted or expired. Calling +Describe+ on one or more sliver URNs that are unknown, deleted or expired shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR :code).
 
 Manifests are not necessarily static. In general, the manifest of a given sliver should be static once it has reached the operational state :ready (e.g., fully booted). However, this API does not require that to be true.
 
