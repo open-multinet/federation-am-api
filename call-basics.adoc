@@ -366,6 +366,7 @@ Aggregates are free to add additional return values or input options to support 
 
 This section explains how specific data types are sent using XmlRpc.
 The following primitive types are always sent using the matching XmlRpc data type:
+
 - +string+
 - +boolean+
 - +int+
@@ -480,6 +481,7 @@ All direct arguments to calls are mandatory, and the +options+ argument allows f
 Unless otherwise specified, all arguments and returns of type struct may include aggregate or resource-specific entries. As arguments, such options must be optional for the client to supply, with the aggregate providing a reasonable default. 
 
 This API specifies some options that should be supported by each AM. These are prefixed with +:+. AM's may also support additional options, if they follow these rules:
+
 * They should document these options
 * They should choose an appropriate prefix. There is a colon between the prefix and the option name. *TODO example*
 * Clients are never required to provide such options. The AM will document the default value they assume for each new option.
@@ -596,11 +598,10 @@ refer to this using:   See the <<CommonOptionEndTime, +:end_time+>> for details.
 
 ***********************************
 [horizontal]
-Name:: +:end_time+ option (<<Allocate>>, <<Provision>>
-Name:: +expiration_time+ argument (<<Renew>>)
+Name:: +:end_time+
 Calls:: <<Allocate>>, <<Provision>>, <<Renew>>
 Supported by the server:: Mandatory
-Included by client:: Optional for <<Allocate>>, <<Provision>>, Required for <<Renew>>
+Included by client:: Optional for <<Allocate>>, <<Provision>> but required for <<Renew>>
 XmlRpc type:: +string+
 String content type::  RFC 3339 date
 ***********************************
@@ -659,7 +660,7 @@ For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Doc
 refer to this using:   See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
 /////////////////////////////////////
 
-*TODO: this is a very common return. Each call has only minor differences. It should be described in general instead of at each call.
+*TODO: this is a very common return. Each call has only minor differences. It should be described in general instead of at each call.*
 
 .Example
 [source]
@@ -682,5 +683,5 @@ refer to this using:   See the <<CommonReturnSliverInfoList, sliver info list re
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
 
-    A free form string (not null or None), optionally returned per sliver from several method returns (<<Describe>>, <<Provision>>, <<Renew>>, <<Status>>, <<PerformOperationalAction>>, <<Delete>>). The aggregate manager should set this to a string that could be presented to a researcher to give more detailed information about the state of the sliver if this operation fails for a given sliver. This option is used in particular where an aggregate may successfully perform the operation for some slivers, but not others. See the +:best_effort+ option above. In particular, it is not returned from <<Allocate>>, which is always all-or-nothing. Note that this field may be omitted entirely from the return in most cases, but is required in the return from <<Status>>, though it may be empty. The field if present must be a valid string, not null/None.
+A free form string (not null or None), optionally returned per sliver from several method returns (<<Describe>>, <<Provision>>, <<Renew>>, <<Status>>, <<PerformOperationalAction>>, <<Delete>>). The aggregate manager should set this to a string that could be presented to a researcher to give more detailed information about the state of the sliver if this operation fails for a given sliver. This option is used in particular where an aggregate may successfully perform the operation for some slivers, but not others. See the +:best_effort+ option above. In particular, it is not returned from <<Allocate>>, which is always all-or-nothing. Note that this field may be omitted entirely from the return in most cases, but is required in the return from <<Status>>, though it may be empty. The field if present must be a valid string, not null/None.
 

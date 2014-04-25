@@ -3,7 +3,7 @@
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
 
- Request that the named slivers be renewed, with their expiration extended. If possible, the aggregate should extend the slivers to the requested expiration time, or to a sooner time if policy limits apply. This method applies to slivers that are :allocated or to slivers that are :provisioned, though different policies may apply to slivers in the different states, resulting in much shorter max expiration times for :allocated slivers.
+Request that the named slivers be renewed, with their expiration extended. If possible, the aggregate should extend the slivers to the requested expiration time, or to a sooner time if policy limits apply. This method applies to slivers that are :allocated or to slivers that are :provisioned, though different policies may apply to slivers in the different states, resulting in much shorter max expiration times for :allocated slivers.
 
 .Call Syntax
 [source]

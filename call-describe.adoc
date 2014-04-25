@@ -3,7 +3,7 @@
 
 *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
 
- Retrieve a manifest RSpec describing the resources contained by the named entities, e.g. a single slice or a set of the slivers in a slice. This listing and description should be sufficiently descriptive to allow experimenters to use the resources.
+Retrieve a manifest RSpec describing the resources contained by the named entities, e.g. a single slice or a set of the slivers in a slice. This listing and description should be sufficiently descriptive to allow experimenters to use the resources.
 
 +Describe+ is used to list the resources belonging to a particular reservation. The return is the standard AM API struct, with a value that is a struct that always includes a single manifest RSpec, describing the resources in the set of slivers whose URNs were supplied, or describing the entire single slice whose URN was supplied as an argument.
 
