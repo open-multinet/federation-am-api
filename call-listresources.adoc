@@ -18,21 +18,16 @@ Return type: +string+
 
 ==== Argument 1:  +credentials+
 
-***********************************
-[horizontal]
-Supported by the server:: Mandatory
-Included by client:: Mandatory
-XmlRpc type::  +array of struct+
-***********************************
+The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
 
-A list of credentials, see <<CommonArgumentCredentials, the Credentials section>>. When using SFA style credentials, this list must include a valid user credential, granting rights to the caller of the method. 
+When using SFA style credentials, this list must include a valid user credential, granting rights to the caller of the method. 
 
 NOTE: _Wim Van de Meerssche:_ Are slice credentials allowed or
 disallowed as authorization for +ListResources+? Or is it always policy of the testbed, with minimum allowed being a user credential of a user at a trusted root.
 
 ==== Argument 2: +rspec_version+
 
-See <<CommonArgumentRspecVersion, +rspec_version+ argument>> for details.
+See the <<CommonArgumentRspecVersion, +rspec_version+ argument>> for details.
 
 ==== Argument 3:  +options+
 
@@ -75,7 +70,7 @@ to be compressed. If the value is true (1), the returned resource list will be
 compressed according to RFC 1950. If the value is false (0) or unspecified.
 Note: compressed or not, the XML-RPC return type of the +ListResources+ value field will always be text.
 
-==== Return value: Advertisement RSpec
+==== Return Value: Advertisement RSpec
 
 ***********************************
 [horizontal]
@@ -107,7 +102,8 @@ BADVERSION:: Bad Version of Advertisement RSpec requested
 
 
 ==== Examples
-.Example Request (JSON syntax)
+
+.Example Request
 [source]
 ------------
 [
@@ -131,7 +127,7 @@ BADVERSION:: Bad Version of Advertisement RSpec requested
 ]
 -----------------
 
-.Example reply (JSON syntax)
+.Example Reply
 [source]
 ------------------
 {

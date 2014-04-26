@@ -21,16 +21,22 @@ XmlRpc type:: +struct+
 
 A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
-Note that in +GetVersion+, the +options+ argument is *optional*, while it is mandatory for all other calls! This means that the +options+ argument may be omitted entirely by clients. This is the only exception to the general rule at <<OptionsArgument,General Options Argument Section>>.
+Note that in +GetVersion+, the +options+ argument itself is *optional*, while it is mandatory for all other calls! This means that the +options+ argument may be omitted entirely by clients. This is the only exception to the general rule at <<OptionsArgument,General Options Argument Section>>.
 The reason is that this method should be understandable by clients expecting any version of this API. And historical API versions support getVersion without options.
 
 This API does not list any options that need to be supported. However, servers do need to support the +options+ argument itself: they should not treat its presence as an error, and ignore any options in it they do not support.
 
 [[GetVersionReturnValue]]
-==== Return Value:
+==== Return Value
+
+***********************************
+[horizontal]
+XmlRpc type:: +struct+
+***********************************
 
 +GetVersion+ returns the standard return struct from all AM API methods (output, value, code). See <<ReturnStructure,Return Structure>>.
-However, next to the standard AM API +code+, +value+, and +output+ entries, +GetVersion+ adds a +geni_api+ integer version of this API (3) to the return structure. This information is also in the +value+ struct but is repeated here for backwards compatibility with AM API v1 clients.
+
+*TODO I guess this is not needed anymore in this API, as it is not backward compatible anyway?* However, next to the standard AM API +code+, +value+, and +output+ entries, +GetVersion+ adds a +geni_api+ integer version of this API (3) to the return structure. This information is also in the +value+ struct but is repeated here for backwards compatibility with AM API v1 clients.
 
 The value contains an XmlRpc +struct+ struct with at least the following members:
 
@@ -68,20 +74,43 @@ struct value
 }
 ***********************************
 
-GetVersion is intended to provide information about the configuration of this aggregate, helping experimenter tools determine how to communicate with this aggregate.
++GetVersion+ is intended to provide information about the configuration of this aggregate, helping experimenter tools determine how to communicate with this aggregate.
 
-GetVersion returns the version of the Aggregate Manager API running locally, the RSpec schemas supported, and the URLs where versions of the AM API are running. The fields are described below:
++GetVersion+ returns the version of the Aggregate Manager API running locally, the RSpec schemas supported, and the URLs where versions of the AM API are running. The fields are described below:
 
 +:api+:: An integer indicating the revision of the Aggregate Manager API that an aggregate supports. This page documents version 1 of the API. 
 
-+:api_versions+:: An XML-RPC struct indicating the versions of the Aggregate Manager API supported at this aggregate, and the URLs at which those API versions can be contacted. This element is required, and shall include at least 1 entry indicating the local aggregate manager URL and the version of the API supported at that URL. Aggregates supporting multiple versions of the Aggregate Manager API should conform to the guidelines specified on the Common Concepts page.
-
-+:api_versions+:: An XML-RPC struct containing entries of:
-Name;; Integer (encoded as a XmlRpc +string+) - supported GENI AM API version
-Value;; +string+ - Absolute URL to the XML-RPC server implementing that version of the GENI AM API
-
++:api_versions+:: An XML-RPC struct indicating the versions of the Aggregate Manager API supported at this aggregate, and the URLs at which those API versions can be contacted. This element is required, and shall include at least 1 entry indicating the local aggregate manager URL and the version of the API supported at that URL.
 +
-There is always at least one entry in this list: The called version itself.
+Aggregates are free to support multiple versions of the AM API. They do so by providing different URLs for each version of the API that they support. Aggregates should have a 'default' URL (the one typically advertised). That url runs whichever version of the API the server chooses (could be the latest, could be something else.)
++
+When aggregates start supporting a new version of the API, they should keep running the old version of the API for a suitable transition period.
++
+Aggregates running multiple versions of the API must advertise the URLs and versions of the API supported in +:api_versions+, which is a +struct+ that has 1 or more entries. Each key indicates a supported version of the API, and the matching value is the absolute URL to the XML-RPC server where that version of the API is supported. There is always at least one entry in this list: The called version itself.
++
+.Syntax
+[source]
+------------------
+":api_versions" : {
+    "<version name>" : "<absolute URL>",
+    ...
+}
+------------------
++
+For example
++
+.Example
+[source]
+------------------
++:api_versions+: {
+  "1": "http://example.com/aggregate_manager/xmlrpc/geni_am/1.0",
+  "2": "http://example.com/aggregate_manager/xmlrpc/geni_am/2.0",
+  "3": "http://example.com/aggregate_manager/xmlrpc/geni_am/3.0",
+  "faa1": "http://example.com/aggregate_manager/xmlrpc/faa_am/1.0"
+}
+------------------
++
+*TODO: add info on how to advertise FAA and geni AM api.*
 
 +:single_allocation+:: See the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section.
 
@@ -105,23 +134,23 @@ Aggregates advertise the type(s) of credentials they support.
 +
 link:http://abac.deterlab.net/[ABAC] credentials as of AM API version 3 will be type=geni_abac, version=1. These are fully specified link:http://groups.geni.net/geni/wiki/TIEDABACCredential[here] (we use version 1.1 from that page).
 +
-For example, an aggregate that accepts ABAC credentials, SFA slice credentials that were issued prior to AM API v3, and SFA slice credentials from AM API version 3, would include this in GetVersion:
+For example, an aggregate that accepts ABAC credentials, SFA slice credentials that were issued prior to AM API v3, and SFA slice credentials from AM API version 3, would include this in +GetVersion+:
 +
 .Credentials array example
 [source]
 ------------
-:credential_types = [
+":credential_types" : [
   {
-   :type = "geni_sfa",
-   :version = "2"
+   ":type" : "geni_sfa",
+   ":version" " "2"
   },
   {
-   :type="geni_sfa",
-   :version = "3"
+   ":type" : "geni_sfa",
+   ":version" : "3"
   },
   {
-   :type="geni_abac",
-   :version="1"
+   ":type" : "geni_abac",
+   ":version" : "1"
   }
 ]
 ------------
@@ -136,7 +165,7 @@ For example, an aggregate that accepts ABAC credentials, SFA slice credentials t
      An array of data structures indicating the RSpec types accepted by this AM in a request. The contract for RSpec versions is described with links to further reading on the Common Concepts page. Per that contract, AMs will produce manifest RSpecs with a schema that is based on the given request type and version. 
 
 +:ad_rspec_versions+::
-    An array of data structures indicating what types of RSpec advertisements may be produced by this AM in ListResources. 
+    An array of data structures indicating what types of RSpec advertisements may be produced by this AM in <<ListResources>>. 
 
 For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Document].
 The elements used within +:request_rspec_versions+ and +:ad_rspec_versions+:
@@ -163,44 +192,43 @@ There are no special cases for the +GetVersion+ call.
 
 ==== Examples
 
-.Example Request (JSON syntax)
+.Example Reply
 [source]
 ------------
 {
-  geni_api = 3 # This is AM API v3
-  code = {
-       geni_code = 0 # Success
+  "code" : {
+       "geni_code" : 0 # Success
        # am_type and am_code are optional. Leaving them out.
      }
-  value = 
+  "value" : 
       {
-        geni_api = 3 # Match above
-        geni_api_versions = {
-             '3' = <This server's AM API absolute URL>
-             '2' = <Prior API version still supported at a slightly different URL - optional but included here>
+        ":api" : "faa1",
+        ":api_versions" : {
+             "faa1" : "<This server's AM API absolute URL>",
+             "2" : "<Prior API version still supported at a slightly different URL - optional but included here>"
         }
-        geni_request_rspec_versions = [{
-             type = "GENI" # case insensitive
-             version = "3" # case insensitive
-             schema = "http://www.geni.net/resources/rspec/3/request.xsd" # required but may be empty
-             namespace = "http://www.geni.net/resources/rspec/3" # required but may be empty
-             extensions = ["http://hpn.east.isi.edu/rspec/ext/stitch/0.1/stitch-schema.xsd", <other URLs here>] # required but may be empty
+        ":request_rspec_versions" : [{
+             "type" : "GENI" # case insensitive
+             "version" : "3" # case insensitive
+             "schema" : "http://www.geni.net/resources/rspec/3/request.xsd" # required but may be empty
+             "namespace" : "http://www.geni.net/resources/rspec/3" # required but may be empty
+             "extensions" : ["http://hpn.east.isi.edu/rspec/ext/stitch/0.1/stitch-schema.xsd", <other URLs here>] # required but may be empty
         }]
-        geni_ad_rspec_versions = [{
-             type = "GENI" # case insensitive
-             version = "3" # case insensitive
-             schema = "http://www.geni.net/resources/rspec/3/ad.xsd" # required but may be empty
-             namespace = "http://www.geni.net/resources/rspec/3" # required but may be empty
-             extensions = ["http://hpn.east.isi.edu/rspec/ext/stitch/0.1/stitch-schema.xsd", <other URLs here>] # required but may be empty
+        ":ad_rspec_versions" : [{
+             "type" : "GENI" # case insensitive
+             "version" : "3" # case insensitive
+             "schema" : "http://www.geni.net/resources/rspec/3/ad.xsd" # required but may be empty
+             "namespace" : "http://www.geni.net/resources/rspec/3" # required but may be empty
+             "extensions" : ["http://hpn.east.isi.edu/rspec/ext/stitch/0.1/stitch-schema.xsd", <other URLs here>] # required but may be empty
         }]
-        geni_credential_types = [{ # This AM accepts only SFA style credentials for API v3
-             geni_type = "geni_sfa" # case insensitive
-             geni_version = "3" # case insensitive
+        ":credential_types" : [{ # This AM accepts only SFA style credentials for API v3
+             ":type" : "geni_sfa" # case insensitive
+             ":version" : "3" # case insensitive
        }]
-       geni_single_allocation = 0 # false - can operate on individual slivers. This is the default, so could legally be omitted here.
-       geni_allocate = "geni_many" # Can do multiple Allocates. This is not the default value, so is required here.
+       ":single_allocation" : 0 # false - can operate on individual slivers. This is the default, so could legally be omitted here.
+       ":allocate" : "geni_many" # Can do multiple Allocates. This is not the default value, so is required here.
       }
-  output = <None>
+  "output" : ""
 }
 ------------
 
