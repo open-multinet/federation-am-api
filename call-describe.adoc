@@ -48,7 +48,7 @@ A struct containting optional arguments, indexed by name. See <<OptionsArgument,
 [horizontal]
 Supported by the server:: Mandatory
 Included by client:: Optional
-XmlRpc type:: +boolean+
+XML-RPC type:: +boolean+
 Default: false
 ***********************************
 
@@ -58,7 +58,7 @@ Default: false
 
 ***********************************
 [horizontal]
-XmlRpc type:: +struct+
+XML-RPC type:: +struct+
 ***********************************
 
 See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
@@ -67,7 +67,7 @@ On success, the value field of the return struct will contain a struct:
 
 ***********************************
 [horizontal]
-XmlRpc type::
+XML-RPC type::
 [source]
 {
    ":rspec": <geni.rspec, a Manifest RSpec>

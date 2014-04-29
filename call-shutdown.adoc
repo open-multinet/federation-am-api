@@ -21,7 +21,7 @@ This operation is for operator use, to stop a misbehaving resource. Once shut do
 [horizontal]
 Supported by the server:: Mandatory
 Included by client:: Mandatory
-XmlRpc type::  +string+
+XML-RPC type::  +string+
 String content type::  URN
 ***********************************
 
@@ -39,7 +39,7 @@ No options are required.
 
 ***********************************
 [horizontal]
-XmlRpc type:: +boolean+
+XML-RPC type:: +boolean+
 ***********************************
 
 Return: On success, the value field of the return struct will contain: XML-RPC boolean, indicating whether the resources associated with this reservation were successfully shut down to a state suitable for forensics. Return should be true, or else an error should be returned.

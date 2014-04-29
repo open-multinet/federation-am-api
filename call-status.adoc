@@ -35,7 +35,7 @@ This method has no options that are required to be supported by AM's.
 
 ***********************************
 [horizontal]
-XmlRpc type:: +struct+
+XML-RPC type:: +struct+
 ***********************************
 
 See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
@@ -44,7 +44,7 @@ On success, the value field of the return struct will contain a struct:
 
 ***********************************
 [horizontal]
-XmlRpc type::
+XML-RPC type::
 [source]
 {
   ":urn": <slice URN>

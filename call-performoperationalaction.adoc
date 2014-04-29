@@ -50,7 +50,7 @@ Default is false (action applies to all slivers equally or none; the method retu
 
 ***********************************
 [horizontal]
-XmlRpc type:: +struct+
+XML-RPC type:: +struct+
 ***********************************
 
 See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
@@ -59,7 +59,7 @@ On success, the value field of the return struct will contain a list of structs:
 
 ***********************************
 [horizontal]
-XmlRpc type::
+XML-RPC type::
 [source]
     [ {
             ":sliver_urn" : <string>,

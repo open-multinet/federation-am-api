@@ -28,7 +28,7 @@ As described here, the :allocate return from <<GetVersion>> advertises when a cl
 [horizontal]
 Supported by the server:: Mandatory
 Included by client:: Mandatory
-XmlRpc type::  +string+
+XML-RPC type::  +string+
 String content type::  URN
 ***********************************
 
@@ -40,7 +40,7 @@ The URN of the slice to which the resources specified in rspec will be allocated
 [horizontal]
 Supported by the server:: Mandatory
 Included by client:: Mandatory
-XmlRpc type::  +string+
+XML-RPC type::  +string+
 String content type::  RSpec
 ***********************************
 
@@ -64,7 +64,7 @@ See the <<CommonOptionEndTime, +:end_time+>> for details.
 
 ***********************************
 [horizontal]
-XmlRpc type:: +struct+
+XML-RPC type:: +struct+
 ***********************************
 
 See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
@@ -72,7 +72,7 @@ See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
 On success, the value field of the return struct will contain a struct:
 ***********************************
 [horizontal]
-XmlRpc type::
+XML-RPC type::
 [source]
     {
      ":rspec" : <geni.rspec manifest of newly allocated slivers>,

@@ -16,7 +16,7 @@ GetVersion(struct options)
 [horizontal]
 Supported by the server:: Mandatory
 Included by client:: Optional 
-XmlRpc type:: +struct+
+XML-RPC type:: +struct+
 ***********************************
 
 A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
@@ -31,46 +31,58 @@ This API does not list any options that need to be supported. However, servers d
 
 ***********************************
 [horizontal]
-XmlRpc type:: +struct+
+XML-RPC type:: +struct+
 ***********************************
 
 +GetVersion+ returns the standard return struct from all AM API methods (output, value, code). See <<ReturnStructure,Return Structure>>.
 
 *TODO I guess this is not needed anymore in this API, as it is not backward compatible anyway?* However, next to the standard AM API +code+, +value+, and +output+ entries, +GetVersion+ adds a +geni_api+ integer version of this API (3) to the return structure. This information is also in the +value+ struct but is repeated here for backwards compatibility with AM API v1 clients.
 
-The value contains an XmlRpc +struct+ struct with at least the following members:
+The value contains an XML-RPC +struct+ struct:
 
+.GetVersion Reply Syntax
 ***********************************
 [horizontal]
-XmlRpc type::
+XML-RPC type::
 [source]
 struct value
 {
-  int :api;
-  struct :api_versions {
+  ":api" : <int>;
+  ":api_versions" : {
        URL <this API version #>; # value is a URL, name (key) is a number represented as a string
-       [optional: other supported API versions and the URLs where they run]
-  }
-  array :request_rspec_versions of {
-       string type;    # case insensitive
-       string version; # case insensitive
-       string schema;
-       string namespace;
-       array extensions of string;
-  };
-  array :ad_rspec_versions of {
-       string type;    # case insensitive
-       string version; # case insensitive
-       string schema;
-       string namespace;
-       array extensions of string;
-  };
-  array :credential_types of {
-       string :type <case insensitive>;
-       string :version <containing an integer>;
- };
- [optional: boolean :single_allocation; <optional only if using default of 0>]
- [optional: string :allocate; <case insensitive. optional only if using default of :single>]
+       "<string: this API version>" : "<string: URL of this API version>",
+       (optional) "<string: other API version>" : "<string: URL of other API version>",
+       ...
+  },
+  ":request_rspec_versions" : [
+     {
+       "type" : "<string (case insensitive)>",
+       "version" : "<string (case insensitive)>",
+       "schema" : "<string>",
+       "namespace" : "<string>",
+       "extensions" : [ "<string>", ... ]
+     },
+     ...
+  ],
+  ":ad_rspec_versions" : [
+     {
+       "type" : "<string (case insensitive)>",
+       "version" : "<string (case insensitive)>",
+       "schema" : "<string>",
+       "namespace" : "<string>",
+       "extensions" : [ "<string>", ... ]
+     },
+     ...
+  ],
+  ":credential_types" : [
+     {
+       "type" : "<string (case insensitive)>",
+       "version" : "<string (case insensitive)>",
+     },
+     ...
+  ],
+ (optional) ":single_allocation" : <boolean. default false>,
+ (optional) ":allocate" : "<string (case insensitive) default: :single>"
 }
 ***********************************
 
@@ -103,10 +115,10 @@ For example
 [source]
 ------------------
 +:api_versions+: {
-  "1": "http://example.com/aggregate_manager/xmlrpc/geni_am/1.0",
-  "2": "http://example.com/aggregate_manager/xmlrpc/geni_am/2.0",
-  "3": "http://example.com/aggregate_manager/xmlrpc/geni_am/3.0",
-  "faa1": "http://example.com/aggregate_manager/xmlrpc/faa_am/1.0"
+  "1": "http://example.com/aggregate_manager/XML-RPC/geni_am/1.0",
+  "2": "http://example.com/aggregate_manager/XML-RPC/geni_am/2.0",
+  "3": "http://example.com/aggregate_manager/XML-RPC/geni_am/3.0",
+  "faa1": "http://example.com/aggregate_manager/XML-RPC/faa_am/1.0"
 }
 ------------------
 +

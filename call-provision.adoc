@@ -59,7 +59,7 @@ Do all slivers fail if any single sliver fails?
 [horizontal]
 Supported by the server:: Mandatory
 Included by client:: Optional 
-XmlRpc type:: array of struct
+XML-RPC type:: array of struct
 ***********************************
 Resource login information. See the Common Concepts page. 
 
@@ -86,7 +86,7 @@ Clients may omit this option. Aggregates should honor this option for any resour
 
 ***********************************
 [horizontal]
-XmlRpc type:: +struct+
+XML-RPC type:: +struct+
 ***********************************
 
 See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
@@ -95,7 +95,7 @@ Return: On success, the value field of the return struct will contain a struct:
 
 ***********************************
 [horizontal]
-XmlRpc type::
+XML-RPC type::
 [source]
   ":rspec": <geni.rspec, RSpec manifest>,
   ":slivers": 

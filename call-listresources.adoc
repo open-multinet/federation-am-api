@@ -39,7 +39,7 @@ A struct containting optional arguments, indexed by name. See <<OptionsArgument,
 [horizontal]
 Supported by the server:: Mandatory
 Included by client:: Optional 
-XmlRpc type:: +boolean+
+XML-RPC type:: +boolean+
 ***********************************
 
 An XML-RPC boolean value indicating whether the caller is interested in all resources or available resources. If this value is true (1), the result should contain only available resources. If this value is false (0) or unspecified, both available and allocated resources should be returned. The Aggregate Manager is free to limit visibility of certain resources based on the credentials parameter.
@@ -51,7 +51,7 @@ An XML-RPC boolean value indicating whether the caller is interested in all reso
 [horizontal]
 Supported by the server:: Mandatory
 Included by client:: Optional 
-XmlRpc type:: +boolean+
+XML-RPC type:: +boolean+
 ***********************************
 
 ////////////////////////////////////
@@ -61,7 +61,7 @@ XmlRpc type:: +boolean+
 [horizontal]
 Supported by the server:: Mandatory
 Included by client:: Optional 
-XmlRpc type:: +boolean+
+XML-RPC type:: +boolean+
 ====================================
 ////////////////////////////////////
 
@@ -74,7 +74,7 @@ Note: compressed or not, the XML-RPC return type of the +ListResources+ value fi
 
 ***********************************
 [horizontal]
-XmlRpc type:: +string+
+XML-RPC type:: +string+
 ***********************************
 
 ////////////////////////////////////
@@ -82,13 +82,13 @@ XmlRpc type:: +string+
 [caption="Details", icon=None]
 ====================================
 [horizontal]
-XmlRpc type:: +string+
+XML-RPC type:: +string+
 ====================================
 ////////////////////////////////////
 
 +ListResources+ returns the standard return struct from all AM API methods (output, value, code). See <<ReturnStructure,Return Structure>>.
 
-The value contains an XmlRpc +string+ containing an Advertisement RSpec, or an XmlRpc +string+ containing a compressed RSpec (see <<OptionCompressed,+:compressed+ option>>).
+The value contains an XML-RPC +string+ containing an Advertisement RSpec, or an XML-RPC +string+ containing a compressed RSpec (see <<OptionCompressed,+:compressed+ option>>).
 The returned advertisement RSpec lists and describes resources at this aggregate. Depending on the arguments, these may be all local resources, or only available local resources.
 
 ==== Return Codes and Errors
