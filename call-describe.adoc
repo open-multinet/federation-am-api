@@ -40,7 +40,7 @@ See the <<CommonArgumentRspecVersion, +rspec_version+ argument>> for details.
 
 ==== Argument 4:  +options+
 
-A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 ==== Option: +:compressed+
 
@@ -70,15 +70,15 @@ On success, the value field of the return struct will contain a struct:
 XML-RPC type::
 [source]
 {
-   ":rspec": <geni.rspec, a Manifest RSpec>
-   ":urn": <string slice urn of the containing slice>
+   ":rspec": <string: geni.rspec, a Manifest RSpec>
+   ":urn": <string: slice urn of the containing slice>
    ":slivers": [
                {
-                  ":sliver_urn": <string sliver urn>
-                  ":expires": <dateTime.rfc3339 allocation expiration string, as in :expires from SliversStatus>,
-                  ":allocation_status": <string sliver state - e.g. :allocated or :provisioned >,
-                  ":operational_status": <string sliver operational state>,
-                  ":error": <optional string. The field may be omitted entirely but may not be null/None, explaining any failure for a sliver.>
+                  ":sliver_urn": <string: sliver urn>
+                  ":expires": <string: dateTime.rfc3339 allocation expiration string, as in :expires from SliversStatus>,
+                  ":allocation_status": <string: sliver state - e.g. :allocated or :provisioned >,
+                  ":operational_status": <string: sliver operational state>,
+                  (optional) ":error": <string: explaining any failure for a sliver. The field may be omitted entirely but may not be null/None>
                },
                ...
          ]

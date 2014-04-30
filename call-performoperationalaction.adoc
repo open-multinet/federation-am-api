@@ -38,7 +38,7 @@ The standard authorization argument. See <<CommonArgumentCredentials, the Creden
 
 ==== Argument 4:  +options+
 
-A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 ==== Option: +:best_effort+
 
@@ -63,9 +63,9 @@ XML-RPC type::
 [source]
     [ {
             ":sliver_urn" : <string>,
-            ":allocation_status": <string, eg :provisioned>,
+            ":allocation_status": <string: eg :provisioned>,
             ":operational_status": <string>,
-            ":expires": <dateTime.rfc3339 of individual sliver expiration>,
+            ":expires": <string: dateTime.rfc3339 of individual sliver expiration>,
             [optional: ":resource_status" : string with resource-specific status in more detail than operational_status; may be omitted],
             [optional: ":error": string explanation of operation failure for this sliver. The field may be omitted but if present may not be null/None.]
             }, 

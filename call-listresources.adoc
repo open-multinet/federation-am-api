@@ -31,7 +31,7 @@ See the <<CommonArgumentRspecVersion, +rspec_version+ argument>> for details.
 
 ==== Argument 3:  +options+
 
-A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 ==== Option: +:available+
 

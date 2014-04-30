@@ -25,7 +25,7 @@ The standard authorization argument. See <<CommonArgumentCredentials, the Creden
 
 ==== Argument 3:  +options+
 
-A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 This method has no options that are required to be supported by AM's.
 
@@ -47,19 +47,19 @@ On success, the value field of the return struct will contain a struct:
 XML-RPC type::
 [source]
 {
-  ":urn": <slice URN>
+  ":urn": <string: slice URN>
   ":slivers": [ 
-                    { ":sliver_urn": <sliver URN>
-                      ":allocation_status": <string, eg provisioned>
-                      ":operational_status": <string, eg ready>
-                      ":expires": <dateTime.rfc3339 of individual sliver expiration>
-                      ":error": <string, eg '' - not null/None and not optional>,
+                    { ":sliver_urn": <string: sliver URN>
+                      ":allocation_status": <string: eg provisioned>
+                      ":operational_status": <string: eg ready>
+                      ":expires": <string: dateTime.rfc3339 of individual sliver expiration>
+                      ":error": <string: eg '' - not null/None and not optional>,
                      },
-                    { ":sliver_urn": <sliver URN>
-                      ":allocation_status": <string, eg provisioned>
-                      ":operational_status": <string, eg ready>
-                      ":expires": <dateTime.rfc3339 of individual sliver expiration>
-                      ":error": <string, eg '' - not null/None and not optional>,
+                    { ":sliver_urn": <string: sliver URN>
+                      ":allocation_status": <string: eg provisioned>
+                      ":operational_status": <string: eg ready>
+                      ":expires": <string: dateTime.rfc3339 of individual sliver expiration>
+                      ":error": <string: eg '' - not null/None and not optional>,
                       }
                   ]
 }

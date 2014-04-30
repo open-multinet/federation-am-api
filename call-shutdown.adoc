@@ -31,7 +31,7 @@ The standard authorization argument. See <<CommonArgumentCredentials, the Creden
 
 ==== Argument 3:  +options+
 
-A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 No options are required.
 

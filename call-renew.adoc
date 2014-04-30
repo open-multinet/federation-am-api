@@ -42,7 +42,7 @@ The date-time string in  RFC 3339 format in UTC when the reservation(s) should b
 
 ==== Argument 4:  +options+
 
-A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 ==== Option: +:best_effort+
 
@@ -70,8 +70,8 @@ XML-RPC type::
    ":sliver_urn": <string>,
    ":allocation_status": <string>,
    ":operational_status": <string>,
-   ":expires": <dateTime.rfc3339 when the sliver expires from its current state>,
-   ":error": <optional string. The field may be omitted entirely but may not be null/None, explaining any renewal failure for this sliver>
+   ":expires": <string: dateTime.rfc3339 when the sliver expires from its current state>,
+   (optional) ":error": <string: explaining any renewal failure for this sliver. The field may be omitted entirely but may not be null/None>
   },
   ...
 ]

@@ -32,7 +32,7 @@ The standard authorization argument. See <<CommonArgumentCredentials, the Creden
 
 ==== Argument 3:  +options+
 
-A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 ==== Option: +:best_effort+
 
@@ -59,8 +59,8 @@ XML-RPC type::
   {
    ":sliver_urn": <string>,
    ":allocation_status": <string>,
-   ":expires": <dateTime.rfc3339 when the sliver expires from its current state>,
-   [optional: ':error': string indicating any AM failure deleting the sliver. The field may be omitted but may not be null/None.]
+   ":expires": <string: dateTime.rfc3339 when the sliver expires from its current state>,
+   (optional) ":error" : <string: indicating any AM failure deleting the sliver. The field may be omitted but may not be null/None>
   },
   ...
 ]

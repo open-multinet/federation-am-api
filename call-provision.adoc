@@ -38,7 +38,7 @@ See the <<CommonArgumentRspecVersion, +rspec_version+ argument>> for details.
 
 ==== Argument 4:  +options+
 
-A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 
 ==== Option: +:end_time+
@@ -73,11 +73,11 @@ Clients may omit this option. Aggregates should honor this option for any resour
 [
   {
     urn: urn:publicid:IDN+geni.net:gcf+user+alice
-    keys: [<ssh key>, <ssh key>]
+    keys: [<string: ssh key>, <string: ssh key>]
   },
   {
     urn: urn:publicid:IDN+geni.net:gcf+user+bob
-    keys: [<ssh key>]
+    keys: [<string: ssh key>]
   }
 ]
 ------------------
@@ -97,15 +97,15 @@ Return: On success, the value field of the return struct will contain a struct:
 [horizontal]
 XML-RPC type::
 [source]
-  ":rspec": <geni.rspec, RSpec manifest>,
+  ":rspec": <string: geni.rspec, RSpec manifest>,
   ":slivers": 
   [
     {
      ":sliver_urn": <string>,
      ":allocation_status": <string>,
      ":operational_status": <string>,
-     ":expires": <dateTime.rfc3339 when the sliver expires from its current state>,
-     ":error": <optional string. The field may be omitted entirely but may not be null/None, explaining any failure to Provision this sliver.>
+     ":expires": <string: dateTime.rfc3339 when the sliver expires from its current state>,
+     (optional) ":error": <string: explaining any failure to Provision this sliver. The field may be omitted entirely but may not be null/None>
     },
     ...
   ],

@@ -54,7 +54,7 @@ The standard authorization argument. See <<CommonArgumentCredentials, the Creden
 
 ==== Argument 4:  +options+
 
-A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 ==== Option: +:end_time+
 
@@ -75,12 +75,12 @@ On success, the value field of the return struct will contain a struct:
 XML-RPC type::
 [source]
     {
-     ":rspec" : <geni.rspec manifest of newly allocated slivers>,
+     ":rspec" : <string: geni.rspec manifest of newly allocated slivers>,
      ":slivers" : [
             {
-                      :sliver_urn: <string sliver urn>
-                      :expires: <dateTime.rfc3339 allocation expiration string, as in :expires from Status>,
-                      :allocation_status: <string sliver state - e.g. :allocated>
+                      :sliver_urn: <string: sliver urn>
+                      :expires: <string: dateTime.rfc3339 allocation expiration string, as in :expires from Status>,
+                      :allocation_status: <string: sliver state - e.g. :allocated>
             },
             ...
         ]
