@@ -1,8 +1,6 @@
 [[Shutdown]]
 === Shutdown
 
-*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
-
 Perform an emergency shutdown on the slivers in the given slice at this aggregate. Resources should be taken offline, such that experimenter access (on both the control and data plane) is cut off. No further actions on the slivers in the given slice should be possible at this aggregate, until an un-specified operator action restores the slice's slivers (or deletes them). This operation is intended for operator use. The slivers are shut down but remain available for further forensics.
 
 .Call Syntax
@@ -21,7 +19,7 @@ This operation is for operator use, to stop a misbehaving resource. Once shut do
 [horizontal]
 Supported by the server:: Mandatory
 Included by client:: Mandatory
-XmlRpc type::  +string+
+XML-RPC type::  +string+
 String content type::  URN
 ***********************************
 
@@ -31,7 +29,7 @@ The standard authorization argument. See <<CommonArgumentCredentials, the Creden
 
 ==== Argument 3:  +options+
 
-A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 No options are required.
 
@@ -39,10 +37,10 @@ No options are required.
 
 ***********************************
 [horizontal]
-XmlRpc type:: +boolean+
+XML-RPC type:: +boolean+
 ***********************************
 
-Return: On success, the value field of the return struct will contain: XML-RPC boolean, indicating whether the resources associated with this reservation were successfully shut down to a state suitable for forensics. Return should be true, or else an error should be returned.
+On success, the value field of the return struct will contain: XML-RPC boolean, indicating whether the resources associated with this reservation were successfully shut down to a state suitable for forensics. Return should be true, or else an error should be returned.
 
 If the given slice has no resources locally, or was previously +Shutdown+, return shall be true, indicating the slice is shut down.
 

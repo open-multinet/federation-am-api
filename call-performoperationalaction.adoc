@@ -1,9 +1,7 @@
 [[PerformOperationalAction]]
 === PerformOperationalAction
 
-*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
-
-Perform the named operational action on the named slivers, possibly changing the :operational_status of the named slivers. E.G. 'start' a VM. For valid operations and expected states, consult the state diagram advertised in the aggregate's advertisement RSpec.
+Perform the named operational action on the named slivers, possibly changing the +:operational_status+ of the named slivers. E.G. 'start' a VM. For valid operations and expected states, consult the state diagram advertised in the aggregate's advertisement RSpec. See also the <<SliverOperationalActions Sliver Operational Actions>> section.
 
 Operational actions modify the running state of the resource, not the nature of the resources in the reservation. To add or remove resources from the reservation, use <<Delete>> and <<Allocate>>. 
 Operational actions, and the states that result, are resource type and aggregate specific. Aggregates advertise these in the advertisement RSpec.
@@ -16,13 +14,13 @@ PerformOperationalAction (string urns[], struct credentials[], string action,
                           struct options={})
 ----------------
 
-This operation is similar to ProtoGENI functions like StartSliver, StopSliver, and RestartSliver in the  PG CMv2 API.
+NOTE: This operation is similar to ProtoGENI functions like StartSliver, StopSliver, and RestartSliver in the  PG CMv2 API.
 
-Aggregate Managers SHOULD return an error code of 13 (UNSUPPORTED) if they do not support a given action for a given resource. An AM SHOULD constrain actions based on the current operational state of the resource. This is a fast synchronous operation, and MAY start long-running sliver transitions whose status can be queried using <<Status>>. This method should only be called, and is only valid, when the sliver is fully allocated (operational status is not :pending_allocation).
+Aggregate Managers SHOULD return an error code of 13 (UNSUPPORTED) if they do not support a given action for a given resource. An AM SHOULD constrain actions based on the current operational state of the resource. This is a fast synchronous operation, and MAY start long-running sliver transitions whose status can be queried using <<Status>>. This method should only be called, and is only valid, when the sliver is fully allocated (operational status is not +:pending_allocation+).
 
-While the action argument may be aggregate and sliver type specific (none are required for all aggregates and sliver types), this API does define three common actions that AMs should support if possible: :start, :stop, and :restart. 
+While the action argument may be aggregate and sliver type specific (none are required for all aggregates and sliver types), this API does define three common actions that AMs should support if possible: +:start+, +:stop+, and +:restart+. 
 
-NOTE: Calling +PerformOperationalAction+ with the action :start corresponds to the final part of what CreateSliver did in AM API v2. 
+NOTE: Calling +PerformOperationalAction+ with the action +:start+ corresponds to the final part of what CreateSliver did in AM API v2. 
 
 ==== Argument 1:  +urns+
 
@@ -34,11 +32,18 @@ The standard authorization argument. See <<CommonArgumentCredentials, the Creden
 
 ==== Argument 3:  +action+
 
-*TODO*
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Mandatory 
+XML-RPC type:: +string+
+***********************************
+
+The operational action to perform.
 
 ==== Argument 4:  +options+
 
-A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 ==== Option: +:best_effort+
 
@@ -50,7 +55,7 @@ Default is false (action applies to all slivers equally or none; the method retu
 
 ***********************************
 [horizontal]
-XmlRpc type:: +struct+
+XML-RPC type:: +struct+
 ***********************************
 
 See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
@@ -59,26 +64,23 @@ On success, the value field of the return struct will contain a list of structs:
 
 ***********************************
 [horizontal]
-XmlRpc type::
+XML-RPC type::
 [source]
     [ {
             ":sliver_urn" : <string>,
-            ":allocation_status": <string, eg :provisioned>,
+            ":allocation_status": <string: eg :provisioned>,
             ":operational_status": <string>,
-            ":expires": <dateTime.rfc3339 of individual sliver expiration>,
+            ":expires": <string: dateTime.rfc3339 of individual sliver expiration>,
             [optional: ":resource_status" : string with resource-specific status in more detail than operational_status; may be omitted],
             [optional: ":error": string explanation of operation failure for this sliver. The field may be omitted but if present may not be null/None.]
             }, 
             ... 
     ]
-    ;
 ***********************************
 
-Note that +PerformOperationalAction+ may return an empty list, if no slivers were in the request or in the specified slice. However, the method may instead return an error (e.g. SEARCHFAILED). Calling this method on a specific sliver that is unknown, expired, or deleted shall result in an error (SEARCHFAILED or EXPIRED or ERROR), unless :best_effort is true.
+Note that +PerformOperationalAction+ may return an empty list, if no slivers were in the request or in the specified slice. However, the method may instead return an error (e.g. SEARCHFAILED). Calling this method on a specific sliver that is unknown, expired, or deleted shall result in an error (SEARCHFAILED or EXPIRED or ERROR), unless +:best_effort+ is true.
 
-The optional :resource_status field MAY be returned for each sliver which contains a resource-specific status that may be more nuanced than the options for :operational_status.
-
-See the Common Concepts page for details on allocation and operational states, operational methods, operations on individual slivers, :best_effort, sliver expiration times, urns, and credentials. 
+The optional +:resource_status+ field MAY be returned for each sliver which contains a resource-specific status that may be more nuanced than the options for +:operational_status+.
 
 ==== Return Codes and Errors
 

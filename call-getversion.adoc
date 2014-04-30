@@ -16,10 +16,10 @@ GetVersion(struct options)
 [horizontal]
 Supported by the server:: Mandatory
 Included by client:: Optional 
-XmlRpc type:: +struct+
+XML-RPC type:: +struct+
 ***********************************
 
-A struct containting optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
+A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
 Note that in +GetVersion+, the +options+ argument itself is *optional*, while it is mandatory for all other calls! This means that the +options+ argument may be omitted entirely by clients. This is the only exception to the general rule at <<OptionsArgument,General Options Argument Section>>.
 The reason is that this method should be understandable by clients expecting any version of this API. And historical API versions support getVersion without options.
@@ -31,111 +31,149 @@ This API does not list any options that need to be supported. However, servers d
 
 ***********************************
 [horizontal]
-XmlRpc type:: +struct+
+XML-RPC type::
+[source]
+struct value
+{
+  ":api" : <int>,
+  ":api_versions" : {
+      <string: version name> : <string: absolute URL>,
+      ...
+  },
+  ":request_rspec_versions" : [
+     {
+       "type" : <string: (case insensitive)>,
+       "version" : <string: (case insensitive)>,
+       "schema" : <string>,
+       "namespace" : <string>,
+       "extensions" : [ <string>, ... ]
+     },
+     ...
+  ],
+  ":ad_rspec_versions" : [
+     {
+       "type" : <string: (case insensitive)>,
+       "version" : <string: (case insensitive)>,
+       "schema" : <string>,
+       "namespace" : <string>,
+       "extensions" : [ <string>, ... ]
+     },
+     ...
+  ],
+  ":credential_types" : [
+     {
+       "type" : <string: (case insensitive)>,
+       "version" : <string: (case insensitive)>,
+     },
+     ...
+  ],
+ (optional) ":single_allocation" : <boolean: default false>,
+ (optional) ":allocate" : <string: default: ':single' (case insensitive)>
+}
 ***********************************
 
 +GetVersion+ returns the standard return struct from all AM API methods (output, value, code). See <<ReturnStructure,Return Structure>>.
 
-*TODO I guess this is not needed anymore in this API, as it is not backward compatible anyway?* However, next to the standard AM API +code+, +value+, and +output+ entries, +GetVersion+ adds a +geni_api+ integer version of this API (3) to the return structure. This information is also in the +value+ struct but is repeated here for backwards compatibility with AM API v1 clients.
+However, next to the standard AM API +code+, +value+, and +output+ entries, +GetVersion+ adds a +geni_api+ integer version of this API (3) to the return structure. This information is also in the +value+ struct but is repeated here for backwards compatibility with AM API v1 clients.
 
-The value contains an XmlRpc +struct+ struct with at least the following members:
+NOTE: *TODO Is the above still useful for this API, as it is not backward compatible? If so, what number do we fill in (a fake large one)?*
+
++GetVersion+ is intended to provide information about the configuration of this aggregate, helping experimenter tools determine how to communicate with this aggregate.
+The information returned includes the version of the Aggregate Manager API running locally, the RSpec schemas supported, and the URLs where versions of the AM API are running.
+
+The value contains an XML-RPC +struct+ struct, the fields are described below.
+
+===== +:api+ 
 
 ***********************************
 [horizontal]
-XmlRpc type::
-[source]
-struct value
-{
-  int :api;
-  struct :api_versions {
-       URL <this API version #>; # value is a URL, name (key) is a number represented as a string
-       [optional: other supported API versions and the URLs where they run]
-  }
-  array :request_rspec_versions of {
-       string type;    # case insensitive
-       string version; # case insensitive
-       string schema;
-       string namespace;
-       array extensions of string;
-  };
-  array :ad_rspec_versions of {
-       string type;    # case insensitive
-       string version; # case insensitive
-       string schema;
-       string namespace;
-       array extensions of string;
-  };
-  array :credential_types of {
-       string :type <case insensitive>;
-       string :version <containing an integer>;
- };
- [optional: boolean :single_allocation; <optional only if using default of 0>]
- [optional: string :allocate; <case insensitive. optional only if using default of :single>]
-}
+Mandatory:: true
+XML-RPC type:: +int+
 ***********************************
 
-+GetVersion+ is intended to provide information about the configuration of this aggregate, helping experimenter tools determine how to communicate with this aggregate.
+An integer indicating the revision of the Aggregate Manager API that an aggregate supports. This page documents version 1 of the API. 
 
-+GetVersion+ returns the version of the Aggregate Manager API running locally, the RSpec schemas supported, and the URLs where versions of the AM API are running. The fields are described below:
-
-+:api+:: An integer indicating the revision of the Aggregate Manager API that an aggregate supports. This page documents version 1 of the API. 
-
-+:api_versions+:: An XML-RPC struct indicating the versions of the Aggregate Manager API supported at this aggregate, and the URLs at which those API versions can be contacted. This element is required, and shall include at least 1 entry indicating the local aggregate manager URL and the version of the API supported at that URL.
-+
-Aggregates are free to support multiple versions of the AM API. They do so by providing different URLs for each version of the API that they support. Aggregates should have a 'default' URL (the one typically advertised). That url runs whichever version of the API the server chooses (could be the latest, could be something else.)
-+
-When aggregates start supporting a new version of the API, they should keep running the old version of the API for a suitable transition period.
-+
-Aggregates running multiple versions of the API must advertise the URLs and versions of the API supported in +:api_versions+, which is a +struct+ that has 1 or more entries. Each key indicates a supported version of the API, and the matching value is the absolute URL to the XML-RPC server where that version of the API is supported. There is always at least one entry in this list: The called version itself.
-+
-.Syntax
+===== +:api_versions+
+***********************************
+[horizontal]
+Mandatory:: true
+XML-RPC type::
 [source]
-------------------
-":api_versions" : {
-    "<version name>" : "<absolute URL>",
-    ...
-}
-------------------
-+
-For example
-+
+  ":api_versions" : {
+       <string: this API version> : <string: Absolute URL of this API version>,
+       (optional) <string: other API version> : <string: Absolute URL of other API version>,
+       ...
+  }
+***********************************
+
+An XML-RPC struct indicating the versions of the Aggregate Manager API supported at this aggregate, and the URLs at which those API versions can be contacted. This element is required, and shall include at least 1 entry indicating the local aggregate manager URL and the version of the API supported at that URL.
+
+Aggregates are free to support multiple versions of the AM API. They do so by providing different URLs for each version of the API that they support. Aggregates should have a 'default' URL (the one typically advertised). That url runs whichever version of the API the server chooses (could be the latest, could be something else.)
+
+When aggregates start supporting a new version of the API, they should keep running the old version of the API for a suitable transition period.
+
+Aggregates running multiple versions of the API must advertise the URLs and versions of the API supported in +:api_versions+, which is a +struct+ that has 1 or more entries. Each key indicates a supported version of the API, and the matching value is the absolute URL to the XML-RPC server where that version of the API is supported. There is always at least one entry in this list: The called version itself.
+
 .Example
 [source]
 ------------------
-+:api_versions+: {
-  "1": "http://example.com/aggregate_manager/xmlrpc/geni_am/1.0",
-  "2": "http://example.com/aggregate_manager/xmlrpc/geni_am/2.0",
-  "3": "http://example.com/aggregate_manager/xmlrpc/geni_am/3.0",
-  "faa1": "http://example.com/aggregate_manager/xmlrpc/faa_am/1.0"
+":api_versions" : {
+  "1": "http://example.com/aggregate_manager/XML-RPC/geni_am/1.0",
+  "2": "http://example.com/aggregate_manager/XML-RPC/geni_am/2.0",
+  "3": "http://example.com/aggregate_manager/XML-RPC/geni_am/3.0",
+  "faa1": "http://example.com/aggregate_manager/XML-RPC/faa_am/1.0"
 }
 ------------------
-+
-*TODO: add info on how to advertise FAA and geni AM api.*
 
-+:single_allocation+:: See the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section.
+===== +:single_allocation+ 
+***********************************
+[horizontal]
+Mandatory:: false
+XML-RPC type:: +boolean+
+Default:: false
+***********************************
 
-+:allocate+:: See the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section.
+See the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section.
 
-+:credential_types+:: See also the <<CommonArgumentCredentials, +credentials argument+ details>>.
-Aggregates advertise the type(s) of credentials they support.
-+
+===== +:allocate+ 
+***********************************
+[horizontal]
+Mandatory:: false
+XML-RPC type:: +string+ (case insensitive)
+Default:: +:single+
+Allowed values:: +:single+, +:disjoint+, +:many+
+***********************************
+
+See the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section.
+
+===== +:credential_types+
+
+***********************************
+[horizontal]
+Mandatory:: true
+XML-RPC type::
 [source]
-------------
-<a list of structs>: [
-  {
-   :type: <string, case insensitive>,
-   :version: <string containing an integer>,
-   <others fields optionally. EG A URL for more info, or a schema>
-  }
-]
-------------
+   ":credential_types" : [
+     {
+      ":type" : <string: (case insensitive)>,
+      ":version" : <string: (containing an integer)>,
+     },
+     ...
+   ]
+***********************************
+
+Aggregates advertise the type(s) of credentials they support.
+See also the <<CommonArgumentCredentials, +credentials argument+ details>>.
+
+* "sfa" slice credentials as defined before AM API version 3 will have type=geni_sfa and version=2. 
+* "sfa" slice credentials as of AM API version 3 will be type=geni_sfa, version=3. 
 +
-"sfa" slice credentials as defined before AM API version 3 will have type=geni_sfa and version=2. "sfa" slice credentials as of AM API version 3 will be type=geni_sfa, version=3. Note: AM API v3 adds requirements on URNs and certificates, as well as credentials. A credential is only geni_sfa version 3 if all contained certificates and URNs are AM API v3 compliant. Experimenters with existing certificates that are not AM API v3 compliant will only get geni_sfa version 2 credentials, unless they first get a new user certificate. As a result, most aggregates should accept both geni_sfa version 3 and version 2 credentials.
-+
-link:http://abac.deterlab.net/[ABAC] credentials as of AM API version 3 will be type=geni_abac, version=1. These are fully specified link:http://groups.geni.net/geni/wiki/TIEDABACCredential[here] (we use version 1.1 from that page).
-+
+Note: AM API v3 adds requirements on URNs and certificates, as well as credentials. A credential is only geni_sfa version 3 if all contained certificates and URNs are AM API v3 compliant. Experimenters with existing certificates that are not AM API v3 compliant will only get geni_sfa version 2 credentials, unless they first get a new user certificate. As a result, most aggregates should accept both geni_sfa version 3 and version 2 credentials.
+
+* link:http://abac.deterlab.net/[ABAC] credentials as of AM API version 3 will be type=geni_abac, version=1. These are fully specified link:http://groups.geni.net/geni/wiki/TIEDABACCredential[here] (we use version 1.1 from that page).
+
 For example, an aggregate that accepts ABAC credentials, SFA slice credentials that were issued prior to AM API v3, and SFA slice credentials from AM API version 3, would include this in +GetVersion+:
-+
+
 .Credentials array example
 [source]
 ------------
@@ -155,20 +193,30 @@ For example, an aggregate that accepts ABAC credentials, SFA slice credentials t
 ]
 ------------
 
+===== +:request_rspec_versions+ and +:ad_rspec_versions+
 
+***********************************
+[horizontal]
+Mandatory:: true
+XML-RPC type::
+[source]
+  ":*_rspec_versions" : [
+     {
+       "type" : <string: (case insensitive)>,
+       "version" : <string: (case insensitive)>,
+       "schema" : <string>,
+       "namespace" : <string>,
+       "extensions" : [ <string>, ... ]
+     },
+     ...
+  ],
+***********************************
 
++:request_rspec_versions+ is an array of data structures indicating the RSpec types accepted by this AM in a request. The contract for RSpec versions is described in the link:rspec.html[Rspec Document]. Per that contract, AMs will produce manifest RSpecs with a schema that is based on the given request type and version. 
 
++:ad_rspec_versions+ is an array of data structures indicating what types of RSpec advertisements may be produced by this AM in <<ListResources>>. 
 
-
-
-+:request_rspec_versions+:: 
-     An array of data structures indicating the RSpec types accepted by this AM in a request. The contract for RSpec versions is described with links to further reading on the Common Concepts page. Per that contract, AMs will produce manifest RSpecs with a schema that is based on the given request type and version. 
-
-+:ad_rspec_versions+::
-    An array of data structures indicating what types of RSpec advertisements may be produced by this AM in <<ListResources>>. 
-
-For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Document].
-The elements used within +:request_rspec_versions+ and +:ad_rspec_versions+:
+The elements used within +:request_rspec_versions+ and +:ad_rspec_versions+ are:
 
 +type+::
     A case-insensitive +string+ which together with +version+ comprises the type of RSpec. +type+ is typically one of "geni", "protogeni", "sfa", or "orbit". 
@@ -176,13 +224,13 @@ The elements used within +:request_rspec_versions+ and +:ad_rspec_versions+:
     A case-insensitive +string+ which together with +type+ comprises the type of RSpec. +version+ should be a type-specific version identifier as specified by the appropriate control framework.
 
 +schema+::
-    A URL pointing to a schema which can be used to verify the given type of RSpec. May be empty. *TODO: be clear: may be ommited or not?*
+    A URL pointing to a schema which can be used to verify the given type of RSpec. Required, but may be empty.
 
 +namespace+::
-    An XML namespace which the RSpec of the given type belongs to. May be empty. *TODO: be clear: may be ommited or not?* 
+    An XML namespace which the RSpec of the given type belongs to. May be empty. Required, but may be empty.
 
 +extensions+::
-    An array of aggregate-specific strings denoting which extensions are supported. In the case of GENI standard RSpecs, these are XML namespaces which denote the extension as a whole. May be empty. *TODO: be clear: may be ommited or not?*
+    An array of aggregate-specific strings denoting which extensions are supported. In the case of GENI standard RSpecs, these are XML namespaces which denote the extension as a whole. Required, but may be empty.
 
 
 ==== Return Codes and Errors
@@ -199,35 +247,35 @@ There are no special cases for the +GetVersion+ call.
   "code" : {
        "geni_code" : 0 # Success
        # am_type and am_code are optional. Leaving them out.
-     }
+     },
   "value" : 
       {
         ":api" : "faa1",
         ":api_versions" : {
-             "faa1" : "<This server's AM API absolute URL>",
-             "2" : "<Prior API version still supported at a slightly different URL - optional but included here>"
-        }
+             "faa1" : "http://example.com/aggregate_manager/XML-RPC/faa_am/1.0",
+             "3" : "http://example.com/aggregate_manager/XML-RPC/geni_am/3.0" #optional but included here
+        },
         ":request_rspec_versions" : [{
-             "type" : "GENI" # case insensitive
-             "version" : "3" # case insensitive
-             "schema" : "http://www.geni.net/resources/rspec/3/request.xsd" # required but may be empty
-             "namespace" : "http://www.geni.net/resources/rspec/3" # required but may be empty
-             "extensions" : ["http://hpn.east.isi.edu/rspec/ext/stitch/0.1/stitch-schema.xsd", <other URLs here>] # required but may be empty
-        }]
+             "type" : "GENI",
+             "version" : "3",
+             "schema" : "http://www.geni.net/resources/rspec/3/request.xsd",
+             "namespace" : "http://www.geni.net/resources/rspec/3",
+             "extensions" : ["http://hpn.east.isi.edu/rspec/ext/stitch/0.1/stitch-schema.xsd"]
+        }],
         ":ad_rspec_versions" : [{
-             "type" : "GENI" # case insensitive
-             "version" : "3" # case insensitive
-             "schema" : "http://www.geni.net/resources/rspec/3/ad.xsd" # required but may be empty
-             "namespace" : "http://www.geni.net/resources/rspec/3" # required but may be empty
-             "extensions" : ["http://hpn.east.isi.edu/rspec/ext/stitch/0.1/stitch-schema.xsd", <other URLs here>] # required but may be empty
-        }]
+             "type" : "GENI",
+             "version" : "3",
+             "schema" : "http://www.geni.net/resources/rspec/3/ad.xsd",
+             "namespace" : "http://www.geni.net/resources/rspec/3",
+             "extensions" : ["http://hpn.east.isi.edu/rspec/ext/stitch/0.1/stitch-schema.xsd"]
+        }],
         ":credential_types" : [{ # This AM accepts only SFA style credentials for API v3
-             ":type" : "geni_sfa" # case insensitive
-             ":version" : "3" # case insensitive
-       }]
-       ":single_allocation" : 0 # false - can operate on individual slivers. This is the default, so could legally be omitted here.
+             ":type" : "geni_sfa",
+             ":version" : "3"
+       }],
+       ":single_allocation" : false, # can operate on individual slivers. This is the default, so could legally be omitted here.
        ":allocate" : "geni_many" # Can do multiple Allocates. This is not the default value, so is required here.
-      }
+      },
   "output" : ""
 }
 ------------

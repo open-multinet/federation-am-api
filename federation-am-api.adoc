@@ -2,16 +2,16 @@ Federation AM API
 =================
 TODO_ADD_Federation_AM_API_Author
 v0.2, April 2014: First draft
-:language: python
+:language: js
 
 
 [NOTE]
 ====================================================
 .About this document
 Work in progress
-Note that this contains almost all text from the AMv3 API. Some has been edited, and a lot of markup has been fixed. Only some has been removed.
+Note that this contains almost all text from the AMv3 API. Some has been edited, and a lot has been moved to other places, and everywhere markup has been fixed. Only some text has been removed (mostly duplicate content).
 
-Most text ended up somewhere. It will not yet be in the best place, and there may be some duplication, as the AMv3 API has a main page, a common concepts page and a details page, and there is some overlap betwen these pages.
+Most text ended up somewhere. It will not yet all be in the best place, and there still may be some duplication. The reason for the duplicate content is that the original AMv3 API has a main page, a common concepts page and a details page, and there is some overlap between these pages.
 ====================================================
 
 *TODO refer to other 4 documents*
