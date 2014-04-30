@@ -9,13 +9,6 @@ Return a listing and description of available resources at this aggregate. The r
 ListResources(array credentials, struct rspec_version, struct options)
 ----------------
 
-Options defined in this API are:
-
-* +boolean :available+
-* +boolean :compressed+
-
-Return type: +string+
-
 ==== Argument 1:  +credentials+
 
 The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.

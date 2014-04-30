@@ -34,7 +34,7 @@ The standard authorization argument. See <<CommonArgumentCredentials, the Creden
 
 ==== Argument 3: +:end_time+
 
-See <<CommonOptionEndTime, +:end_time+>> for details. Note that here, it is a mandatory argument.
+See <<CommonOptionEndTime, +:end_time+ option>> for details. Note that here, it is a mandatory argument.
 
 ////////////////////////
 The date-time string in  RFC 3339 format in UTC when the reservation(s) should be extended until.

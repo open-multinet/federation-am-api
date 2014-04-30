@@ -2,7 +2,7 @@ Federation AM API
 =================
 TODO_ADD_Federation_AM_API_Author
 v0.2, April 2014: First draft
-:language: python
+:language: js
 
 
 [NOTE]

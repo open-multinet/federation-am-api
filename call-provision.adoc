@@ -1,13 +1,11 @@
 [[Provision]]
 === Provision
 
-*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
-
 Request that the named +:allocated+ slivers be made +:provisioned+, instantiating or otherwise realizing the resources, such that they have a valid +:operational_status+ and may possibly be made +:ready+ for experimenter use. This operation is synchronous, but may start a longer process, such as creating and imaging a virtual machine.
 
 Redeem a reservation, requesting that the listed slivers move from +:allocated+ to +:provisioned+. Only when slivers are provisioned are the resources 'instantiated' and made ready for operational use. Note that at some aggregates and for some resource types, this operation may be a no-op. At other aggregates, this operation starts a long running process (e.g. loading an image on a machine and booting it). Tools should monitor the sliver status (by calling <<Status>>), looking for an operational state other than +:pending_allocation+. Depending on the resource type, that next state may differ. See the advertisement RSpec for the resource type specific operational states and actions.
 
-As with the <<Allocate>> method, some aggregates may not support provisioning only some reserved resources.
+As with the <<Allocate>> method, some aggregates may not support provisioning only some reserved resources. See the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section for more information.
 
 .Call Syntax
 [source]
@@ -16,13 +14,14 @@ Provision(string urns[], struct credentials[],
           struct rspec_version, struct options)
 ----------------
 
-NOTE: This operation is part of what CreateSliver used to do. The first part of what CreateSliver did is now in <<Allocate>>. Note that resources are not necessarily ready for experimenter use after the work that this function initiates finally completes. Consult the :operational_status, and the advertised operational state machine. Consider calling <<PerformOperationalAction>>, e.g. with the command name :start.
+NOTE: This operation is part of what CreateSliver used to do. The first part of what CreateSliver did is now in <<Allocate>>. This operation is similar to ProtoGENI's  RedeemTicket method.
 
-The operation is similar to ProtoGENI's  RedeemTicket method.
+NOTE: Note that resources are not necessarily ready for experimenter use after the work that this function initiates finally completes. Consult the :operational_status, and the advertised operational state machine. Consider calling <<PerformOperationalAction>>, e.g. with the command name :start.
 
-As described here, the :single_allocation return from <<GetVersion>> advertises whether or not a client may invoke this method on only some of the slivers in a given :allocation_state in a given slice (default is false - the client may operate on only some of the slivers in a given state).
 
-When only a slice URN is supplied (no specific sliver URNs), this method applies only to the slivers currently in the :allocated allocation state.
+As described in the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section, the +:single_allocation+ return from <<GetVersion>> advertises whether or not a client may invoke this method on only some of the slivers in a given +:allocation_state+ in a given slice (default is false - the client may operate on only some of the slivers in a given state).
+
+When only a slice URN is supplied (no specific sliver URNs), this method applies only to the slivers currently in the +:allocated+ allocation state.
 
 ==== Argument 1:  +urns+
 
@@ -43,15 +42,15 @@ A struct containing optional arguments, indexed by name. See <<OptionsArgument,G
 
 ==== Option: +:end_time+
 
-See the <<CommonOptionEndTime, +:end_time+>> for details.
+See the <<CommonOptionEndTime, +:end_time+ option>> for details.
 
 As with the <<Allocate>> method, experimenters may request a sliver expiration time; aggregates may allow the operation while ignoring the requested expiration time or granting a different expiration time. 
 
 ==== Option: +:best_effort+
 
-See <<CommonOptionBestEffort, +:best_effort+ option>> for details.
-
 Do all slivers fail if any single sliver fails?
+
+See <<CommonOptionBestEffort, +:best_effort+ option>> for details.
 
 ==== Option: +:users+
 
@@ -61,7 +60,8 @@ Supported by the server:: Mandatory
 Included by client:: Optional 
 XML-RPC type:: array of struct
 ***********************************
-Resource login information. See the Common Concepts page. 
+
+Resource login information.
 
 Some resource types allow experimenter access. The +:users+ option allows specifying login key material to be installed on the resources (e.g. SSH public keys). 
 
@@ -86,15 +86,6 @@ Clients may omit this option. Aggregates should honor this option for any resour
 
 ***********************************
 [horizontal]
-XML-RPC type:: +struct+
-***********************************
-
-See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
-
-Return: On success, the value field of the return struct will contain a struct:
-
-***********************************
-[horizontal]
 XML-RPC type::
 [source]
   ":rspec": <string: geni.rspec, RSpec manifest>,
@@ -111,11 +102,14 @@ XML-RPC type::
   ],
 ***********************************
 
-The returned manifest must be in the format specified by the :rspec_version option. The returned manifest covers only newly provisioned slivers. Use <<Describe>> to get a manifest of all provisioned slivers. When :best_effort is true, all requested slivers are returned, but some slivers may have failed (:allocation_status will remain :allocated). Check :error for details. Attempting to +Provision+ an unknown or expired sliver when :best_effort is false shall result in an error (SEARCHFAILED or EXPIRED or ERROR :code). Attempting to +Provision+ a slice (no slivers identified) with no current slivers at this aggregate shall return an error (SEARCHFAILED).
+On success, the value field of the return struct will contain a struct containing the RSpec manifest and a list of sliver info.
+
+See the <<CommonReturnSliverInfoList, sliver info list return>> for details on the sliver info list.
+
+The returned manifest must be in the format specified by the +:rspec_version+ option. The returned manifest covers only newly provisioned slivers. Use <<Describe>> to get a manifest of all provisioned slivers. When +:best_effort+ is true, all requested slivers are returned, but some slivers may have failed (+:allocation_status+ will remain +:allocated+). Check +:error+ for details. Attempting to +Provision+ an unknown or expired sliver when +:best_effort+ is false shall result in an error (SEARCHFAILED or EXPIRED or ERROR +:code+). Attempting to +Provision+ a slice (no slivers identified) with no current slivers at this aggregate shall return an error (SEARCHFAILED).
 
 Note that previously allocated slivers may have expired (been deleted) by the time you call +Provision+.
 
-See the Common Concepts page for details on allocation and operational states, operations on individual slivers, :best_effort, sliver expiration times, urns, credentials, rspecs, and :users. 
 ==== Return Codes and Errors
 
 The +Provision+ call can return the usual error codes: BADARGS, ERROR, SERVERERROR and UNAVAILABLE. See <<ErrorCodes,Error Codes>> for general errors.
@@ -124,7 +118,7 @@ Additionally, the +Provision+ call can return the following error codes:
 [horizontal]
 FORBIDDEN:: Credential does not grant permission to a slice or sliver specified in the +urns+ argument. Or the slice/sliver does not have permission to allocate resources at this slice. Or the slice has been shut down.
 BADVERSION:: Bad Version of manifest RSpec requested with the +rspec_version+ argument.
-UNSUPPORTED:: The aggregate does not permit operations on individual slivers in the same slice of this form. See the +:single_allocation+ and +:allocate: options of <<GetVersion>> for more information.
+UNSUPPORTED:: The aggregate does not permit operations on individual slivers in the same slice of this form. See the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section for more information.
 EXPIRED:: The slivers has expired.
 SEARCHFAILED:: The slice or sliver does not exist at this AM.
 BUSY:: Slice or sliver is temporarily locked, try again later
