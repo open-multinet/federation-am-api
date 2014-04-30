@@ -1,8 +1,6 @@
 [[Describe]]
 === Describe
 
-*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
-
 Retrieve a manifest RSpec describing the resources contained by the named entities, e.g. a single slice or a set of the slivers in a slice. This listing and description should be sufficiently descriptive to allow experimenters to use the resources.
 
 +Describe+ is used to list the resources belonging to a particular reservation. The return is the standard AM API struct, with a value that is a struct that always includes a single manifest RSpec, describing the resources in the set of slivers whose URNs were supplied, or describing the entire single slice whose URN was supplied as an argument.
@@ -27,7 +25,7 @@ NOTE: This method is part of what +ListResources+ used to do in previous version
 
 See the <<CommonArgumentUrns, +urns+ argument>> for details.
 
-The +:single_allocation+ return from <<GetVersion>> advertises whether or not a client may invoke this method on only some of the slivers in a given +:allocation_state+ in a given slice (default is false - the client may operate on only some of the slivers in a given state).
+The +:single_allocation+ return from <<GetVersion>> advertises whether or not a client may invoke this method on only some of the slivers in a given +:allocation_state+ in a given slice (default is false - the client may operate on only some of the slivers in a given state). See also the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section.
 
 ==== Argument 2:  +credentials+
 
@@ -49,10 +47,13 @@ A struct containing optional arguments, indexed by name. See <<OptionsArgument,G
 Supported by the server:: Mandatory
 Included by client:: Optional
 XML-RPC type:: +boolean+
-Default: false
+Default:: false
 ***********************************
 
-*TODO*
+An XML-RPC boolean value indicating whether the caller would like the result
+to be compressed. If the value is true (1), the returned resource list will be
+compressed according to RFC 1950. If the value is false (0) or unspecified.
+Note: compressed or not, the XML-RPC return type of the +ListResources+ value field will always be +string+
 
 ==== Return Value
 
@@ -70,7 +71,7 @@ On success, the value field of the return struct will contain a struct:
 XML-RPC type::
 [source]
 {
-   ":rspec": <string: geni.rspec, a Manifest RSpec>
+   ":rspec": <string: geni.rspec, a Manifest RSpec (possibly compressed)>
    ":urn": <string: slice urn of the containing slice>
    ":slivers": [
                {
@@ -87,9 +88,9 @@ XML-RPC type::
 
 Note that the manifest RSpec for allocated slivers may contain less detail than for provisioned slivers. Aggregates are expected to combine the manifests of all requested slivers into a single manifest RSpec. Note that a manifest returned here for only some of the slivers in a slice at this aggregate may contain references to resources not described in this manifest because they are in other slivers.
 
-If a slice urn is supplied and there are no slivers in the given slice at this aggregate, then :rspec shall be a valid manifest RSpec, containing zero (0) node or link elements - that is, specifying no resources. :slivers may be an empty array, or may be an array of previous slivers that have since been deleted or expired. Calling +Describe+ on one or more sliver URNs that are unknown, deleted or expired shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR :code).
+If a slice urn is supplied and there are no slivers in the given slice at this aggregate, then +:rspec+ shall be a valid manifest RSpec, containing zero (0) node or link elements - that is, specifying no resources. +:slivers+ may be an empty array, or may be an array of previous slivers that have since been deleted or expired. Calling +Describe+ on one or more sliver URNs that are unknown, deleted or expired shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR +:code+).
 
-Manifests are not necessarily static. In general, the manifest of a given sliver should be static once it has reached the operational state :ready (e.g., fully booted). However, this API does not require that to be true.
+Manifests are not necessarily static. In general, the manifest of a given sliver should be static once it has reached the operational state +:ready+ (e.g., fully booted). However, this API does not require that to be true.
 
 See the Common Concepts page about the credentials, rspec, and urns arguments, and also for details on allocation states, operational states, and datetime values. See GeniApiIdentifiers for details on URN structure. 
 

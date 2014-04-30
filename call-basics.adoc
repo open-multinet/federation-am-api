@@ -348,6 +348,7 @@ When <<Provision>> fails for only some slivers, and +:best_effort+ option was su
 
 These states apply to each sliver individually. Logically, the state transition methods then take a single sliver URN. For convenience, these methods accept a list of sliver URNs, or a slice URN as a simple alias for all slivers in this slice at this aggregate.
 
+[[SliverOperationalStates]]
 === Sliver Operational States
 
 NOTE: *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
@@ -391,6 +392,7 @@ GENI defined operational states (both required and optional for aggregates):
 - +:ready_busy+: A wait state. The resource is performing some operational action, but remains accessible/usable by the experimenter. Upon completion of the action, the resource will return to +:ready.+
 - +:failed+: A final state. Some operational action failed, rendering the resource unusable. An administrator action, undefined by this API, may be required to return the resource to another operational state. 
 
+[[SliverOperationalActions]]
 === Sliver Operational Actions
 
 NOTE: *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*

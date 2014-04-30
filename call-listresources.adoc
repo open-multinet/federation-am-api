@@ -61,7 +61,7 @@ XML-RPC type:: +boolean+
 An XML-RPC boolean value indicating whether the caller would like the result
 to be compressed. If the value is true (1), the returned resource list will be
 compressed according to RFC 1950. If the value is false (0) or unspecified.
-Note: compressed or not, the XML-RPC return type of the +ListResources+ value field will always be text.
+Note: compressed or not, the XML-RPC return type of the +ListResources+ value field will always be +string+
 
 ==== Return Value: Advertisement RSpec
 

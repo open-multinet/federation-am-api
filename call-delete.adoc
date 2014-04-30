@@ -1,9 +1,7 @@
 [[Delete]]
 === Delete
 
-*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
-
-Delete the named slivers, making them :unallocated. Resources are stopped if necessary, and both de-provisioned and de-allocated. No further AM API operations may be performed on slivers that have been deleted.
+Delete the named slivers, making them +:unallocated+. Resources are stopped if necessary, and both de-provisioned and de-allocated. No further AM API operations may be performed on slivers that have been deleted.
 
 .Call Syntax
 [source]
@@ -38,7 +36,7 @@ A struct containing optional arguments, indexed by name. See <<OptionsArgument,G
 
 See <<CommonOptionBestEffort, +:best_effort+ option>> for details.
 
-This operation should generally succeed for a valid sliver, despite the +:best_effort+ option. However, when +:best_effort: is supplied and is false, and an aggregate cannot delete all the named slivers, no slivers are deleted. 
+This operation should generally succeed for a valid sliver, despite the +:best_effort+ option. However, when +:best_effort+ is supplied and is false, and an aggregate cannot delete all the named slivers, no slivers are deleted. 
 
 ==== Return Value
 
@@ -66,13 +64,11 @@ XML-RPC type::
 ]
 ***********************************
 
-Note that this method should return a struct for each deleted sliver, with the URN of the deleted sliver, the allocation state :unallocated, and the time when the sliver was previously set to expire. This method may also return an empty list, if no slivers are at this aggregate in the specified slice.
+Note that this method should return a struct for each deleted sliver, with the URN of the deleted sliver, the allocation state +:unallocated+, and the time when the sliver was previously set to expire. This method may also return an empty list, if no slivers are at this aggregate in the specified slice.
 
 Note that aggregates will automatically delete slivers whose expiration time is reached.
 
-Calling +Delete+ on an unknown, expired or deleted sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED, or ERROR) (unless :best_effort is true, in which case the method may succeed and return a :error for each sliver that failed). Attempting to +Delete+ a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or `EXPIRED); details are aggregate specific.
-
-See the Common Concepts page for details on allocation and operational states, operations on individual slivers, :best_effort, sliver expiration times, urns, and credentials. 
+Calling +Delete+ on an unknown, expired or deleted sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED, or ERROR) (unless +:best_effort+ is true, in which case the method may succeed and return a +:error+ for each sliver that failed). Attempting to +Delete+ a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or `EXPIRED); details are aggregate specific.
 
 ==== Return Codes and Errors
 

@@ -1,9 +1,7 @@
 [[Renew]]
 === Renew
 
-*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup)*
-
-Request that the named slivers be renewed, with their expiration extended. If possible, the aggregate should extend the slivers to the requested expiration time, or to a sooner time if policy limits apply. This method applies to slivers that are :allocated or to slivers that are :provisioned, though different policies may apply to slivers in the different states, resulting in much shorter max expiration times for :allocated slivers.
+Request that the named slivers be renewed, with their expiration extended. If possible, the aggregate should extend the slivers to the requested expiration time, or to a sooner time if policy limits apply. This method applies to slivers that are +:allocated+ or to slivers that are +:provisioned+, though different policies may apply to slivers in the different states, resulting in much shorter max expiration times for +:allocated+ slivers.
 
 .Call Syntax
 [source]
@@ -17,12 +15,12 @@ Renew(string urns[],
 NOTE: This operation used to be called +RenewSliver+. Use +Renew+(<slice_urn>) to get the equivalent functionality.
 
 
-When +Renew+ is called with :best_effort false, the entire method will fail (return non-zero :code) if any requested sliver cannot be renewed to the requested time, and all slivers will keep their original expiration time. When +Renew+ is called with :best_effort true, some slivers may fail to be renewed. In this case, the allocation state and expiration times do not change. :error may optionally be returned by the aggregate to explain this failure.
+When +Renew+ is called with +:best_effort+ false, the entire method will fail (return non-zero +:code+) if any requested sliver cannot be renewed to the requested time, and all slivers will keep their original expiration time. When +Renew+ is called with +:best_effort+ true, some slivers may fail to be renewed. In this case, the allocation state and expiration times do not change. +:error+ may optionally be returned by the aggregate to explain this failure.
 
-As described here, the :single_allocation return from <<GetVersion>> advertises whether or not a client may invoke this method on only some of the slivers in a given :allocation_state in a given slice (default is false - the client may operate on only some of the slivers in a given state).
+As described in the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section, the +:single_allocation+ return from <<GetVersion>> advertises whether or not a client may invoke this method on only some of the slivers in a given +:allocation_state+ in a given slice (default is false - the client may operate on only some of the slivers in a given state).
 
 
-+Renew+ requests a changed expiration for one or more slivers in a slice. At some aggregates, this expiration may be shorter. This method applies both to slivers that are +:allocated+ and to those that are already +:provisioned+. Depending on local aggregate configuration, the aggregate may only support +Renew+ on all current slivers in the slice, or may permit renewing only some slivers. Local policy will dictate maximum expiration times. These times are typically quite short (~ 10 minutes initially, ~120 minutes maximum) for reservations (+:allocated+), and longer for provisioned (+:provisioned+) slivers (~ 5-8 days initially). Since these expiration times are different, typically +Renew+ is used only for slivers in the same allocation state. 
++Renew+ requests a changed expiration for one or more slivers in a slice. At some aggregates, this expiration may be shorter. This method applies both to slivers that are +:allocated+ and to those that are already +:provisioned+. Depending on local aggregate configuration, the aggregate may only support +Renew+ on all current slivers in the slice, or may permit renewing only some slivers. Local policy will dictate maximum expiration times. These times are typically quite short (\~ 10 minutes initially, \~ 120 minutes maximum) for reservations (+:allocated+), and longer for provisioned (+:provisioned+) slivers (~ 5-8 days initially). Since these expiration times are different, typically +Renew+ is used only for slivers in the same allocation state. 
 
 ==== Argument 1:  +urns+
 
@@ -77,11 +75,9 @@ XML-RPC type::
 ]
 ***********************************
 
-Calling +Renew+ on an unknown, deleted or expired sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR :code) (unless :best_effort is true, in which case the method may succeed, but return a :error for each sliver that failed). Attempting to +Renew+ a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (SEARCHFAILED or EXPIRED). Note therefore that an empty list is a valid return from this method.
+Calling +Renew+ on an unknown, deleted or expired sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR +:code+) (unless +:best_effort+ is true, in which case the method may succeed, but return a +:error+ for each sliver that failed). Attempting to +Renew+ a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (SEARCHFAILED or EXPIRED). Note therefore that an empty list is a valid return from this method.
 
 It is legal to attempt to renew a sliver to a sooner expiration time than the sliver was previously due to expire. Not all aggregates will support this however.
-
-See the Common Concepts page for details on allocation and operational states, operations on individual slivers, :best_effort, sliver expiration times, urns, and credentials. 
 
 ==== Return Codes and Errors
 
