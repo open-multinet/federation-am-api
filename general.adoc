@@ -7,6 +7,39 @@
 - link:credential-sfa.html[SFA Credentials]
 - link:credential-abac.html[ABAC Credentials]
 
+== Using the AM API
+
+*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
+
+Clients (experimenters via their tools) use the AM API to discover resources (ListResources), request resources (Allocate), provision reserved resources (Provision), start resources (PerformOperationalAction), check the status of resources as they are started (Status), extend their reservation (Renew), and then return the resources when done (Delete). Client tools may use GetVersion to ensure aggregates speak a compatible version of the AM API and known formats for RSpecs. Administrators may call Shutdown to stop the resources of a slice at this aggregate, perhaps if that slice is misbehaving.
+
+ListResources returns to the client an advertisement RSpec - a detailed listing of the resources available at that aggregate. From this information, the experimenter may determine which resources to reserve for their use. The RSpec should also have enough information to help the experimenter set the initial configuration for their resources.
+
+Once the experimenter has selected the resources they want and how to configure them, they produce a request RSpec, detailing the resources they want and how they should be configured. They separately contact their slice authority to obtain a slice credential (or set of credentials), granting them rights to reserve resources for that slice. The experimenter then uses their tool and calls Allocate on this API, passing in both the slice credential and the request RSpec. The aggregate then attempts to satisfy the experimenter's resource request. If the aggregate can satisfy the request, the aggregate reserves the resources for the experimenter. The resources have not been provisioned yet, giving the experimenter a chance to verify the reservation, or check for corresponding resource availability at another aggregate. If it is acceptable, the experimenter (via their tool) calls Provision to set up the resources. The aggregate then starts the process of instantiating the resources and configuring them as requested in the request RSpec. Once that process has started, the Provision call returns with a manifest RSpec, listing the resources as reserved and initially configured for the experimenter.
+
+The experimenter tool can then poll the aggregate manager to watch as the resources are configured and become ready for use, by calling Status, looking for an operational state other than +:pending_allocation+. The actual operational state that the sliver will change to depends on the sliver and aggregate type. Operational states are sliver type and aggregate specific, and defined in the aggregate's advertisement RSpec. In many cases, the aggregate indicates that the sliver is fully allocated with a +:operational_state+ value of +:notready+. Once the resources are ready for use, the experimenter tool will typically call PerformOperationalAction(+:start+) to start the resources (e.g. boot a machine). The experimenter (or their tool) will also call Renew to request that their reservation lasts as long as they require the resources for. When the experimenter is done using the resources, they call Delete to end their reservation. The aggregate then stops and clears the resources, freeing them for use by other clients.
+
+Typical client work flow:
+
+1. <Experimenter gets a certificate and slice credential, renewing that slice as needed>
+2. GetVersion(): learn RSpec formats supported at this aggregate
+3. ListResources(<user credential>, options): get Ad RSpec describing available resources
+4. <Experimenter constructs a request RSpec>
+5. Allocate(<slice URN>, <slice credential>, <request RSpec>, {}):
+  -     Aggregate reserves resources
+  -     Return is a manifest RSpec describing the reserved resources
+  -     Optionally Delete some slivers, if you made a mistake, or don't like what the aggregate picked for you. 
+6. Provision(<slice URN or sliver URNs>, <slice credential>, <request RSpec>, <users struct>, {}):
+  -     Aggregate instantiates resources
+  -     Return is a manifest RSpec describing the reserved resources, plus any instantiation-specific configuration information 
+7. Status(<slice URN or sliver URNs>, <slice credential>, {}) to check that resources are provisioned (e.g. look for operational state +:notready+.
+8. PerformOperationalAction(<slice URN>, <slice credential>, "+:start+", {}):
+  -     Aggregate starts resources 
+9. Status(<slice URN or sliver URNs>, <slice credential>, {}) to check that resources have started
+10. Renew(<slice URN or sliver URNs>, <slice credential>, <newtime>, {}) to extend reservation
+11. <Experimenter uses resources>
+12. Delete(<slice URN or sliver URNs>, <slice credential>, {}) when done 
+
 == Architecture & Concepts
 
 TODO
