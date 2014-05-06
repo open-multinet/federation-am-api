@@ -17,6 +17,8 @@ Aggregate Managers shall require client side certificates to authenticate users,
 
 NOTE: *TODO: This could use more details, but perhaps they belong in the link:general.html[General] document?*
 
+NOTE: *TODO* add http://groups.geni.net/geni/wiki/GeniApiCertificates here? (or in general document?)
+
 [[ReturnStructure]]
 === Return Structure
 

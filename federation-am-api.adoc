@@ -46,3 +46,7 @@ include::call-delete.adoc[tabsize=4]
 
 include::call-shutdown.adoc[tabsize=4]
 
+== Releation to other API's
+
+NOTE: *TODO* add a section here that desribes the relation between this API and other API's, such as the Geni AMv2 and AMv3 APIs. Incompatabilities should be listed.
+
