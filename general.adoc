@@ -17,6 +17,8 @@ TODO "where does AM fit into this?"
 
 TODO (urns etc)
 
+NOTE: *TODO* add http://groups.geni.net/geni/wiki/GeniApiIdentifiers here
+
 == History?
 
 TODO
