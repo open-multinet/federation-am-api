@@ -67,6 +67,8 @@ struct value
      },
      ...
   ],
+  ":am_code_version" : <string>,
+  ":am_type" : [ <string>, ... ],
  (optional) ":single_allocation" : <boolean: default false>,
  (optional) ":allocate" : <string: default: ':single' (case insensitive)>
 }
@@ -124,6 +126,39 @@ Aggregates running multiple versions of the API must advertise the URLs and vers
   "faa1": "http://example.com/aggregate_manager/XML-RPC/faa_am/1.0"
 }
 ------------------
+
+===== +:am_code_version+
+
+***********************************
+[horizontal]
+Mandatory:: false
+XML-RPC type:: +string+
+Legal characters;; alphanumeric, space, `-` (hyphen), `.`, `:` (colon), `#`, `_` (underscore), `+`, `(`, `)`
+Regular expression;; `^[a-zA-Z0-9-\.:#_\+\(\)]+$`
+***********************************
+
+For monitoring and operations, it is very useful to identify the software version that AMs use. Therefore, aggregates are strongly encouraged to advertise their current software revision using the +:am_code_version+ field, though for security reasons some aggregates may choose not to do so. Aggregate developers are expected to include this option, but site operators may select not to expose it.
+
+
+===== +:am_type+
+
+***********************************
+[horizontal]
+Mandatory:: true
+XML-RPC type:: +array of string+
+Legal characters;; alphanumeric
+***********************************
+
+This option adds a way for aggregates to identify what kind of aggregate this is, and therefore what aggregate specific options or returns are applicable. Aggregates of aggregates may identify as multiple types. One of these types indicates that this is such an aggregate of aggregates, and other listed types indicate that clients may interact with the aggregate as though it is any of the listed types.
+
+The value is a list of strings, of length at least one. It should generally be a list of length 1. Aggregates of aggregates may list multiple types.
+
+[NOTE]
+=====================================================================
+*TODO*: http://groups.geni.net/geni/wiki/GAPI_AM_API_DRAFT/Adopted#ChangeSetN:AddinformationtoGetVersion also mentions the following (do we add this somehow?):
+
+Values should be one of the defined GENI AM types if applicable, as defined by the AM API http://groups.geni.net/geni/attachment/wiki/GAPI_AM_API_V3/CommonConcepts/geni-am-types.xml (As of this proposal, one of orca, foam, protogeni, sfa, dcn. More GENI AM types may be added in the future.) 
+=====================================================================
 
 ===== +:single_allocation+ 
 ***********************************
@@ -274,7 +309,9 @@ There are no special cases for the +GetVersion+ call.
              ":version" : "3"
        }],
        ":single_allocation" : false, # can operate on individual slivers. This is the default, so could legally be omitted here.
-       ":allocate" : "geni_many" # Can do multiple Allocates. This is not the default value, so is required here.
+       ":allocate" : "geni_many", # Can do multiple Allocates. This is not the default value, so is required here.
+       ":am_code_version" : "c6395734b45abc96d6d2ec703a28b5862ebbc898",
+       ":am_type" : [ "protogeni" ]
       },
   "output" : ""
 }
