@@ -660,7 +660,7 @@ This  +expiration_time+ argument of <<Renew>> call and the +:end_time+ option of
 
 The +:end_time+ argument/option requests an expiration of the specified slivers. It is in dateTime.!rfc3339 format (defined above). 
 
-When an explicit argument (<<Renew>>), it is required, and aggregates must honor the request to the extent local policy permits. They must return an error if they cannot honor this argument.
+When an explicit argument (<<Renew>>), it is required, and aggregates must honor the request to the extent local policy permits. They must return an error if they cannot honor this argument. Note that the +:extend_alap+ option changes this behaviour, allowing the AM to extend "as long as possible" instead.
 
 When +:end_time+ is an option in the options struct (<<Provision>> and <<Allocate>>), clients may omit the option, and AMs may choose not to or be unable to honor this option, but may still succeed the overall request. If +:end_time+ is supplied, the experimenter is requesting a particular sliver reservation expiration date. Local policy may however dictate the expiration date. The AM therefore may ignore this argument; the call should still succeed, even if the date argument cannot be satisfied. 
 

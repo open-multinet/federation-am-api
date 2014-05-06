@@ -48,6 +48,27 @@ See <<CommonOptionBestEffort, +:best_effort+ option>> for details.
 
 Specifying whether the client prefers all included slivers to be renewed or none, or wants a partial success if possible.
 
+=== Option: +:extend_alap+ 
+
+***********************************
+[horizontal]
+Supported by the server:: Mandatory
+Included by client:: Optional
+XML-RPC type:: +boolean+
+Default:: false
+***********************************
+
+ALAP stands for "as long as possible". When +true+, the AM should extend the life of the sliver, to the minimum of the requested new expiration time, the expiration time in the slice credential (of course), and the AM local maximum based on local policy (which may be resource or slice dependent).
+
+When the AM successfully extends the life of the slice/sliver using this new option, the return value is success.
+
+When the AM cannot extend the life of the slice/sliver at all, then it fails the request, returning an error code unless +:best_effort+ is +true+, in which case it may return success and indicate the individual per-sliver errors in the return struct. 
+
+//////////////////////
+When the AM cannot extend the life of the slice/sliver at all (because it does not honor the new option, or because no expiration is possible)
+The error code may be one of UNSUPPORTED for an AM that does not support this option, or BADARGS or ERROR for other failures.
+//////////////////////
+
 ==== Return Value
 
 ***********************************
