@@ -442,7 +442,8 @@ The following primitive types are always sent using the matching XML-RPC data ty
 The +array+ and +struct+ types are used to create complex data types.
 
 Note that the following XML-RPC types are NOT used: +base64+ and +dateTime.iso8601+.
-The +nil+ type is also not used (this is an XML-RPC extension).
+
+The +nil+ type is an XML-RPC extension, but should also be supported, in case any options use it.
 
 === Compressed data
 
