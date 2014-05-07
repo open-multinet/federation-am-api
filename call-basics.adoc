@@ -390,7 +390,7 @@ GENI defined operational states (both required and optional for aggregates):
 - +:notready+: A final state. The resource is not usable / accessible by the experimenter, and requires explicit experimenter action before it is usable/accessible by the experimenter. For some resources, +:start+ will move the resource out of this state and towards +:ready.+
 - +:configuring+: A wait state. The resource is in process of changing to +:ready,+ and on success will do so without additional experimenter action. For example, the resource may be powering on.
 - +:stopping+: A wait state. The resource is in process of changing to +:notready,+ and on success will do so without additional experimenter action. For example, the resource may be powering off.
-- +:ready+: A final state. The resource is usable/accessible by the experimenter, and ready for slice operations.
+- +:ready+: A final state. The resource is usable/accessible by the experimenter, and ready for slice operations. If the resource supports SSH access, the SSH keys specified in the <<Provision>> command have been installed on the host, and the user can now login. If the user has specified a startup script or a software install in the RSpec, the +:ready+ state does not guarantee anything about these: It does not even guarantee these have already started.
 - +:ready_busy+: A wait state. The resource is performing some operational action, but remains accessible/usable by the experimenter. Upon completion of the action, the resource will return to +:ready.+
 - +:failed+: A final state. Some operational action failed, rendering the resource unusable. An administrator action, undefined by this API, may be required to return the resource to another operational state. 
 
