@@ -479,15 +479,30 @@ XML-RPC type:: +string+
 String content type:: RFC 3339 date
 ***********************************
 
-NOTE: dates are NOT sent using the XML-RPC date type!
+NOTE: dates are NOT sent using the XML-RPC +dateTime.iso8601+ type!
 
-NOTE: _Wim Van de Meerssche:_  Dates are encoded with RFC3339 and send as XML-RPC +string+ type.
-However, XML-RPC has a +dateTime.iso8601+ type. Why? Has this to do with library support?
-Again *this should be very clearly documented, with examples*. 
+All datetime arguments and returns in this API shall be strings that conform to link:http://www.ietf.org/rfc/rfc3339.txt[RFC 3339]. This represents a subset of the valid date/time strings permissible by the standard XML-RPC date/time data type,  +dateTime.iso8601+.
+Note that RFC3339 still allows some flexibility.
+For example, the following dates are all valid RFC3339:
 
-All datetime arguments and returns in this API shall be strings that conform to RFC 3339. This represents a subset of the valid date/time strings permissible by the standard XML-RPC date/time data type,  +dateTime.iso8601+.
+  1996-12-19T16:39:57.25-08:00
+  1996-12-20T00:39:57.25Z
+  1996-12-20T00:39:57.25+00:00
+  1990-12-31T23:59:60Z
+  1990-12-31T15:59:60-08:00
+  2013-04-22T05:18:52Z
+  2013-11-28T15:07:57Z
+  1996-12-19t16:39:57.25-08:00
+  1996-12-20t00:39:57.25Z
+  1996-12-20 00:39:57.25z
 
-Full date and time with explicit timezone: offset from UTC or in UTC, e.g.: +1985-04-12T23:20:50.52Z+ or +1996-12-19T16:39:57-08:00+ 
+We recommend that implementers use parsers that fully comply with the RFC 3339. However, due to the flexibility in the spec and different interpretations chosen by different common parsers, we require that such DATETIME values: 
+
+1. Contain an uppercase T between the time and date portions
+2. Contain a timezone suffix, either an uppercase Z (for UTC) or +/-HH:MM
+3. Do not contain fractional seconds
+
+Note that specifying a timezone is in fact always mandatory in RFC 3339. "Unqualified Local Time" is not allowed as it is guaranteed to cause interoperability problems.
 
 In the specification of this API, this is described as +dateTime.rfc3339+.
 
