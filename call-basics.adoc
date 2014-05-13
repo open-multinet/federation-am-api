@@ -360,6 +360,7 @@ Slivers, once fully allocated, are said to be in a particular operational state.
 The AM API defines a few operational states with particular semantics. AMs are not required to support the API defined states for all resources, but if the aggregate uses the API defined states, then the aggregate must follow the given semantics. AMs are however STRONGLY encouraged to support them, to provide maximum interoperability. There is one state that AMs are required to support, +:pending_allocation,+ for a sliver which has not been fully allocated and provisioned (other operational states are not yet valid). Operational states are generally only valid for slivers which have been provisioned (+:provisioned+ allocation state).
 
 AMs may have their own operational states/state-machine internally. AMs are however required to advertise such states and actions that experimenters may see or use, by using an advertisement RSpec extension (if an AM does not advertise operational states, then tools can not know whether any actions are available). Operational states which the experimenter never sees, need not be advertised. Operational states and actions are generally by resource type. The standard RSpec extension attaches such definitions to the sliver_type element of RSpecs.
+Operational states defined by AMs must have names with a restricted format. They may only use alphanumeric characters plus underscore, and the first character must be an alphanumeric character. This means they must match the following regular expression: `'^[a-zA-Z0-9][a-zA-Z0-9_]*$'`
 
 The standard advertisement RSpec extension for advertising operational states and actions can be found here, with an example with comments  here (it is version-controlled in the standard GENI RSpecs git repository as well).
 
@@ -569,8 +570,8 @@ XML-RPC type::
 [source]
    [
       {
-        ":type" : <string: type name (case insensitive)>,
-        ":version" : <string: type version (case insensitive)>,
+        ":type" : <string: type name (case insensitive, matching '^[a-zA-Z0-9][a-zA-Z0-9-_\.:]*$')>,
+        ":version" : <string: type version (containing an integer)>,
         ":value" : <string: the credential itself>
       },
       ...
@@ -594,6 +595,13 @@ Each credential (in +:value+) is defined as a signed document. A given list of c
 * AMs may get other authorization material from other sources: EG a future Credential Store service. 
 
 At least one subset of the credentials (e.g. a single SFA style slice credential) must authorize operations for the slice specified in slice_urn if that is an argument, or for the slice that contains the named slivers, if sliver urns are an argument, or a valid set of administrative credentials with sufficient privileges. When sliver_urns are supplied, all such slivers must belong to the same slice, over which the given credential set provides access. Methods that do not take a slice urn or sliver urns, but do take credentials, are interpreted to require credentials that authorize the user generally. For example, an SFA style user credential must be supplied. Credentials must be valid (signed by a valid GENI certificate authority either directly or by chain, not expired, and grant privileges to the client identified by the SSL client certificate). Each method requires specific privileges, which must be granted by the provided credentials. Note that the semantics of this argument is not clear: most implementations require a single credential to provide all needed privileges. Alternative interpretations might, for example, accumulate privileges from each valid credential to determine overall caller permissions. For details on GENI AM API format credentials, see link:http://groups.geni.net/geni/wiki/GeniApiCredentials[the GENI wiki].
+
+There are restrictions on what characters are allowed in the +:type+ string:
+
+* The first character may only be an alphanumeric  character.
+* The other characters may only use alphanumeric characters plus hyphen, underscore, period, or colon.
+
+Regular expression expressing these rule: '^[a-zA-Z0-9][a-zA-Z0-9-_\.:]*$'
 
 The <<GetVersion>> reply advertises which credentials types are supported, using +:credential_type+. See <<GetVersionReturnValue, GetVersion Return Value>> for details.
 
@@ -693,13 +701,20 @@ Included by client:: Mandatory
 XML-RPC type:: 
 [source]
   {
-      "type" : <string: (case insensitive)>,
-      "version" : <string: (case insensitive)>
+      "type" : <string: (case insensitive, matching '^[a-zA-Z0-9][a-zA-Z0-9-_\.:]*$')>,
+      "version" : <string: (case insensitive, matching '^[a-zA-Z0-9][a-zA-Z0-9-_\.:]*$')>
   }
 ***********************************
 
 An XML-RPC struct indicating the type and version of Advertisement (<<ListResources>>) or Manifest (<<Provision>> and <<Describe>>) RSpec this call will return. The struct contains 2 members, +type+ and +version+. +type+ and +version+ are case-insensitive strings, matching those in +:ad_rspec_versions+ as returned by <<GetVersion>> at this aggregate. Aggregates should return a :code of 4 (BADVERSION) if the requested RSpec version is not one advertised as supported in <<GetVersion>>. 
 All aggregate managers are required to honor this option. 
+
+There are some restrictions on the allowed string for +type+ and +version+. The following rules apply to both:
+
+* The first character may only be an alphanumeric  character.
+* The other characters may only use alphanumeric characters plus hyphen, underscore, period, or colon.
+
+Regular expression expressing these rule: '^[a-zA-Z0-9][a-zA-Z0-9-_\.:]*$'
 
 For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Document].
 
