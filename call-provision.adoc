@@ -106,7 +106,12 @@ On success, the value field of the return struct will contain a struct containin
 
 See the <<CommonReturnSliverInfoList, sliver info list return>> for details on the sliver info list.
 
+///////////////////////////////////////////////////
+Old version:
 The returned manifest must be in the format specified by the +:rspec_version+ option. The returned manifest covers only newly provisioned slivers. Use <<Describe>> to get a manifest of all provisioned slivers. When +:best_effort+ is true, all requested slivers are returned, but some slivers may have failed (+:allocation_status+ will remain +:allocated+). Check +:error+ for details. Attempting to +Provision+ an unknown or expired sliver when +:best_effort+ is false shall result in an error (SEARCHFAILED or EXPIRED or ERROR +:code+). Attempting to +Provision+ a slice (no slivers identified) with no current slivers at this aggregate shall return an error (SEARCHFAILED).
+///////////////////////////////////////////////////
+
+Expired, deleted and unknown slivers, or slices without valid slivers, will cause this call to return SEARCHFAILED. See <<CommonArgumentUrns, the +urns+ argument>> for more details on this error code and return value.
 
 Note that previously allocated slivers may have expired (been deleted) by the time you call +Provision+.
 

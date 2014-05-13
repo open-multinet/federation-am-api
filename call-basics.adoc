@@ -635,9 +635,37 @@ Included by client:: Mandatory
 XML-RPC type:: +array of string+
 ***********************************
 
-Several methods take some URNs to identify what to operate on. These methods are defined as accepting a list of arbitrary strings called URNs, which follow the GENI identifier rules. This API defines two kinds of URNs that may be supplied here, slice URNs and sliver URNs (see the GENI identifiers page). Some aggregates may understand other URNs, but these are not defined or required here. Aggregates that accept only URNs defined by this API will return an error when given URNs not in one of those forms. This API requires that aggregates accept either a single slice URN, or 1 or more sliver URNs that all belong to the same slice. Aggregates are not required to accept both a slice URN and sliver URNs, 2 or more slice URNs, or a set of sliver URNs that crosses multiple slices. Some aggregates may choose to accept other such combinations of URNs. Aggregates that accept only arguments defined by this API will return an error when given more than 1 slice URN, a combination of both slice and sliver URNs, or a set of sliver URNs that belong to more than 1 slice.
+Several methods take some URNs to identify what to operate on. These methods are defined as accepting a list of arbitrary strings called URNs, which follow the GENI identifier rules. This API defines two kinds of URNs that may be supplied here, slice URNs and sliver URNs (see the GENI identifiers page). Some aggregates may understand other URNs, but these are not defined or required here. Aggregates that accept only URNs defined by this API will return an error when given URNs not in one of those forms. This API requires that aggregates accept either a single slice URN, or 1 or more sliver URNs that all belong to the same slice. Aggregates are not required to accept both a slice URN and sliver URNs, 2 or more slice URNs, or a set of sliver URNs that crosses multiple slices. Some aggregates may choose to accept other such combinations of URNs. Aggregates that accept only arguments defined by this API will return a BADARGS error when given more than 1 slice URN, a combination of both slice and sliver URNs, or a set of sliver URNs that belong to more than 1 slice.
 
-If the urns[] list includes a set of sliver URNs, then the AM shall apply the method to all listed slivers. If the operation fails on one or more of the slivers for any reason, then the whole method fails with an appropriate error code, unless +:best_effort+ is true and supported. 
+If the +urns+ list includes a set of sliver URNs, then the AM shall apply the method to all listed slivers. If the operation fails on one or more of the slivers for any reason, then the whole method fails with an appropriate error code, unless +:best_effort+ is true and supported. 
+
+
+If the list contains a sliver URN, and that sliver is deleted, expired or unknown, the call will result in a SEARCHFAILED error code. The +value+ (which is optional, since this is an error) may optionally contain more details, such as info on the expired sliver.
+
+If the list contains a slice URN, and that slice has no slivers, or only expired or deleted slivers, the call results in a SEARCHFAILED error code. The +value+ (which is optional, since this is an error) may optionally contain more details, such as info on the expired or deleted slivers.
+
+Note that for both cases above, it is possible that the AM has no info on expired or deleted slivers. because of this, the SEARCHFAILED error is the best error that can be guaranteed to be returned by calls that take a +urns+ argument. Some aggregate might have info on expired slivers. They should NOT return an EXPIRED error in the cases above. Aggregates should also not return a more general error.
+Aggregates should also never return SUCCESS in the cases above, and just omit the sliver from their +value+.
+
+//////////////////////////////////
+In the scetions about the specific calls, refer to the above using: 
+Expired, deleted and unknown slivers, or slices without valid slivers, will cause this call to return SEARCHFAILED. See <<CommonArgumentUrns, the +urns+ argument>> for more details on this error code and return value.
+//////////////////////////////////
+
+
+//////////////////////////////////
+Overview of what could be returned when for AMv3:
+|==========================
+| arg | sliver status | return Describe | return Status & Renew & Delete | return Provision | return POA
+| sliver urn | expired | SEARCHFAILED, EXPIRED or ERROR | same | same | same 
+| sliver urn | deleted | SEARCHFAILED, EXPIRED or ERROR | same | same | same 
+| sliver urn | neverexisted | SEARCHFAILED, EXPIRED or ERROR | same | same | same 
+| slice urn | expired | empty :rspec and :sliver empty or containing expired | SUCCESS and :sliver empty or containing expired, OR EARCHFAILED or EXPIRED | SEARCHFAILED | SUCCESS and :sliver empty OR EARCHFAILED 
+| slice urn | deleted | empty :rspec and :slivers empty or containing deleted | SUCCESS and :sliver empty or containing deleted, OR EARCHFAILED or EXPIRED | SEARCHFAILED | SUCCESS and :sliver empty OR EARCHFAILED 
+| slice urn | neverexisted | empty :rspec and :slivers empty | SUCCESS and :sliver empty, OR EARCHFAILED or EXPIRED | SEARCHFAILED | SUCCESS and :sliver empty OR EARCHFAILED 
+|==========================
+//////////////////////////////////
+
 
 [[CommonOptionEndTime]]
 === Common Argument/Option: +:end_time+

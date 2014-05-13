@@ -61,7 +61,12 @@ XML-RPC type::
 
 Note that aggregates may return other information, such as details on sliver contents, etc.
 
+///////////////////////////////////////////////////
+Old version:
 Calling +Status+ on an unknown, deleted or expired sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR) (unless +:best_effort+ is true, in which case the method may succeed, but return a +:error+ for each sliver that failed). Attempting to get +Status+ for a slice (no slivers identified) with no current slivers at this aggregate may return an empty list for +:slivers+, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or EXPIRED). Note therefore that +:slivers+ may be an empty list.
+///////////////////////////////////////////////////
+
+Expired, deleted and unknown slivers, or slices without valid slivers, will cause this call to return SEARCHFAILED. See <<CommonArgumentUrns, the +urns+ argument>> for more details on this error code and return value.
 
 ==== Return Codes and Errors
 
