@@ -740,7 +740,7 @@ refer to this using:   See the <<CommonReturnSliverInfoList, sliver info list re
 
 NOTE: *TODO: this is a very common return. Each call has only minor differences. It should be described in general instead of at each call. This section needs a more detailed description.*
 
-.Example
+.Syntax
 [source]
 ------------------
   ":slivers": 
@@ -755,6 +755,63 @@ NOTE: *TODO: this is a very common return. Each call has only minor differences.
     },
     ...
   ],
+------------------
+
+.Example Call & Reply without +:best_effort+
+[source]
+------------------
+  call:
+  Renew(["urn:publicid:IDN+example.com+sliver+1", "urn:publicid:IDN+example.com+sliver+2"], 
+         [ { <valid credential struct> } ], 
+         "2014-05-20T00:00:00Z",
+         { }
+        );
+
+  reply:
+  {
+      "output" : "sliver urn:publicid:IDN+example.com+sliver+2 does not exist",
+      "code" : {
+                ":code" : 12
+              },
+      "value" : { }
+  }
+------------------
+
+.Example Call & Reply without +:best_effort+ (optionally including value)
+[source]
+------------------
+  call:
+  Renew(["urn:publicid:IDN+example.com+sliver+1", "urn:publicid:IDN+example.com+sliver+2"], 
+         [ { <valid credential struct> } ], 
+         "2014-05-20T00:00:00Z",
+         { }
+        );
+
+  reply:
+  {
+      "output" : "sliver urn:publicid:IDN+example.com+sliver+2 does not exist",
+      "code" : {
+                ":code" : 12
+              },
+      "value" : {  
+            ":slivers":
+               [
+                 {
+                  ":sliver_urn": "urn:publicid:IDN+example.com+sliver+1",
+                  ":allocation_status": ":provisioned",
+                  ":operational_status": ":notready",
+                  ":expires": "2014-05-01T11:11:11Z",
+                  ":error_code": 0 
+                 },
+                 {
+                  ":sliver_urn": "urn:publicid:IDN+example.com+sliver+2",
+                  ":allocation_status": ":unallocated",
+                  ":error_code": 12,
+                  ":error_output" : "no such sliver found here"
+                 }
+               ]
+      }
+  }
 ------------------
 
 ==== +:error+
