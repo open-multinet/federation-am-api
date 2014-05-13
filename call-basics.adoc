@@ -617,7 +617,7 @@ Default: +false+
 NOTE: *TODO: Does <<Status>> support this option?*
 See also <<OperationsOnIndividualSlivers, Operations on Individual Slivers>>
 
-Clients may omit this option, but aggregates must honor the option if possible. This option modifies the way that the operation applies to all named slivers. By default (+:best_effort+=false), the operation must apply equally to all slivers, either succeeding or failing for all (returning an appropriate error code). When true, the aggregate may succeed the operation for some slivers, while failing the operation for other slivers (returning a code of SUCCESS but then explaining the per-sliver error in the appropriate +:error+ field for that sliver). This option applies to <<Provision>>, <<Renew>>, <<Delete>>, and <<PerformOperationalAction>>. Each of these methods returns a set of statuses for each requested sliver, allowing the AM to report individual results per sliver. This option does not apply to <<Allocate>> or <<Describe>>, which is always all or nothing.
+Clients may omit this option, but aggregates must honor the option if possible. This option modifies the way that the operation applies to all named slivers. By default (+:best_effort+=false), the operation must apply equally to all slivers, either succeeding or failing for all (returning an appropriate error code). When true, the aggregate may succeed the operation for some slivers, while failing the operation for other slivers (returning a code of SUCCESS but then explaining the per-sliver error in the +:error_code+ and +:error_output+ field for that sliver, see also the <<CommonReturnSliverInfoList, Sliver info list return>>). This option applies to <<Provision>>, <<Renew>>, <<Delete>>, and <<PerformOperationalAction>>. Each of these methods returns a set of statuses for each requested sliver, allowing the AM to report individual results per sliver. This option does not apply to <<Allocate>> or <<Describe>>, which are always all or nothing.
 
 [[CommonArgumentUrns]]
 === Common argument: +array of urns+
@@ -722,11 +722,87 @@ NOTE: *TODO: this is a very common return. Each call has only minor differences.
      ":allocation_status": <string>,
      ":operational_status": <string>,
      ":expires": <string: dateTime.rfc3339 when the sliver expires from its current state>,
-     (optional) ":error": <string: explaining any failure to Provision this sliver. The field may be omitted entirely but may not be null/None>
+     (optional) ":error_code": <int: error code matching the failure or success of this sliver. The same code as in the default return structures code field is expected here>
+     (optional) ":error_output": <string: explaining any failure for this sliver. The field may be omitted entirely but may not be null/None>
      (optional) ":resource_status" : <string: resource-specific status in more detail than operational_status>,
     },
     ...
   ],
+------------------
+
+
+.Example Call & Reply with +:best_effort+ (aggregate cannot differentiate between expired, deleted and never existed)
+[source]
+------------------
+  call:
+  Renew(["urn:publicid:IDN+example.com+sliver+1", "urn:publicid:IDN+example.com+sliver+2"], 
+         [ { <valid credential struct> } ], 
+         "2014-05-20T00:00:00Z",
+         { ":best_effort" : true }
+        );
+
+  reply:
+  {
+      "output" : "",
+      "code" : {
+                ":code" : 0 
+              },
+      "value" : {  
+            ":slivers":
+               [
+                 {
+                  ":sliver_urn": "urn:publicid:IDN+example.com+sliver+1",
+                  ":allocation_status": ":provisioned",
+                  ":operational_status": ":notready",
+                  ":expires": "2014-05-20T00:00:00Z",
+                  ":error_code": 0 
+                 },
+                 {
+                  ":sliver_urn": "urn:publicid:IDN+example.com+sliver+2",
+                  ":allocation_status": ":unallocated",
+                  ":error_code": 12,
+                  ":error_output" : "no such sliver found here"
+                 }
+               ]
+      }
+  }
+------------------
+
+.Example Call & Reply with +:best_effort+ (on aggregate that remembers expired and deleted slivers)
+[source]
+------------------
+  call:
+  Renew(["urn:publicid:IDN+example.com+sliver+1", "urn:publicid:IDN+example.com+sliver+2"], 
+         [ { <valid credential struct> } ], 
+         "2014-05-20T00:00:00Z",
+         { ":best_effort" : true }
+        );
+
+  reply:
+  {
+      "output" : "",
+      "code" : {
+                ":code" : 0 
+              },
+      "value" : {  
+            ":slivers":
+               [
+                 {
+                  ":sliver_urn": "urn:publicid:IDN+example.com+sliver+1",
+                  ":allocation_status": ":provisioned",
+                  ":operational_status": ":notready",
+                  ":expires": "2014-05-20T00:00:00Z",
+                  ":error_code": 0 
+                 },
+                 {
+                  ":sliver_urn": "urn:publicid:IDN+example.com+sliver+2",
+                  ":allocation_status": ":unallocated",
+                  ":error_code": 15,
+                  ":error_output" : "sliver has expired"
+                 }
+               ]
+      }
+  }
 ------------------
 
 ==== +:error+
