@@ -351,16 +351,14 @@ These states apply to each sliver individually. Logically, the state transition 
 [[SliverOperationalStates]]
 === Sliver Operational States
 
-NOTE: *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
-
 Slivers, once fully allocated, are said to be in a particular operational state. States may indicate that a sliver is configuring, running, ready, turning, etc. These states are used by tools to know what sliver-internal actions are relevant, and what aggregate-defined operational actions may be valid.
 
 The AM API defines a few operational states with particular semantics. AMs are not required to support the API defined states for all resources, but if the aggregate uses the API defined states, then the aggregate must follow the given semantics. AMs are however STRONGLY encouraged to support them, to provide maximum interoperability. There is one state that AMs are required to support, +:pending_allocation,+ for a sliver which has not been fully allocated and provisioned (other operational states are not yet valid). Operational states are generally only valid for slivers which have been provisioned (+:provisioned+ allocation state).
 
-AMs may have their own operational states/state-machine internally. AMs are however required to advertise such states and actions that experimenters may see or use, by using an advertisement RSpec extension (if an AM does not advertise operational states, then tools can not know whether any actions are available). Operational states which the experimenter never sees, need not be advertised. Operational states and actions are generally by resource type. The standard RSpec extension attaches such definitions to the sliver_type element of RSpecs.
+AMs may have their own operational states/state-machine internally. AMs are however required to advertise such states and actions that experimenters may see or use, by using an advertisement RSpec extension (if an AM does not advertise operational states, then tools can not know whether any actions are available). See link:rspec.html[the Rspec document] for more information on this extension. Operational states which the experimenter never sees, need not be advertised. Operational states and actions are generally by resource type. The standard RSpec extension attaches such definitions to the sliver_type element of RSpecs.
 Operational states defined by AMs must have names with a restricted format. They may only use alphanumeric characters plus underscore, and the first character must be an alphanumeric character. This means they must match the following regular expression: `'^[a-zA-Z0-9][a-zA-Z0-9_]*$'`
 
-The standard advertisement RSpec extension for advertising operational states and actions can be found here, with an example with comments  here (it is version-controlled in the standard GENI RSpecs git repository as well).
+The standard advertisement RSpec extension for advertising operational states and actions can be found link:http://www.geni.net/resources/rspec/ext/opstate/1[here], with an example with comments https://www.protogeni.net/trac/protogeni/wiki/RspecAdOpState[here].
 
 States should be defined in terms of
 
