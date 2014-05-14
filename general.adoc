@@ -48,9 +48,156 @@ TODO "where does AM fit into this?"
 
 == Identifiers
 
-TODO (urns etc)
+NOTE: *TODO* thoughout this section, the placeholder ZZZZ is used. This should be replaced by the appropriate identifier.
 
-NOTE: *TODO* add http://groups.geni.net/geni/wiki/GeniApiIdentifiers here
+***********************************
+Objects (be it a researcher, resource, clearinghouse, or aggregate manager) are identified with a http://en.wikipedia.org/wiki/Uniform_Resource_Name[Uniform Resource Name (URN)].
+
+The format of a ZZZZ URN is: `urn:publicid:IDN+<string: authority>+<string: type>+<string: name>`
+
+All sections of the URN are mandatory. Note that additional '+' characters are allowed in the <name> section.
+***********************************
+
+ZZZZ URNs are in the http://www.faqs.org/rfcs/rfc3151.html[URN namespace for Public Identifiers]. As such, each ZZZZ URN is of the form: +urn:publicid:<transcribed-public-identifier>+. http://www.faqs.org/rfcs/rfc3151.html[RFC 3151] describes how public identifiers are transcribed to URNs (which involves collapsing whitespace and replacing certain characters with % encoded values).
+
+The public identifier section of a ZZZZ URN must begin with "IDN ". When transcribed, this means that all ZZZZ URNs begin with "urn:publicid:IDN+".
+
+To transcribe a public ID to a URN use the following rules, from RFC 3151:
+
+|===============================================
+|From   | Transcribe to
+|leading and trailing whitespace | trim
+|whitespace | collapse to a single '+'
+|'//'   | ':'
+|'::'   | ';'
+|'+'    | '%2B'
+|":'    | '%3A'
+|'/'    | '%2F'
+|';'    | '%3B'
+|'''    | '%27'
+|'?'    | '%3F'
+|'#'    | '%23'
+|'%'    | '%25
+|===============================================
+
+Example translations:
+|===============================================
+|Public ID |  ZZZZ URN
+|IDN plc//princeton authority sa |    urn:publicid:IDN+plc:princeton+authority+sa
+|IDN gcf//gpo//gpolab user joe |  urn:publicid:IDN+gcf:gpo:gpolab+user+joe
+|IDN gcf//gpo//gpolab node switch 1 port 2 |  urn:publicid:IDN+gcf:gpo:gpolab+node+switch+1+port+2
+|===============================================
+
+Formally, the public ID format follows the following naming convention (in perl regular expression syntax for the encoding string):
+
+    IDN [toplevelauthority][\/\/sub-authority]* resource-type resource-name
+
+This would lead to the following URN schema in the public id namespace (Using the transformation in  RFC 3151) :
+
+    urn:publicid:IDN+toplevelauthority[:sub-authority]*\+resource-type\+resource-name
+
+Where:
+
+toplevelauthority::  is unique across the federation and tied to a specific authority instance. By convention it should be an internationalized domain name (which must then match the one in the certificate of the authority which issued the object name)
+
+sub-authority:: is unique within the "toplevelauthority" and by convention is often an internationalized domain name (which should then match the one in the certificate of the authority which issued the object name)
+
+resource-type:: is a string describing the type of the named object (the set of strings is described below)
+
+resource-name:: should uniquely identify the object among any other resources with identical toplevelauthority+"sub-authority" and resource-type. It is important to realize that the GENI API attaches no other significance to this field, and in particular, no relation is implied between objects with identical resource-name but differing toplevelauthority or resource-type. However, individual authorities may choose to define additional semantics for resource names.
+
+
+=== Authority String
+
+Authorities are resource namespaces. For instance, 'plc' is the overall PlanetLab namespace and 'plc.princeton' and 'plc.bbn' are specific namespaces for the Princeton and BBN PlanetLab sites. The authority string format is toplevelauthority:sub_authority1:...:sub_authority_n. Only entities with URNs of type authority are allowed to sign credentials for a namespace (except in the case of delegation).
+
+For example, a ProtoGENI Clearinghouse with URN like protogeni.utah.... cannot issue a slice credential giving a user privileges on a PlanetLab slice (with urn plc.princeton....). Only PlanetLab can grant rights over PlanetLab slices.
+
+Essentially, to be a valid authority for a namespace, the authority name must be a prefix of the names in its namespace. EG: a\.b is an authority for, a\.b.c.d, but a is not an authority for, a\.b.c.d (the subject's name starts with a.b, where we've escaped the .). Also any authority name is an authority for itself.
+
+Authority strings are to be treated as case insensitive for comparison purposes, though they should be case sensitive for display purposes (i.e. case preserving). This is consistent with the DNS standard as these are generally hostnames.
+
+The authority in a URN should follow certain conventions for different URN types. The authority section of a URN issued by an authority must match the authority section of the URN of the authority that issued the URN, which is the authority that manages the existence of these objects. In particular
+
+* slice URNs are issued by a slice authority ("+authority+sa"), so the authority section of the slice URN matches that of the slice authority
+* user URNs are issued by a member authority or slice authority or clearinghouse ("+ma", "+sa"+, "+ch")
+* sliver URNs are issued by an aggregate ("+authority+am")
+* component URNs ("node" or "link" types for example) are issued by an aggregate or a component manager ("+authority+am" or "+authority+cm") 
+
+=== Type
+
+The <type> string has not yet been completely specified, but is used to identify the kind of resource being identified. Many APIs require use of URNs with particular types. Use the defined types below, unless they simply do not fit for you.
+
+authority:: A ZZZZ service (i.e. an XMLRPC server). By convention, resource-name is am for an aggregate manager, sa for a slice authority. In principle, other names could be used for authorities.
+
+interface:: A component which is an interface (an endpoint for links). The toplevelauthority must match that of the aggregate manager (or component manager).
+
+link:: A component which is a network link (a connection between two or more interfaces). The toplevelauthority must match that of the aggregate manager.
+
+node:: A component which is a node (an abstraction for networkable resources). The toplevelauthority must match that of the aggregate manager.
+
+slice:: A resource container. Every valid sliver belongs to exactly one slice. The toplevelauthority must match that of the slice authority.
+
+sliver:: A collection of resources which has been instantiated within a slice at a single aggregate. The toplevelauthority must match that of the aggregate manager; the corresponding slice is not identified in the sliver URN.
+
+user:: A ZZZZ end user. Users are associated with slice or member authorities, but not unique slices; the slice to user correspondence is potentially many-to-many. The toplevelauthority must match that of the issuing authority.
+
+vlan:: A shared VLAN, that may cross slices. This VLAN may or may not cross aggregates, as in the GENI openflow mesoscale. VLAN URNs should name the VLAN, not identify the specific VLAN tag, as that may vary across aggregates and switches.
+
+tool:: A ZZZZ tool (i.e. a hosted experimenter tool like  the GENI Portal). The toplevelauthority indicates the authority certifying that the holder of a certificate naming this URN operates a tool with the given name.
+
+Additional types may be defined in the future.
+
+Note: For ProtoGENI compatibility, slice credentials should be signed by an authority with name "sa", e.g., urn:publicid:IDN+gcf:gpo+authority+sa.
+
+=== Name
+
+The <name> string can in general be any valid string constrained by the URN character set (e.g. no whitespace).
+
+However, names for certain URN types are restricted:
+
+Slice::
+    * Slice URN alone is a label - unique at a point in time but not over time.
+    * Format: urn:publicid:IDN+<SA name>+slice+<slice name>
+    * Slice names are <=19 characters, only alphanumeric plus hyphen (no hyphen in first character): '^[a-zA-Z0-9][-a-zA-Z0-9]\{0,18\}$'
+    * Slice names are case insensitive for comparison purposes, but should be treated as case sensitive for display purposes. In other words, servers should preserve the case. 
+
+Sliver::
+    * Sliver URN should be unique over time within an AM for record-keeping / operations purposes.
+    * Format: urn:publicid:IDN+<AM name>+sliver+<sliver name>
+    * Sliver names
+    **     Must be unique over time within that AM, and are selected by the AM.
+    **    May use only alphanumeric characters plus hyphen, period, or underscore: '[a-zA-Z0-9\.\-_]+' 
+
+User::
+    * Usernames are case-insensitive internally, though they may be case-sensitive in display.
+    **     EG JohnSmth as a display name is johnsmth internally, and there cannot also be a user JOHNSMTH.
+    **     In other words, usernames are case insensitive for comparison but case preserving. 
+    * Usernames should begin with a letter and be alphanumeric or underscores; no hyphen or '.': ('^[a-zA-Z][\w]\{0,7\}$').
+    * Usernames are limited to 8 characters.
+    * User URNs (which contain the authority name and the username) are required to be temporally and globally unique. 
+
+Tool::
+    * Tool names are case-insensitive internally, though they may be case-sensitive in display.
+    **     EG JohnSmth as a display name is johnsmth internally, and there cannot also be a user JOHNSMTH. 
+    * Tool names should begin with a letter and be alphanumeric or underscore, hyphen, at sign or period: ('[a-zA-Z][a-ZA-Z0-9\-_@\.]{0,63}$').
+    * Tool names are limited to 64 characters.
+    * Tool URNs (which contain the authority name and the tool instance name) are required to be temporally and globally unique.
+    * Tool names should encode both the tool type and instance. For example portal-gpo or genidesktop-uky. 
+
+=== Examples and Usage
+
+|==============================================================================================================================
+| Resource |    ZZZZ Identifier
+| User cviecco at the planetlab namespace |    urn:publicid:IDN+planet-lab.org+user+cviecco
+| Planetlab node: pl2.ucs.indiana.edu |    urn:publicid:IDN+planet-lab.org+node+pl2.ucs.indiana.edu
+| Interface eth0 in planetlab node pl1.ucs.indiana.edu |   urn:publicid:IDN+planet-lab.org+interface+pl1.ucs.indiana.edu:eth0
+| Slice mytestslice in the Utah Emulab slice authority |   urn:publicid:IDN+emulab.net+slice+mytestslice
+| The Utah Emulab slice authority |    urn:publicid:IDN+emulab.net+authority+sa
+| Sliver 123 in the Utah Emulab aggregate manager |    urn:publicid:IDN+emulab.net+sliver+123
+|==============================================================================================================================
+
+In the ZZZZ API, URNs are used to name slices (as seen as arguments in Federation AM API calls), to identify users, and to label resources. URNs are also used in ZZZZ certificates (to bind public keys to identifiers) and in Credentials (to grant permissions to source identifiers on target identifiers).
 
 == History?
 
