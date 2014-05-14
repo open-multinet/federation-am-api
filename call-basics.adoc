@@ -383,13 +383,14 @@ Operational actions immediately change the sliver operational state (if any chan
 
 GENI defined operational states (both required and optional for aggregates):
 
-- +:pending_allocation+: Required for aggregates to support. A wait state. The sliver is still being allocated and provisioned, and other operational states are not yet valid. <<PerformOperationalAction>> may not yet be called on this sliver. For example, the sliver is in allocation state +:provisioned,+ but has not been fully provisioned (e.g., the VM has not been fully imaged). Once the sliver has been fully allocated, the AM will transition the sliver to some other valid operational state, as specified by the advertised operational state machine. This state is generally not part of the AM's advertised state machine, as it represents 'operational states not valid yet'. Common next states (and first states of operational state machines) are +:notready,+ +:ready,+ and +:failed.+
-- +:notready+: A final state. The resource is not usable / accessible by the experimenter, and requires explicit experimenter action before it is usable/accessible by the experimenter. For some resources, +:start+ will move the resource out of this state and towards +:ready.+
-- +:configuring+: A wait state. The resource is in process of changing to +:ready,+ and on success will do so without additional experimenter action. For example, the resource may be powering on.
-- +:stopping+: A wait state. The resource is in process of changing to +:notready,+ and on success will do so without additional experimenter action. For example, the resource may be powering off.
-- +:ready+: A final state. The resource is usable/accessible by the experimenter, and ready for slice operations.
-- +:ready_busy+: A wait state. The resource is performing some operational action, but remains accessible/usable by the experimenter. Upon completion of the action, the resource will return to +:ready.+
-- +:failed+: A final state. Some operational action failed, rendering the resource unusable. An administrator action, undefined by this API, may be required to return the resource to another operational state. 
++:pending_allocation+:: Required for aggregates to support. A wait state. The sliver is still being allocated and provisioned, and other operational states are not yet valid. <<PerformOperationalAction>> may not yet be called on this sliver. For example, the sliver is in allocation state +:provisioned,+ but has not been fully provisioned (e.g., the VM has not been fully imaged). Once the sliver has been fully allocated, the AM will transition the sliver to some other valid operational state, as specified by the advertised operational state machine. This state is generally not part of the AM's advertised state machine, as it represents 'operational states not valid yet'. Common next states (and first states of operational state machines) are +:notready,+ +:ready,+ and +:failed.+
++:notready+:: A final state. The resource is not usable / accessible by the experimenter, and requires explicit experimenter action before it is usable/accessible by the experimenter. For some resources, +:start+ will move the resource out of this state and towards +:ready.+
++:configuring+: A wait state. The resource is in process of changing to +:ready+, and on success will do so without additional experimenter action. For example, the resource may be powering on.
++:stopping+:: A wait state. The resource is in process of changing to +:notready+, and on success will do so without additional experimenter action. For example, the resource may be powering off.
++:ready+:: A final state. The resource is usable/accessible by the experimenter, and ready for slice operations.
++:ready_busy+:: A wait state. The resource is performing some operational action, but remains accessible/usable by the experimenter. Upon completion of the action, the resource will return to +:ready.+
++:failed+:: A final state. Some operational action failed, rendering the resource unusable. An administrator action, undefined by this API, may be required to return the resource to another operational state. 
++:updating_users+:: A wait state, related to the optional +:update_users+ action. The resource is in process of modifying user date. Upon completion of the action, the resource will return to +:ready.+ Note that this is an optional state, so so aggregates supporting this state need to advertise this fact in their advertisement RSpec.
 
 [[SliverOperationalActions]]
 === Sliver Operational Actions
@@ -410,11 +411,22 @@ Any operational action may fail. When this happens, the API method should return
 
 Operational actions immediately change the sliver operational state (if any change will occur). Long running actions therefore require a 'wait' state, while the action is completing.
 
-GENI defined operational actions:
+Defined operational actions:
 
-- +:start+: This action results in the sliver becoming +:ready+ eventually. The operation may fail (move to +:failed),+ or move through some number of transition states. For example, booting a VM.
-- +:restart+: This action results in the sliver becoming +:ready+ eventually. The operation may fail (move to +:failed),+ or move through some number of transition states. During this operation, the resource may or may not remain accessible. Dynamic state associated with this resource may be lost by performing this operation. For example, re-booting a VM.
-- +:stop+: This action results in the sliver becoming +:notready+ eventually. The operation may fail (move to +:failed),+ or move through some number of transition states. For example, powering down a VM. 
++:start+:: This action results in the sliver becoming +:ready+ eventually. The operation may fail (move to +:failed),+ or move through some number of transition states. For example, booting a VM.
++:restart+:: This action results in the sliver becoming +:ready+ eventually. The operation may fail (move to +:failed),+ or move through some number of transition states. During this operation, the resource may or may not remain accessible. Dynamic state associated with this resource may be lost by performing this operation. For example, re-booting a VM.
++:stop+:: This action results in the sliver becoming +:notready+ eventually. The operation may fail (move to +:failed),+ or move through some number of transition states. For example, powering down a VM. 
++:update_users+:: This is an optional action, so aggregates supporting this action (and operational state) need to advertise this fact in their advertisement RSpec. This action allows experimenters to change the users and/or SSH keys installed on existing running compute nodes, in a way that is persistent and consistent with any aggregate manager controlled processes. The +credentials+ argument must include credentials over the slice as usual. The +options+ struct must include the +:users+ option as specified in <<ProvisionUsersOption, +Provision+>>. The following rules are used to determine how to modify the users and SSH keys using this structure:
++
+* New users in the +:users+ struct will be added
+* Ommitting a user in the +:users+ struct means there will be no change to the keys installed for that user. It does not mean the user should be removed. 
+* Existing users mentioned in the new +:users+ struct will have all SSH keys replaced by the new set. Note that a user may have an empty list of SSH keys specified, effectively preventing the user from accessing the node.
++
+This action is only legal on slivers in the +:ready+ operational state. This action immediately moves all such slivers to the +:updating_users+ operational state. Slivers stays in that state until the aggregate completes the needed changes, at which time the slivers change back to the +:ready+ operational state. Slivers may be in the +:updating_users+ state for several minutes; during this time no other operational actions can be taken on the slivers.
++
+Besides the usual return error codes, the +PerformOperationalAction+ method with this action may return REFUSED if the sliver is in the wrong operational state.
+
++:updating_users_cancel+:: This is an optional action, so aggregates supporting this action (and operational state) need to advertise this fact in their advertisement RSpec. This action requires no options. It cancels any pending +:update_users+ action on the named slivers, returning those slivers to the +:ready+ operational state. This action is only legal on slivers in the +:updating_users+ operational state. This action may be used on slivers which fail to complete the +:update_users+ action. After a successful +:updating_users_cancel+, the state of users and keys on the sliver(s) is not defined; some may have the same users/keys as they had prior to beginning the +:update_users+ action, and others may have already updated to the new set of users and keys.
 
 
 === Documenting Aggregate Additions
