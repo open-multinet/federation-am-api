@@ -419,12 +419,20 @@ GENI defined operational actions:
 
 === Documenting Aggregate Additions
 
-NOTE: *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
+Aggregates are free to add additional return values or input options to support aggregate or resource specific functionality, or to innovate within the bounds of the AM API. 
 
-Aggregates are free to add additional return values or input options to support aggregate or resource specific functionality, or to innovate within the bounds of the AM API. This includes adding new methods that use the same transport, interface, certificates, and credentials. Aggregates are encouraged to document any such new return values which they return or options arguments, to bootstrap coordination with clients, and provide documentation for human experimenters. One way to provide partial documentation, is to implement  XML-RPC introspection. Through the use of method help, aggregates can provide human readable text describing return values. Alternatively or additionally, aggregates may document return values as part of their return from <<GetVersion>>. This API does not specify the format for advertising those extra return values in <<GetVersion>>.
+This includes adding new methods that use the same transport, interface, certificates, and credentials. 
+Aggregates are encouraged to document any such new return values which they return or options arguments, to bootstrap coordination with clients, and provide documentation for human experimenters. 
 
+One way to provide partial documentation, is to implement XML-RPC introspection. 
+Through the use of method help, aggregates can provide human readable text describing return values. 
+Alternatively or additionally, aggregates may document return values as part of their return from <<GetVersion>>. 
+This API does not specify the format for advertising those extra return values in <<GetVersion>>.
 
+Aggregates must choose names starting with a non-empty prefix followed by a colon, when choosing names for:
 
+* Members added to a return structure defined in this api (or to a structure inside such a return structure)
+* Options added to the <<OptionsArgument, +options+ argument>>
 
 == Data Types
 
@@ -547,7 +555,9 @@ Unless otherwise specified, all arguments and returns of type struct may include
 This API specifies some options that should be supported by each AM. These are prefixed with +:+. AM's may also support additional options, if they follow these rules:
 
 * They should document these options
-* They should choose an appropriate prefix. There is a colon between the prefix and the option name. example: +fed4fire:somecustumoption+  +geni:anothercustomoption+
+* They should choose an appropriate prefix. There is a colon between the prefix and the option name. examples:
+** +fed4fire:somecustumoption+ 
+** +geni:anothercustomoption+
 * Clients are never required to provide such options. The AM will document the default value they assume for each new option.
 
 [[CommonArgumentCredentials]]
