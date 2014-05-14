@@ -263,7 +263,7 @@ A Sliver is an aggregate defined grouping of resources within a slice at this ag
 
 One or more slivers are created by an aggregate when the experimenter tool calls <<Allocate>>. This API encourages aggregates to independently manage each sliver, allowing experimenters to selectively <<Delete>>, <<Renew>>, or <<Provision>> each sliver. As such, these methods take a list of sliver urns (or a slice urn), and return a struct reporting results for each sliver URN independently. However, slivers at an aggregate may have interdependencies, and an individual aggregate may not be able to independently manage each sliver, without also modifying other related slivers. This API defines a number of aggregate configuration options returned by <<GetVersion>>, and an option to many methods, allowing aggregates to advertise their behavior, and experimenters to request particular behavior.
 
-+:single_allocation:+:: 
++:single_allocation+:: 
 +
 ***********************************
 Mandatory:: false
@@ -271,7 +271,7 @@ XML-RPC type:: +boolean+
 Default:: false
 ***********************************
 +
-When true (not default), and performing one of (<<Describe>>, <<Allocate>>, <<Renew>>, <<Provision>>, <<Delete>>), such an AM requires you to include either the slice urn or the urn of all the slivers in the same state. If you attempt to run one of those operations on just some slivers in a given state, such an AM will return an error. 
+When true (not default), and performing one of (<<Describe>>, <<Allocate>>, <<Renew>>, <<Provision>>, <<Delete>>), such an AM requires you to include either the slice urn or the urn of all the slivers in the same state. If you attempt to run one of those operations on just some slivers in a given state, such an AM will return an error (UNSUPPORTED.
 +
 For example, at an AM where +:single_allocation+ is true you must <<Provision>> all +:allocated+ slivers at once. If you supply a list of sliver URNs to <<Provision>> that is only 'some' of the +:allocated+ slivers for this slice at this AM, then the AM will return an error. Similarly, such an aggregate would return an error from <<Describe>> if you request a set of sliver URNs that is only some of the +:provisioned+ slivers.
 
@@ -285,11 +285,12 @@ Allowed values:: +:single+, +:disjoint+, +:many+
 ***********************************
 +
 A case insensitive string, one of fixed set of possible values. Default is +:single+. This option defines whether this AM allows adding slivers to slices at an AM (i.e. calling <<Allocate>> multiple times, without first deleting the allocated slivers). Possible values:
-        +:single+;; Performing multiple Allocates without a delete is an error condition because the aggregate only supports a single sliver per slice or does not allow incrementally adding new slivers. This is the AM API v2 behavior.
-        +:disjoint+;; Additional calls to <<Allocate>> must be disjoint from slivers allocated with previous calls (no references or dependencies on existing slivers). The topologies must be disjoint in that there can be no connection or other reference from one topology to the other.
+
+        +:single+;; Performing multiple Allocates without a delete is an error condition (error code UNSUPPORTED) because the aggregate only supports a single sliver per slice or does not allow incrementally adding new slivers. This is the AM API v2 behavior.
+        +:disjoint+;; Additional calls to <<Allocate>> must be disjoint from slivers allocated with previous calls (no references or dependencies on existing slivers). The topologies must be disjoint in that there can be no connection or other reference from one topology to the other. Allocate must return the UNSUPPORTED error code when this condition is not met.
         +:many+;; Multiple slivers can exist and be incrementally added, including those which connect or overlap in some way. New aggregates should strive for this capability. 
 
-Many methods also take a the +:best_effort+ option (aggregates must support it, clients do not need to supply it):
+Many methods also take a +:best_effort+ option (aggregates must support it, clients do not need to supply it):
 
 +:best_effort+::
 +
@@ -300,12 +301,14 @@ Calls:: <<Provision>>, <<PerformOperationalAction>>, <<Status>>, <<Renew>>, <<De
 Supported by the server:: Mandatory
 Included by client:: Optional 
 XML-RPC type:: +boolean+
-Default: +false+
+Default:: +false+
 ***********************************
 +
 See also <<CommonOptionBestEffort, +:best_effort+ option>>
 +
-If false, the client is requesting that the aggregate either fully satisfy the request, moving all listed slivers to the desired state, or fully fail the request, leaving all slivers in their original state and returning an appropriate error code. If the aggregate cannot guarantee all or nothing success or failure given the included slivers and resource types, the aggregate shall fail the request, returning an appropriate error code (UNSUPPORTED). If this option is true, then some slivers may transition to the new state, and some not. Experimenters must examine the return closely to know the state of their slivers - such methods will return data about all requested slivers. Aggregates may optionally return +:error+ for each sliver for which the operation failed, to indicate further details. Note that <<Allocate>> is always all-or-nothing.
+If false (default), the client is requesting that the aggregate either fully satisfy the request, moving all listed slivers to the desired state, or fully fail the request, leaving all slivers in their original state and returning an appropriate error code. If the aggregate cannot guarantee all or nothing success or failure given the included slivers and resource types, the aggregate shall fail the request, returning an appropriate error code (UNSUPPORTED). 
++
+If this option is true, then some slivers may transition to the new state, and some not. Experimenters must examine the return closely to know the state of their slivers - such methods will return data about all requested slivers. Aggregates may optionally return +:error+ for each sliver for which the operation failed, to indicate further details. Note that <<Allocate>> is always all-or-nothing.
 
 It is expected that many aggregates will implement one of the following combinations of options:
 
