@@ -306,9 +306,7 @@ Default:: +false+
 +
 See also <<CommonOptionBestEffort, +:best_effort+ option>>
 +
-If false (default), the client is requesting that the aggregate either fully satisfy the request, moving all listed slivers to the desired state, or fully fail the request, leaving all slivers in their original state and returning an appropriate error code. If the aggregate cannot guarantee all or nothing success or failure given the included slivers and resource types, the aggregate shall fail the request, returning an appropriate error code (UNSUPPORTED). 
-+
-If this option is true, then some slivers may transition to the new state, and some not. Experimenters must examine the return closely to know the state of their slivers - such methods will return data about all requested slivers. Aggregates may optionally return +:error+ for each sliver for which the operation failed, to indicate further details. Note that <<Allocate>> is always all-or-nothing.
+If false (default), the client is requesting that the aggregate either fully satisfy the request, moving all listed slivers to the desired state, or fully fail the request, leaving all slivers in their original state and returning an appropriate error code. If the aggregate cannot guarantee all or nothing success or failure given the included slivers and resource types, the aggregate shall fail the request, returning an appropriate error code (UNSUPPORTED).  If this option is true, then some slivers may transition to the new state, and some not. Experimenters must examine the return closely to know the state of their slivers - such methods will return data about all requested slivers. Aggregates may optionally return +:error+ for each sliver for which the operation failed, to indicate further details. Note that <<Allocate>> is always all-or-nothing.
 
 It is expected that many aggregates will implement one of the following combinations of options:
 
@@ -319,14 +317,12 @@ It is expected that many aggregates will implement one of the following combinat
 
 === Sliver Allocation States
 
-NOTE: *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
-
 Many operations in this API create slivers or change the allocation status of slivers, and often return the current allocation status of each sliver.
 
 Valid sliver allocation states are:
 
-+:unallocated+:: (alternatively called 'null'). The sliver does not exist. This is the small black circle in typical state diagrams.
-+:allocated+:: (alternatively called 'offered' or 'promised'). The sliver exists, defines particular resources, and is in a slice. The aggregate has not (if possible) done any time consuming or expensive work to instantiate the resources, provision them, or make it difficult to revert the slice to the state prior to allocating this sliver. This state is what the aggregate is offering the experimenter.
++:unallocated+:: (also known as 'null'). The sliver does not exist. This is the small black circle in typical state diagrams.
++:allocated+:: (also known as called 'offered' or 'promised'). The sliver exists, defines particular resources, and is in a slice. The aggregate has not (if possible) done any time consuming or expensive work to instantiate the resources, provision them, or make it difficult to revert the slice to the state prior to allocating this sliver. This state is what the aggregate is offering the experimenter.
 +:provisioned.+:: The aggregate has started instantiating resources, and otherwise making changes to resources and the slice to make the resources available to the experimenter. At this point, operational states are valid to specify further when the resources are available for experimenter use. 
 
 .Sliver Allocation States and AM API Method Transitions
@@ -334,9 +330,9 @@ image::images/sliver-alloc-states3.jpg[Sliver Allocation States and AM API Metho
 
 +:allocated+ represents resources that have been allocated to a slice without provisioning the resources. This represents a cheap and reversible resource allocation. When a sliver is created and moved into state 2 (+:allocated),+ the aggregate produces a manifest RSpec identifying which resources are included in the sliver. These resources are exclusively available to the containing sliver, but are not ready for use. In particular, allocating a sliver should be a cheap and quick operation, which the aggregate can readily undo without impacting the state of slivers which are fully provisioned. For some aggregates, transitioning to this state may be a no-op.
 
-States 2 and 3 (+:allocated+ and +:provisioned)+ have aggregate and possibly resource specific timeouts. By convention the +:allocated+ state timeout is typically short, to keep most resources available. The +:provisioned+ state timeout is the sliver expiration. If the client does not transition the sliver from +:allocated+ to +:provisioned+ before the end of the +:allocated+ state timeout, the sliver reverts to +:unallocated.+ If the experimenter needs more time, the experimenter should be allowed to request a renewal of either timeout. Note that typically the sliver expiration time (timeout for state 3, +:provisioned)+ will be notably longer than the timeout for state 2, +:allocated.+
+States 2 and 3 (+:allocated+ and +:provisioned)+ have aggregate and possibly resource specific timeouts. By convention the +:allocated+ state timeout is typically short, to keep most resources available. The +:provisioned+ state timeout is the sliver expiration. If the client does not request transition the sliver from +:allocated+ to +:provisioned+ before the end of the +:allocated+ state timeout, the sliver reverts to +:unallocated+. If the experimenter needs more time, the experimenter should be allowed to request a renewal of either timeout. Note that typically the sliver expiration time (timeout for state 3, +:provisioned)+ will be notably longer than the timeout for state 2, +:allocated.+
 
-State 3, +:provisioned,+ is the state of the sliver allocation after the aggregate begins to instantiate the sliver. Note that fully provisioning a sliver may take noticeable time. This state also includes a timeout - the sliver expiration time (which is not necessarily related to the time it takes to provision a resource). <<Renew>> extends this timeout. For some aggregates and resource types, moving to this state from state 2 (+:allocated)+ may be a no-op.
+State 3, +:provisioned,+ is the state of the sliver allocation after the aggregate begins to instantiate the sliver. Note that fully provisioning a sliver may take noticeable time. This state also includes a timeout - the sliver expiration time. This is the time a resource stays provisioned, and is unrelated to the time it takes to provision a resource. After the sliver expiration timeout, the resource automatically reverts to the +:unallocated+ state (stopping resources when needed). <<Renew>> extends this timeout. For some aggregates and resource types, moving to this state from state 2 (+:allocated)+ may be a no-op.
 
 If the transition from one state to another fails, the sliver shall remain in its original state.
 
@@ -344,9 +340,9 @@ Several AM API methods can be described in terms of transitions among allocation
 
 - <<Allocate>> moves 1 or more slivers from +:unallocated+ (state 1) to +:allocated+ (state 2). This method can be described as creating an instance of the state machine for each sliver. If the aggregate cannot fully satisfy the request, the whole request fails. This is a change from the AM API V2 CreateSliver, which also provisioned the resources, and 'started' them. That is <<Allocate>> does one of the three things that CreateSliver did previously.
 - <<Delete>> moves 1 or more slivers from either state 2 or 3 (+:allocated+ or +:provisioned),+ back to state 1 (+:unallocated).+ This is similar to the AM API AM API V2 DeleteSliver.
-- <<Renew>>, when given allocated slivers, requests an extended timeout for slivers in state 2 (+:allocated).+
-- <<Renew>> can also be used to request an extended timeout for slivers in state 3 (the +:provisioned+ state). That is, this method's semantics can be the same as RenewSliver from AM API v2.
-- <<Provision>> moves 1 or more slivers from state 2 (+:allocated)+ to state 3 (+:provisioned).+ This is some of what AM API V2 CreateSliver did. Note however that this does not 'start' the resources, or otherwise change their operational state. This method only fully instantiates the resources in the slice. This may be a no-op for some aggregates or resources. 
+- <<Renew>>, when given slivers in state 2 (+:allocated+ state), requests an extended timeout.
+- <<Renew>>, when given slivers in state 3 (+:provisioned+ state) will request and extended sliver expiration timeout. That is, this method's semantics can be the same as RenewSliver from AM API v2.
+- <<Provision>> moves 1 or more slivers from state 2 (+:allocated)+ to state 3 (+:provisioned).+ This is some of what AM API V2 CreateSliver did. Note however that this does not 'start' the resources, or otherwise change their operational state (<<PerformOperationalAction>> does that). This method only fully instantiates the resources in the slice. This may be a no-op for some aggregates or resources. 
 
 When <<Provision>> fails for only some slivers, and +:best_effort+ option was supplied, the aggregate will return the status of each requested sliver individually. The +:allocation_state+ for slivers that failed will remain +:allocated.+ This typically suggests that the experimenter may retry the call. For some aggregates or resource types, the sliver may be 'dead', and <<Provision>> may never succeed. Experimenters should check +:error+ for more information.
 
