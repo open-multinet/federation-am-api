@@ -394,10 +394,10 @@ GENI defined operational states (both required and optional for aggregates):
 
 Some AM cannot know if a resource is ready or has stopped, or even in which state a resource is. To express this, additional states are available. Clients need to be able to handle these cases.
 
-- +:configuring_or_ready+: A final state. The resource is in process of getting ready and on success will do so without additional experimenter action. Or, the resource is already ready. The resource will stay in this state, and won't got in +:ready+ state ever. This is used if the AM start the resources, but can never know when this operation finishes. It is possible that the AM will however be informed when the resource fails to become ready (but it might also be impossible for the AM to know this).
-- +:stopping_or_stopped+: A final state. The resource is in process of stopping (becomming not ready) and on success will do so without additional experimenter action. Or, the resource is already stopped. The resource will stay in this state, and won't got in +:notready+ state ever. This is used if the AM can stop resources, but can never know when this operation finishes.
-- +:unknown+: A final state. It is unknown in which state the resource is.
-- +:unknown_changing+: A wait state. It is unknown in which state the resource is, but is is changing from one state to another. This state is used if it is known to the AM that the resource will eventually change into a final state (even if that state is unknown). 
++:configuring_or_ready+:: A final state. The resource is in process of getting ready and on success will do so without additional experimenter action. Or, the resource is already ready. The resource will stay in this state, and won't got in +:ready+ state ever. This is used if the AM start the resources, but can never know when this operation finishes. It is possible that the AM will however be informed when the resource fails to become ready (but it might also be impossible for the AM to know this).
++:stopping_or_stopped+:: A final state. The resource is in process of stopping (becomming not ready) and on success will do so without additional experimenter action. Or, the resource is already stopped. The resource will stay in this state, and won't got in +:notready+ state ever. This is used if the AM can stop resources, but can never know when this operation finishes.
++:unknown+:: A final state. It is unknown in which state the resource is.
++:unknown_changing+:: A wait state. It is unknown in which state the resource is, but is is changing from one state to another. This state is used if it is known to the AM that the resource will eventually change into a final state (even if that state is unknown). 
 
 [[SliverOperationalActions]]
 === Sliver Operational Actions
