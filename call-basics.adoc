@@ -838,7 +838,7 @@ NOTE: *TODO: this is a very common return. Each call has only minor differences.
   }
 ------------------
 
-==== +:error+
+==== +:error_output+
 
 NOTE: *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
 
