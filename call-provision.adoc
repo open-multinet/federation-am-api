@@ -52,6 +52,7 @@ Do all slivers fail if any single sliver fails?
 
 See <<CommonOptionBestEffort, +:best_effort+ option>> for details.
 
+[[ProvisionUsersOption]]
 ==== Option: +:users+
 
 ***********************************
