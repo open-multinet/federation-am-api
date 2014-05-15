@@ -661,9 +661,25 @@ Included by client:: Mandatory
 XML-RPC type:: +array of string+
 ***********************************
 
-Several methods take some URNs to identify what to operate on. These methods are defined as accepting a list of arbitrary strings called URNs, which follow the GENI identifier rules. This API defines two kinds of URNs that may be supplied here, slice URNs and sliver URNs (see the GENI identifiers page). Some aggregates may understand other URNs, but these are not defined or required here. Aggregates that accept only URNs defined by this API will return an error when given URNs not in one of those forms. This API requires that aggregates accept either a single slice URN, or 1 or more sliver URNs that all belong to the same slice. Aggregates are not required to accept both a slice URN and sliver URNs, 2 or more slice URNs, or a set of sliver URNs that crosses multiple slices. Some aggregates may choose to accept other such combinations of URNs. Aggregates that accept only arguments defined by this API will return a BADARGS error when given more than 1 slice URN, a combination of both slice and sliver URNs, or a set of sliver URNs that belong to more than 1 slice.
+Several methods take some URNs to identify what to operate on. 
+These methods are defined as accepting a list of arbitrary strings called URNs, 
+which follow the GENI identifier rules. 
+This API defines two kinds of URNs that may be supplied here, 
+slice URNs and sliver URNs 
+(see the GENI identifiers page). 
+Some aggregates may understand other URNs, 
+but these are not defined or required here. 
+Aggregates that accept only URNs defined by this API will return an error when given URNs not in one of those forms. 
+This API requires that aggregates accept either a single slice URN, or 1 or more sliver URNs that all belong to the same slice. 
+Aggregates are not required to accept both a slice URN and sliver URNs, 2 or more slice URNs, or a set of sliver URNs that crosses multiple slices. 
+Some aggregates may choose to accept other such combinations of URNs. 
+Aggregates that accept only arguments defined by this API will return a BADARGS error when given more than 1 slice URN, 
+a combination of both slice and sliver URNs, or a set of sliver URNs that belong to more than 1 slice.
 
-If the +urns+ list includes a set of sliver URNs, then the AM shall apply the method to all listed slivers. If the operation fails on one or more of the slivers for any reason, then the whole method fails with an appropriate error code, unless +:best_effort+ is true and supported. 
+If the +urns+ list includes a set of sliver URNs, then the AM shall apply the method to all listed slivers. 
+If the operation fails on one or more of the slivers for any reason, 
+then the whole method fails with an appropriate error code, 
+unless +:best_effort+ is true and supported. 
 
 
 If the list contains a sliver URN, and that sliver is deleted, expired or unknown, the call will result in a SEARCHFAILED error code. The +value+ (which is optional, since this is an error) may optionally contain more details, such as info on the expired sliver.
