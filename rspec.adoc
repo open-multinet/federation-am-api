@@ -11,6 +11,8 @@ v0.1, April 2014: First draft
 - link:credential-abac.html[ABAC Credentials]
 - link:general.html[General] Architecture & Concepts, Identifiers (URN etc.), "where does AM fit into this?"
 
+*TODO bvermeul: in this document I would describe 3 types of RSpec (advertisement, request, manifest), put the schemas also in this standard, and then 
+maybe refer to example repositories which are known, e.g. http://fed4fire-testbeds.ilabt.iminds.be/ilabt-documentation/urnsrspecs.html *
 
 == User login information - Manifest Rspec Extension
 
