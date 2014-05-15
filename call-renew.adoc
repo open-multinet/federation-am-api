@@ -75,7 +75,12 @@ XML-RPC type::
 ]
 ***********************************
 
+///////////////////////////////////////////////////
+Old version:
 Calling +Renew+ on an unknown, deleted or expired sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR +:code+) (unless +:best_effort+ is true, in which case the method may succeed, but return a +:error+ for each sliver that failed). Attempting to +Renew+ a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (SEARCHFAILED or EXPIRED). Note therefore that an empty list is a valid return from this method.
+///////////////////////////////////////////////////
+
+Expired, deleted and unknown slivers, or slices without valid slivers, will cause this call to return SEARCHFAILED. See <<CommonArgumentUrns, the +urns+ argument>> for more details on this error code and return value.
 
 It is legal to attempt to renew a sliver to a sooner expiration time than the sliver was previously due to expire. Not all aggregates will support this however.
 

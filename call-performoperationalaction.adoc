@@ -78,7 +78,12 @@ XML-RPC type::
     ]
 ***********************************
 
+///////////////////////////////////////////////////
+Old version:
 Note that +PerformOperationalAction+ may return an empty list, if no slivers were in the request or in the specified slice. However, the method may instead return an error (e.g. SEARCHFAILED). Calling this method on a specific sliver that is unknown, expired, or deleted shall result in an error (SEARCHFAILED or EXPIRED or ERROR), unless +:best_effort+ is true.
+///////////////////////////////////////////////////
+
+Expired, deleted and unknown slivers, or slices without valid slivers, will cause this call to return SEARCHFAILED. See <<CommonArgumentUrns, the +urns+ argument>> for more details on this error code and return value.
 
 The optional +:resource_status+ field MAY be returned for each sliver which contains a resource-specific status that may be more nuanced than the options for +:operational_status+.
 

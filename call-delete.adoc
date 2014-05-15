@@ -68,7 +68,12 @@ Note that this method should return a struct for each deleted sliver, with the U
 
 Note that aggregates will automatically delete slivers whose expiration time is reached.
 
+///////////////////////////////////////////////////
+Old version:
 Calling +Delete+ on an unknown, expired or deleted sliver (by explicit URN) shall result in an error (e.g. SEARCHFAILED, EXPIRED, or ERROR) (unless +:best_effort+ is true, in which case the method may succeed and return a +:error+ for each sliver that failed). Attempting to +Delete+ a slice (no slivers identified) with no current slivers at this aggregate may return an empty list of slivers, may return a list of previous slivers that have since been deleted, or may even return an error (e.g. SEARCHFAILED or `EXPIRED); details are aggregate specific.
+///////////////////////////////////////////////////
+
+Expired, deleted and unknown slivers, or slices without valid slivers, will cause this call to return SEARCHFAILED. See <<CommonArgumentUrns, the +urns+ argument>> for more details on this error code and return value.
 
 ==== Return Codes and Errors
 

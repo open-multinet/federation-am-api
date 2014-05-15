@@ -88,11 +88,15 @@ XML-RPC type::
 
 Note that the manifest RSpec for allocated slivers may contain less detail than for provisioned slivers. Aggregates are expected to combine the manifests of all requested slivers into a single manifest RSpec. Note that a manifest returned here for only some of the slivers in a slice at this aggregate may contain references to resources not described in this manifest because they are in other slivers.
 
+//////////////////////////////////////////////////////
+Old version:
 If a slice urn is supplied and there are no slivers in the given slice at this aggregate, then +:rspec+ shall be a valid manifest RSpec, containing zero (0) node or link elements - that is, specifying no resources. +:slivers+ may be an empty array, or may be an array of previous slivers that have since been deleted or expired. Calling +Describe+ on one or more sliver URNs that are unknown, deleted or expired shall result in an error (e.g. SEARCHFAILED, EXPIRED or ERROR +:code+).
+//////////////////////////////////////////////////////
+
+Expired, deleted and unknown slivers, or slices without valid slivers, will cause this call to return SEARCHFAILED. See <<CommonArgumentUrns, the +urns+ argument>> for more details on this error code and return value. Note that when given a slice URN without slivers, the +Describe+ call must return SEARCHFAILED, but may return a +value+, which must then contain an empty rspec.
+
 
 Manifests are not necessarily static. In general, the manifest of a given sliver should be static once it has reached the operational state +:ready+ (e.g., fully booted). However, this API does not require that to be true.
-
-See the Common Concepts page about the credentials, rspec, and urns arguments, and also for details on allocation states, operational states, and datetime values. See GeniApiIdentifiers for details on URN structure. 
 
 
 ==== Return Codes and Errors
