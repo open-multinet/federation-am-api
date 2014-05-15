@@ -190,7 +190,7 @@ XML-RPC type::
 [source]
    ":credential_types" : [
      {
-      ":type" : <string: (case insensitive)>,
+      ":type" : <string: (case insensitive, matching '^[a-zA-Z0-9][a-zA-Z0-9-_\.:]*$')>,
       ":version" : <string: (containing an integer)>,
      },
      ...
@@ -198,7 +198,8 @@ XML-RPC type::
 ***********************************
 
 Aggregates advertise the type(s) of credentials they support.
-See also the <<CommonArgumentCredentials, +credentials argument+ details>>.
+See also the related <<CommonArgumentCredentials, +credentials+ argument>>.
+There are restrictions on what characters are allowed in the +:type+ string, they are listed at the <<CommonArgumentCredentials, +credentials+ argument>>.
 
 * "sfa" slice credentials as defined before AM API version 3 will have type=geni_sfa and version=2. 
 * "sfa" slice credentials as of AM API version 3 will be type=geni_sfa, version=3. 
@@ -259,14 +260,13 @@ The elements used within +:request_rspec_versions+ and +:ad_rspec_versions+ are:
     A case-insensitive +string+ which together with +type+ comprises the type of RSpec. +version+ should be a type-specific version identifier as specified by the appropriate control framework.
 
 +schema+::
-    A URL pointing to a schema which can be used to verify the given type of RSpec. Required, but may be empty.
+    A URL pointing to a schema which can be used to verify the given type of RSpec. Required, but may be empty. This is a standard XML schema URL, so the string should follow the applicable standards. See http://www.w3.org/TR/xml-names11/ and  http://www.w3.org/TR/xmlschema11-1/
 
 +namespace+::
-    An XML namespace which the RSpec of the given type belongs to. May be empty. Required, but may be empty.
+    An XML namespace which the RSpec of the given type belongs to. May be empty. Required, but may be empty. This is a standard XML namespace, so the string should follow the applicable standards. See  http://www.w3.org/TR/xml-names11/ and  http://www.w3.org/TR/xmlschema11-1/.
 
 +extensions+::
     An array of aggregate-specific strings denoting which extensions are supported. In the case of GENI standard RSpecs, these are XML namespaces which denote the extension as a whole. Required, but may be empty.
-
 
 ==== Return Codes and Errors
 
