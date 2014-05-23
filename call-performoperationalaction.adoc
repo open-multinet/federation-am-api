@@ -14,13 +14,9 @@ PerformOperationalAction (string urns[], struct credentials[], string action,
                           struct options={})
 ----------------
 
-NOTE: This operation is similar to ProtoGENI functions like StartSliver, StopSliver, and RestartSliver in the  PG CMv2 API.
-
 Aggregate Managers SHOULD return an error code of 13 (UNSUPPORTED) if they do not support a given action for a given resource. An AM SHOULD constrain actions based on the current operational state of the resource. This is a fast synchronous operation, and MAY start long-running sliver transitions whose status can be queried using <<Status>>. This method should only be called, and is only valid, when the sliver is fully allocated (operational status is not +:pending_allocation+).
 
 While the action argument may be aggregate and sliver type specific (none are required for all aggregates and sliver types), this API does define three common actions that AMs should support if possible: +:start+, +:stop+, and +:restart+. 
-
-NOTE: Calling +PerformOperationalAction+ with the action +:start+ corresponds to the final part of what CreateSliver did in AM API v2. 
 
 ==== Argument 1:  +urns+
 

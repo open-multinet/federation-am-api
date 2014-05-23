@@ -11,8 +11,6 @@ In contrast to <<Describe>>, +Status+ is used to query dynamic state information
 Status(string urns[], struct credentials[], struct options)
 ----------------
 
-NOTE: This operation used to be called +SliverStatus+ in earlier versions of the AM API. :slivers has replaced :resources and :sliver_urn replaces :urn. :status is replaced with 2 fields, :allocation_status and :operational_status.
-
 ==== Argument 1:  +urns+
 
 See the <<CommonArgumentUrns, +urns+ argument>> for details.

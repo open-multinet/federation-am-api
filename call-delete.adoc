@@ -9,10 +9,6 @@ Delete the named slivers, making them +:unallocated+. Resources are stopped if n
 Delete(string urns[], struct credentials[], struct options)
 ----------------
 
-NOTE: This operation used to be called +DeleteSliver+ in earlier versions of this API. To get the functionality of +DeleteSliver+, call +Delete+ with the slice URN.
-
-NOTE: This operation is similar to ProtoGENI's  +DeleteSliver+ operation and to  SFA's +DeleteSlice+ operation (sec. 6.2.3).
-
 As described here, the +:single_allocation+ return from <<GetVersion>> advertises whether or not a client may invoke this method on only some of the slivers in a given +:allocation_state+ in a given slice (default is false - the client may operate on only some of the slivers in a given state).
 
 +Delete+ the given slivers, stopping any running resources and freeing the reservation. This method applies to slivers in any state.

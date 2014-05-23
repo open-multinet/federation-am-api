@@ -17,10 +17,6 @@ Describe(string urns[], struct credentials[],
          struct rspec_version, struct options[])
 ----------------
 
-
-NOTE: This method is part of what +ListResources+ used to do in previous versions of the AM API, and is similar to ProtoGENI  `Resolve`.
-
-
 ==== Argument 1:  +urns+
 
 See the <<CommonArgumentUrns, +urns+ argument>> for details.
