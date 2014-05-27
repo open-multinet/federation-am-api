@@ -77,7 +77,7 @@ XML-RPC type::
      ":slivers" : [
             {
                       :sliver_urn: <string: sliver urn>
-                      :expires: <string: dateTime.rfc3339 allocation expiration string, as in :expires from Status>,
+                      :expires: <string.dateTime.rfc3339: allocation expiration string, as in :expires from Status>,
                       :allocation_status: <string: sliver state - e.g. :allocated>
             },
             ...

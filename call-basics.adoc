@@ -495,13 +495,21 @@ String content type:: URN
 
 An URN is sent as an XML-RPC +string+. See also the link:general.html[General] document about indentifiers. 
 
+[[StringDateTimeRfc3339]]
 === Datetime data type
 
 ***********************************
 [horizontal]
 XML-RPC type:: +string+
 String content type:: RFC 3339 date
+Type name in this document:: +string.datetime.rfc3339+
 ***********************************
+
+//////////////////////
+refer to this using:
+<<StringDateTimeRfc3339, +string.datetime.rfc3339+>>
+//////////////////////
+
 
 NOTE: dates are NOT sent using the XML-RPC +dateTime.iso8601+ type!
 
@@ -528,7 +536,7 @@ We recommend that implementers use parsers that fully comply with the RFC 3339. 
 
 Note that specifying a timezone is in fact always mandatory in RFC 3339. "Unqualified Local Time" is not allowed as it is guaranteed to cause interoperability problems.
 
-In the specification of this API, this is described as +dateTime.rfc3339+.
+In the specification of this API, this type is refered to as +string.dateTime.rfc3339+.
 
 === RSpec data type
 
@@ -745,12 +753,12 @@ Calls:: <<Allocate>>, <<Provision>>, <<Renew>>
 Supported by the server:: Mandatory
 Included by client:: Optional for <<Allocate>>, <<Provision>> but required for <<Renew>>
 XML-RPC type:: +string+
-String content type::  RFC 3339 date
+String content type::  <<StringDateTimeRfc3339, +string.datetime.rfc3339+>>
 ***********************************
 
 This  +expiration_time+ argument of <<Renew>> call and the +:end_time+ option of <<Allocate>> and <<Provision>>, are similar, thay both specify the requested expiration time of the sliver. However, it is an an argument for <<Renew>>, and thus it is mandatory to include by clients. 
 
-The +:end_time+ argument/option requests an expiration of the specified slivers. It is in dateTime.!rfc3339 format (defined above). 
+The +:end_time+ argument/option requests an expiration of the specified slivers. It is in <<StringDateTimeRfc3339, +string.datetime.rfc3339+>> format.
 
 When an explicit argument (<<Renew>>), it is required, and aggregates must honor the request to the extent local policy permits. They must return an error if they cannot honor this argument.
 
@@ -820,7 +828,7 @@ NOTE: *TODO: this is a very common return. Each call has only minor differences.
      ":sliver_urn": <string>,
      ":allocation_status": <string>,
      ":operational_status": <string>,
-     ":expires": <string: dateTime.rfc3339 when the sliver expires from its current state>,
+     ":expires": <string.dateTime.rfc3339: when the sliver expires from its current state>,
      (optional) ":error": <string: explaining any failure to Provision this sliver. The field may be omitted entirely but may not be null/None>
      (optional) ":resource_status" : <string: resource-specific status in more detail than operational_status>,
     },

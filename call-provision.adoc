@@ -96,7 +96,7 @@ XML-RPC type::
      ":sliver_urn": <string>,
      ":allocation_status": <string>,
      ":operational_status": <string>,
-     ":expires": <string: dateTime.rfc3339 when the sliver expires from its current state>,
+     ":expires": <string.dateTime.rfc3339: when the sliver expires from its current state>,
      (optional) ":error": <string: explaining any failure to Provision this sliver. The field may be omitted entirely but may not be null/None>
     },
     ...

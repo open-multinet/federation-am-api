@@ -70,7 +70,7 @@ XML-RPC type::
             ":sliver_urn" : <string>,
             ":allocation_status": <string: eg :provisioned>,
             ":operational_status": <string>,
-            ":expires": <string: dateTime.rfc3339 of individual sliver expiration>,
+            ":expires": <string.dateTime.rfc3339: date of individual sliver expiration>,
             [optional: ":resource_status" : string with resource-specific status in more detail than operational_status; may be omitted],
             [optional: ":error": string explanation of operation failure for this sliver. The field may be omitted but if present may not be null/None.]
             }, 
