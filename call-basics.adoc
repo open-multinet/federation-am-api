@@ -538,33 +538,36 @@ Note that specifying a timezone is in fact always mandatory in RFC 3339. "Unqual
 
 In the specification of this API, this type is refered to as +string.dateTime.rfc3339+.
 
+[[StringRspecDataType]]
 === RSpec data type
 
 ***********************************
 [horizontal]
 XML-RPC type:: +string+
 String content type:: RSpec 
+Type name in this document:: +string.rspec+
 ***********************************
+
+//////////////////////
+refer to this using:
+<<StringRspecDataType, +string.rspec+>>
+//////////////////////
 
 An RSpec is sent as an XML-RPC +string+. 
 
 See the link:rspec.html[Rspec Document] for details on RSpecs.
 
-NOTE: *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
-
 Throughout this API, multiple arguments and returns are labeled as an RSpec. These fields shall be understood as XML documents following one of the schemas advertised in the return from <<GetVersion>>. All such RSpecs must pass an XML schema validator, must list all used schemas and namespaces within the document, using schemas that are publicly available. The <<GetVersion>> return advertises schemas for advertisement and request RSpecs; the schemas for manifest RSpecs are assumed to be available at the same base URL, but using a corresponding manifest schema.
 
-A fully GENI AM API compliant aggregate will always support the GENI standard schemas for RSpecs, available at http://www.geni.net/resources/rspec. As of 4/2012, the current GENI RSpec version is 3 (type is geni, case insensitive). Aggregates are free to use an alternate format internally, but must accept and produce compliant RSpecs on demand.
+A fully compliant aggregate will always support the GENI standard schemas for RSpecs, see the link:rspec.html[Rspec section]. The current GENI RSpec version is 3 (type is geni, case insensitive). Aggregates are free to use an alternate format internally, but must accept and produce compliant RSpecs on demand.
 
-More information on GENI RSpecs is available link:http://www.protogeni.net/trac/protogeni/wiki/RSpec[on the ProtoGENI wiki].
-
-The Aggregate Manager (AM) API requires this contract: Aggregates advertise the type and version of RSpec formats that they support. If available, they specify the schema, namespace and extensions combination which is the authoritative definition of that format. Clients of the API should understand that combination in order to know how to understand the resources available at that aggregate.
+This API requires this contract: Aggregates advertise the type and version of RSpec formats that they support in <<GetVersion>>. If available, they specify the schema, namespace and extensions combination which is the authoritative definition of that format. Clients of the API should understand that combination in order to know how to understand the resources available at that aggregate.
 
 If an aggregate advertises a particular type/version (optionally defined with a combination of schema, namespace and extensions) in the +:ad_rspec_versions+ attribute of <<GetVersion>>, then it promises to send a correct Advertisement RSpec in response to a <<ListResources>> call which supplies a +:rspec_version+ option containing that type/version. (+:rspec_version+ is a struct with 2 members, type and version. type and version are case-insensitive strings, matching those in +:ad_rspec_versions).+
 
 If an Aggregate advertises a particular type/version (optionally defined with a combination of schema, namespace and extensions) in the +:request_rspec_versions+ attribute of <<GetVersion>> then it promises to correctly honor an <<Allocate>> call containing a request RSpec in the given format, and then to return a Manifest RSpec in the corresponding format (i.e. a GENI format request is answered with a GENI format manifest). The aggregate also promises to send a correctly formatted Manifest RSpec in response to a <<Describe>> or <<Provision>> call which supplies a valid slice URN or list of sliver URNs and an +:rspec_version+ option containing that supported type/version.
 
-In this API, such RSpec fields are labeled as type +geni.rspec+. 
+In this API, such RSpec fields are refered to as +string.rspec+. 
 
 
 == Common Call Arguments, Options and Return values
@@ -808,7 +811,7 @@ There are some restrictions on the allowed string for +type+ and +version+. The 
 
 Regular expression expressing these rule: '^[a-zA-Z0-9][a-zA-Z0-9-_\.:]*$'
 
-For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Document].
+For more details on RSpecs and RSpec versions, see the type <<StringRspecDataType, +string.rspec+>> and the link:rspec.html[Rspec Document].
 
 
 [[CommonReturnSliverInfoList]]

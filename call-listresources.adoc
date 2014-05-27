@@ -68,6 +68,7 @@ Note: compressed or not, the XML-RPC return type of the +ListResources+ value fi
 ***********************************
 [horizontal]
 XML-RPC type:: +string+
+String content type:: <<StringRspecDataType, +string.rspec+>>
 ***********************************
 
 ////////////////////////////////////

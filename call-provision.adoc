@@ -89,7 +89,7 @@ Clients may omit this option. Aggregates should honor this option for any resour
 [horizontal]
 XML-RPC type::
 [source]
-  ":rspec": <string: geni.rspec, RSpec manifest>,
+  ":rspec": <string.rspec: RSpec manifest>,
   ":slivers": 
   [
     {
@@ -103,7 +103,7 @@ XML-RPC type::
   ],
 ***********************************
 
-On success, the value field of the return struct will contain a struct containing the RSpec manifest and a list of sliver info.
+On success, the value field of the return struct will contain a struct containing the RSpec manifest (using the <<StringRspecDataType, +string.rspec+>> data type) and a list of sliver info.
 
 See the <<CommonReturnSliverInfoList, sliver info list return>> for details on the sliver info list.
 
