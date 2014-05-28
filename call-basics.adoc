@@ -813,29 +813,63 @@ For more details on RSpecs and RSpec versions, see the type <<StringRspecDataTyp
 
 
 [[CommonReturnSliverInfoList]]
-=== Common Return: Sliver info list
+=== Common Return: Sliver Info List
 /////////////////////////////////////
 refer to this using:   See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
 /////////////////////////////////////
 
-NOTE: *TODO: this is a very common return. Each call has only minor differences. It should be described in general instead of at each call. This section needs a more detailed description.*
-
-.Syntax
+***********************************
+[horizontal]
+Calls:: <<PerformOperationalAction>>, <<Renew>>, <<Delete>>
+Calls:: (as part of larger +struct+) <<Allocate>>, <<Provision>>, <<Status>>, <<Describe>>
+Supported by server:: Mandatory (part of the mandatory return of these calls)
+XML-RPC type::
 [source]
-------------------
-  ":slivers": 
   [
     {
      ":sliver_urn": <string>,
      ":allocation_status": <string>,
      ":operational_status": <string>,
-     ":expires": <string.dateTime.rfc3339: when the sliver expires from its current state>,
-     (optional) ":error": <string: explaining any failure to Provision this sliver. The field may be omitted entirely but may not be null/None>
-     (optional) ":resource_status" : <string: resource-specific status in more detail than operational_status>,
+     ":expires": <string.dateTime.rfc3339: sliver expiration time>,
+     (optional) ":error": <string: explaining any failure to Provision>
+     (optional) ":resource_status" : <string: resource-specific status>,
     },
     ...
-  ],
-------------------
+  ]
+***********************************
+
+The +:operational_status+ in the sliver info list is required, unless these 2 conditions are met: 
+
+* +:operational_status+ is +:pending_allocation+
+* +:allocation_status+ is not +:provisioned+. 
+
++:error+ may be omitted entirely but may not be null/None.
++:resource_status+ can be used to describe the resource specific status in more detail than +:operational_status+.
+
+<<PerformOperationalAction>>, <<Renew>> and <<Delete>> directly return the basic sliver info list +array+ described above.
+<<Allocate>>, <<Provision>>, <<Describe>> and <<Status>> return a +struct+, which contains a sliver info list +array+ and additional info.
+
+==== Extended return +struct+
+
+***********************************
+[horizontal]
+Calls:: <<Allocate>>, <<Provision>>, <<Describe>>, <<Status>>
+Supported by server:: Mandatory (part of the mandatory return of these calls)
+XML-RPC type::
+[source]
+    {
+      ":rspec" : <string.rspec: manifest rspec>
+      ":urn" : <string: slice urn of the containing slice>
+      ":slivers" : <array: sliver info list described above>
+    }
+***********************************
+
+Additional rules:
+
+* +:urn+ only needs to be included for the +Describe+ and +Status+ calls.
+* +:rspec+ only needs to be included for the +Allocate+, +Provision+ and +Describe+ calls.
+
+==== Examples
 
 .Example Call & Reply without +:best_effort+
 [source]
