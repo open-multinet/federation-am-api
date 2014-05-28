@@ -10,7 +10,7 @@ At some aggregates, experimenter tools may call Allocate multiple times, to add 
 ----------------
 Allocate(string slice_urn,
          struct credentials[],
-         geni.rspec rspec,
+         string.rspec rspec,
          struct options)
 ----------------
 
@@ -39,12 +39,12 @@ The URN of the slice to which the resources specified in rspec will be allocated
 Supported by the server:: Mandatory
 Included by client:: Mandatory
 XML-RPC type::  +string+
-String content type::  RSpec
+String content type::  <<StringRspecDataType, +string.rspec+>>
 ***********************************
 
 An RSpec containing the resources that the caller is requesting for allocation to the slice specified in slice_urn. These are expected to be consistent with the resources returned by a previous invocation of <<ListResources>>. If this RSpec is in a format not listed as supported by <<GetVersion>>, then the aggregate will return an error of +BADVERSION (4)+.
 
-For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Document].
+For more details on RSpecs and RSpec versions, see the type <<StringRspecDataType, +string.rspec+>> and the link:rspec.html[Rspec Document].
 
 ==== Argument 3: +credentials+
 
@@ -73,11 +73,11 @@ On success, the value field of the return struct will contain a struct:
 XML-RPC type::
 [source]
     {
-     ":rspec" : <string: geni.rspec manifest of newly allocated slivers>,
+     ":rspec" : <string.rspec: manifest of newly allocated slivers>,
      ":slivers" : [
             {
                       :sliver_urn: <string: sliver urn>
-                      :expires: <string: dateTime.rfc3339 allocation expiration string, as in :expires from Status>,
+                      :expires: <string.dateTime.rfc3339: allocation expiration string, as in :expires from Status>,
                       :allocation_status: <string: sliver state - e.g. :allocated>
             },
             ...

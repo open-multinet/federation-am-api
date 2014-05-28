@@ -89,21 +89,21 @@ Clients may omit this option. Aggregates should honor this option for any resour
 [horizontal]
 XML-RPC type::
 [source]
-  ":rspec": <string: geni.rspec, RSpec manifest>,
+  ":rspec": <string.rspec: RSpec manifest>,
   ":slivers": 
   [
     {
      ":sliver_urn": <string>,
      ":allocation_status": <string>,
      ":operational_status": <string>,
-     ":expires": <string: dateTime.rfc3339 when the sliver expires from its current state>,
+     ":expires": <string.dateTime.rfc3339: when the sliver expires from its current state>,
      (optional) ":error": <string: explaining any failure to Provision this sliver. The field may be omitted entirely but may not be null/None>
     },
     ...
   ],
 ***********************************
 
-On success, the value field of the return struct will contain a struct containing the RSpec manifest and a list of sliver info.
+On success, the value field of the return struct will contain a struct containing the RSpec manifest (using the <<StringRspecDataType, +string.rspec+>> data type) and a list of sliver info.
 
 See the <<CommonReturnSliverInfoList, sliver info list return>> for details on the sliver info list.
 

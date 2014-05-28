@@ -495,13 +495,21 @@ String content type:: URN
 
 An URN is sent as an XML-RPC +string+. See also the link:general.html[General] document about indentifiers. 
 
+[[StringDateTimeRfc3339]]
 === Datetime data type
 
 ***********************************
 [horizontal]
 XML-RPC type:: +string+
 String content type:: RFC 3339 date
+Type name in this document:: +string.datetime.rfc3339+
 ***********************************
+
+//////////////////////
+refer to this using:
+<<StringDateTimeRfc3339, +string.datetime.rfc3339+>>
+//////////////////////
+
 
 NOTE: dates are NOT sent using the XML-RPC +dateTime.iso8601+ type!
 
@@ -528,35 +536,38 @@ We recommend that implementers use parsers that fully comply with the RFC 3339. 
 
 Note that specifying a timezone is in fact always mandatory in RFC 3339. "Unqualified Local Time" is not allowed as it is guaranteed to cause interoperability problems.
 
-In the specification of this API, this is described as +dateTime.rfc3339+.
+In the specification of this API, this type is refered to as +string.dateTime.rfc3339+.
 
+[[StringRspecDataType]]
 === RSpec data type
 
 ***********************************
 [horizontal]
 XML-RPC type:: +string+
 String content type:: RSpec 
+Type name in this document:: +string.rspec+
 ***********************************
+
+//////////////////////
+refer to this using:
+<<StringRspecDataType, +string.rspec+>>
+//////////////////////
 
 An RSpec is sent as an XML-RPC +string+. 
 
 See the link:rspec.html[Rspec Document] for details on RSpecs.
 
-NOTE: *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
-
 Throughout this API, multiple arguments and returns are labeled as an RSpec. These fields shall be understood as XML documents following one of the schemas advertised in the return from <<GetVersion>>. All such RSpecs must pass an XML schema validator, must list all used schemas and namespaces within the document, using schemas that are publicly available. The <<GetVersion>> return advertises schemas for advertisement and request RSpecs; the schemas for manifest RSpecs are assumed to be available at the same base URL, but using a corresponding manifest schema.
 
-A fully GENI AM API compliant aggregate will always support the GENI standard schemas for RSpecs, available at http://www.geni.net/resources/rspec. As of 4/2012, the current GENI RSpec version is 3 (type is geni, case insensitive). Aggregates are free to use an alternate format internally, but must accept and produce compliant RSpecs on demand.
+A fully compliant aggregate will always support the GENI standard schemas for RSpecs, see the link:rspec.html[Rspec section]. The current GENI RSpec version is 3 (type is geni, case insensitive). Aggregates are free to use an alternate format internally, but must accept and produce compliant RSpecs on demand.
 
-More information on GENI RSpecs is available link:http://www.protogeni.net/trac/protogeni/wiki/RSpec[on the ProtoGENI wiki].
-
-The Aggregate Manager (AM) API requires this contract: Aggregates advertise the type and version of RSpec formats that they support. If available, they specify the schema, namespace and extensions combination which is the authoritative definition of that format. Clients of the API should understand that combination in order to know how to understand the resources available at that aggregate.
+This API requires this contract: Aggregates advertise the type and version of RSpec formats that they support in <<GetVersion>>. If available, they specify the schema, namespace and extensions combination which is the authoritative definition of that format. Clients of the API should understand that combination in order to know how to understand the resources available at that aggregate.
 
 If an aggregate advertises a particular type/version (optionally defined with a combination of schema, namespace and extensions) in the +:ad_rspec_versions+ attribute of <<GetVersion>>, then it promises to send a correct Advertisement RSpec in response to a <<ListResources>> call which supplies a +:rspec_version+ option containing that type/version. (+:rspec_version+ is a struct with 2 members, type and version. type and version are case-insensitive strings, matching those in +:ad_rspec_versions).+
 
 If an Aggregate advertises a particular type/version (optionally defined with a combination of schema, namespace and extensions) in the +:request_rspec_versions+ attribute of <<GetVersion>> then it promises to correctly honor an <<Allocate>> call containing a request RSpec in the given format, and then to return a Manifest RSpec in the corresponding format (i.e. a GENI format request is answered with a GENI format manifest). The aggregate also promises to send a correctly formatted Manifest RSpec in response to a <<Describe>> or <<Provision>> call which supplies a valid slice URN or list of sliver URNs and an +:rspec_version+ option containing that supported type/version.
 
-In this API, such RSpec fields are labeled as type +geni.rspec+. 
+In this API, such RSpec fields are refered to as +string.rspec+. 
 
 
 == Common Call Arguments, Options and Return values
@@ -745,22 +756,20 @@ Calls:: <<Allocate>>, <<Provision>>, <<Renew>>
 Supported by the server:: Mandatory
 Included by client:: Optional for <<Allocate>>, <<Provision>> but required for <<Renew>>
 XML-RPC type:: +string+
-String content type::  RFC 3339 date
+String content type::  <<StringDateTimeRfc3339, +string.datetime.rfc3339+>>
 ***********************************
 
 This  +expiration_time+ argument of <<Renew>> call and the +:end_time+ option of <<Allocate>> and <<Provision>>, are similar, thay both specify the requested expiration time of the sliver. However, it is an an argument for <<Renew>>, and thus it is mandatory to include by clients. 
 
-The +:end_time+ argument/option requests an expiration of the specified slivers. It is in dateTime.!rfc3339 format (defined above). 
+The +:end_time+ argument/option requests an expiration of the specified slivers. It is in <<StringDateTimeRfc3339, +string.datetime.rfc3339+>> format.
 
 When an explicit argument (<<Renew>>), it is required, and aggregates must honor the request to the extent local policy permits. They must return an error if they cannot honor this argument.
 
-When +:end_time+ is an option in the options struct (<<Provision>> and <<Allocate>>), clients may omit the option, and AMs may choose not to or be unable to honor this option, but may still succeed the overall request. If +:end_time+ is supplied, the experimenter is requesting a particular sliver reservation expiration date. Local policy may however dictate the expiration date. The AM therefore may ignore this argument; the call should still succeed, even if the date argument cannot be satisfied. 
+When +:end_time+ is an option in the options struct (<<Provision>> and <<Allocate>>), clients may omit the option, and AMs may choose not to or be unable to honor this option, but may still succeed the overall request. If +:end_time+ is supplied, the experimenter is requesting a particular sliver reservation expiration time. Local policy may however dictate the expiration time. The AM therefore may ignore this argument; the call should still succeed, even if the date argument cannot be satisfied. 
 
-==== Note on Expiration times
+==== Sliver Expiration times
 
-NOTE: *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
-
-Slivers have expiration times. Expiration times are set by local aggregate policy. In no case however should an aggregate set a sliver expiration to later than the expiration of the presented credentials which granted the caller authorization to invoke the method. I.E. sliver expiration is less than or equal to the expiration of the presented geni_sfa slice credential.
+Slivers have expiration times. Expiration times are set by local aggregate policy. In no case however should an aggregate set a sliver expiration to later than the expiration of the presented credentials which granted the caller authorization to invoke the method: *Sliver expiration is always less than or equal to the expiration of the presented slice credential*.
 
 Additionally, slivers have different durations depending on the sliver allocation state. Generally:
 
@@ -770,7 +779,7 @@ Additionally, slivers have different durations depending on the sliver allocatio
 When a sliver expires, the aggregate deletes the sliver automatically. This includes stopping resources and freeing the reservation.
 
 [[CommonArgumentRspecVersion]]
-==== Common Argument: +rspec_version+
+=== Common Argument: +rspec_version+
 
 /////////////////////////////////////
 refer to this using:   See the <<CommonArgumentRspecVersion, +rspec_version+ argument>> for details.
@@ -800,33 +809,67 @@ There are some restrictions on the allowed string for +type+ and +version+. The 
 
 Regular expression expressing these rule: '^[a-zA-Z0-9][a-zA-Z0-9-_\.:]*$'
 
-For more details on RSpecs and RSpec versions, see the link:rspec.html[Rspec Document].
+For more details on RSpecs and RSpec versions, see the type <<StringRspecDataType, +string.rspec+>> and the link:rspec.html[Rspec Document].
 
 
 [[CommonReturnSliverInfoList]]
-=== Common Return: Sliver info list
+=== Common Return: Sliver Info List
 /////////////////////////////////////
 refer to this using:   See the <<CommonReturnSliverInfoList, sliver info list return>> for details.
 /////////////////////////////////////
 
-NOTE: *TODO: this is a very common return. Each call has only minor differences. It should be described in general instead of at each call. This section needs a more detailed description.*
-
-.Syntax
+***********************************
+[horizontal]
+Calls:: <<PerformOperationalAction>>, <<Renew>>, <<Delete>>
+Calls:: (as part of larger +struct+) <<Allocate>>, <<Provision>>, <<Status>>, <<Describe>>
+Supported by server:: Mandatory (part of the mandatory return of these calls)
+XML-RPC type::
 [source]
-------------------
-  ":slivers": 
   [
     {
      ":sliver_urn": <string>,
      ":allocation_status": <string>,
      ":operational_status": <string>,
-     ":expires": <string: dateTime.rfc3339 when the sliver expires from its current state>,
-     (optional) ":error": <string: explaining any failure to Provision this sliver. The field may be omitted entirely but may not be null/None>
-     (optional) ":resource_status" : <string: resource-specific status in more detail than operational_status>,
+     ":expires": <string.dateTime.rfc3339: sliver expiration time>,
+     (optional) ":error": <string: explaining any failure to Provision>
+     (optional) ":resource_status" : <string: resource-specific status>,
     },
     ...
-  ],
-------------------
+  ]
+***********************************
+
+The +:operational_status+ in the sliver info list is required, unless these 2 conditions are met: 
+
+* +:operational_status+ is +:pending_allocation+
+* +:allocation_status+ is not +:provisioned+. 
+
++:error+ may be omitted entirely but may not be null/None.
++:resource_status+ can be used to describe the resource specific status in more detail than +:operational_status+.
+
+<<PerformOperationalAction>>, <<Renew>> and <<Delete>> directly return the basic sliver info list +array+ described above.
+<<Allocate>>, <<Provision>>, <<Describe>> and <<Status>> return a +struct+, which contains a sliver info list +array+ and additional info.
+
+==== Extended return +struct+
+
+***********************************
+[horizontal]
+Calls:: <<Allocate>>, <<Provision>>, <<Describe>>, <<Status>>
+Supported by server:: Mandatory (part of the mandatory return of these calls)
+XML-RPC type::
+[source]
+    {
+      ":rspec" : <string.rspec: manifest rspec>
+      ":urn" : <string: slice urn of the containing slice>
+      ":slivers" : <array: sliver info list described above>
+    }
+***********************************
+
+Additional rules:
+
+* +:urn+ only needs to be included for the +Describe+ and +Status+ calls.
+* +:rspec+ only needs to be included for the +Allocate+, +Provision+ and +Describe+ calls.
+
+==== Examples
 
 .Example Call & Reply without +:best_effort+
 [source]

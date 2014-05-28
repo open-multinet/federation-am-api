@@ -51,7 +51,7 @@ XML-RPC type::
                    ":sliver_urn": <string: sliver URN>
                    ":allocation_status": <string: eg provisioned>
                    ":operational_status": <string: eg ready>
-                   ":expires": <string: dateTime.rfc3339 of individual sliver expiration>
+                   ":expires": <string.dateTime.rfc3339: of individual sliver expiration>
                    ":error": <string: eg '' - not null/None and not optional>,
                  },
                  ...

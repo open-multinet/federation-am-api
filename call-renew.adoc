@@ -8,7 +8,7 @@ Request that the named slivers be renewed, with their expiration extended. If po
 ----------------
 Renew(string urns[],
       struct credentials[],
-      dateTime.rfc3339 :end_time, 
+      string.dateTime.rfc3339 :end_time, 
       struct options)
 ----------------
 
@@ -33,10 +33,6 @@ The standard authorization argument. See <<CommonArgumentCredentials, the Creden
 ==== Argument 3: +:end_time+
 
 See <<CommonOptionEndTime, +:end_time+ option>> for details. Note that here, it is a mandatory argument.
-
-////////////////////////
-The date-time string in  RFC 3339 format in UTC when the reservation(s) should be extended until.
-////////////////////////
 
 ==== Argument 4:  +options+
 
@@ -68,7 +64,7 @@ XML-RPC type::
    ":sliver_urn": <string>,
    ":allocation_status": <string>,
    ":operational_status": <string>,
-   ":expires": <string: dateTime.rfc3339 when the sliver expires from its current state>,
+   ":expires": <string.dateTime.rfc3339: when the sliver expires from its current state>,
    (optional) ":error": <string: explaining any renewal failure for this sliver. The field may be omitted entirely but may not be null/None>
   },
   ...
