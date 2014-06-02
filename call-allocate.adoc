@@ -14,10 +14,6 @@ Allocate(string slice_urn,
          struct options)
 ----------------
 
-NOTE: This is the first part of what CreateSliver used to do in previous versions of the AM API. The second part is now done by <<Provision>>, and the final part is done by <<PerformOperationalAction>>. 
-
-NOTE: This operation is similar to ProtoGENI's GetTicket operation.
-
 As described in the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section, the :allocate return from <<GetVersion>> advertises when a client may legally call Allocate (only once at a time per slice, whenever desired, or multiple times only if the requested resources do not interact).
 
 ==== Argument 1: +slice_urn+

@@ -14,10 +14,7 @@ Provision(string urns[], struct credentials[],
           struct rspec_version, struct options)
 ----------------
 
-NOTE: This operation is part of what CreateSliver used to do. The first part of what CreateSliver did is now in <<Allocate>>. This operation is similar to ProtoGENI's  RedeemTicket method.
-
 NOTE: Note that resources are not necessarily ready for experimenter use after the work that this function initiates finally completes. Consult the :operational_status, and the advertised operational state machine. Consider calling <<PerformOperationalAction>>, e.g. with the command name :start.
-
 
 As described in the <<OperationsOnIndividualSlivers, Operations On Individual Slivers>> section, the +:single_allocation+ return from <<GetVersion>> advertises whether or not a client may invoke this method on only some of the slivers in a given +:allocation_state+ in a given slice (default is false - the client may operate on only some of the slivers in a given state).
 

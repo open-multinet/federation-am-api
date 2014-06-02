@@ -48,5 +48,54 @@ include::call-shutdown.adoc[tabsize=4]
 
 == Releation to other API's
 
-NOTE: *TODO* add a section here that desribes the relation between this API and other API's, such as the Geni AMv2 and AMv3 APIs. Incompatabilities should be listed.
+This section compares the methods of this API to other API's, such as the link:http://www.protogeni.net/wiki/ComponentManagerAPIV2[ProtoGeni CM v2 API] and the link:http://groups.geni.net/geni/wiki/GAPI_AM_API_V2[Geni AM v2 API].
+
+In particular, the notable differences with the link:http://groups.geni.net/geni/wiki/GAPI_AM_API_V3[Geni AM v3 API], on which this API is based, are listed. General differences, like replacing the +geni_+ prefix with a colon +:+ are not mentioned for each command.
+
+<<GetVersion>>::
+    ProtoGENI;; The +GetVersion+ methods have a same name and purpose, but the information returned is in a completely different format.
+    Geni AM v2 API;; This is the same as +GetVersion+ but contains more information.
+    Geni AM v3 API;; This is mostly the same, however, the format is not compatible due to dropping the +geni_+ prefix. Also, some extra info is added by this API: +:am_code_version+ and +:am_type+
+
+<<Allocate>>::
+    ProtoGENI;; This operation is similar to the +GetTicket+ operation.
+    Geni AM v2 API;; This is the first part of what +CreateSliver+ does. The second part is done by <<Provision>>, and the final part is done by <<PerformOperationalAction>>. So +CreateSliver+ also provisions the resources, and 'starts' them.
+    Geni AM v3 API;; This API changes +rspec_version+ into a mandatory argument instead of a mandatory option. 
+
+<<Provision>>::
+    ProtoGENI;; This operation is similar to the +RedeemTicket+ method.
+    Geni AM v2 API;; This operation is part of what +CreateSliver+ does. The first part of what +CreateSliver+ does is <<Allocate>>. Note that this does not 'start' the resources, or otherwise change their operational state (<<PerformOperationalAction>> does that).
+    Geni AM v3 API;; This API changes +rspec_version+ into a mandatory argument instead of a mandatory option.
+
+<<PerformOperationalAction>>::
+    ProtoGENI;; This operation is similar to functions like +StartSliver+, +StopSliver+, and +RestartSliver+ in the PG CMv2 API.
+    Geni AM v2 API;; Calling +PerformOperationalAction+ with the action +:start+ corresponds to the final part of what +CreateSliver+ does.
+    Geni AM v3 API;; This API adds an +:update_users+ action.
+
+<<ListResources>>::
+    ProtoGeni;; This operation is similar to the +DiscoverResources+ method.
+    Geni AM v2 API;; This method is what +ListResources+ does when called without a slice URN argument.
+    Geni AM v3 API;; This API changes +rspec_version+ into a mandatory argument instead of a mandatory option.
+
+
+<<Describe>>::
+    ProtoGENI;; This operation is similar to the +Resolve+ method.
+    Geni AM v2 API;; This method is what +ListResources+ does when called with a slice URN argument.
+    Geni AM v3 API;; This API changes +rspec_version+ into a mandatory argument instead of a mandatory option.
+
+<<Status>>::
+    ProtoGENI;;  This operation is similar to the +SliverStatus+ method.
+    Geni AM v2 API;; This method correseponds to the +SliverStatus+ method. +:slivers+ replaces +geni_resources+ and +:sliver_urn+ replaces +geni_urn+. +geni_status+ is replaced with 2 fields: +:allocation_status+ and +:operational_status+
+    Geni AM v3 API;; similar.
+
+<<Delete>>:: 
+    ProtoGENI;; This operation is similar to the +DeleteSliver+ operation.
+    SFA;; This operation is similar to the +DeleteSlice+ operation (sec. 6.2.3).
+    Geni AM v2 API;; This method correseponds to the +DeleteSliver+ method. To get the functionality of +DeleteSliver+, call +Delete+ with the slice URN.
+    Geni AM v3 API;; similar.
+
+<<Renew>>::
+    ProtoGENI;; This operation is similar to the +RenewSlice+ method.
+    Geni AM v2 API;; This operation is similar to the +RenewSliver+. Use +Renew+(<slice_urn>) to get the equivalent functionality.
+    Geni AM v3 API;; This API adds the +:extend_alap+ option.
 

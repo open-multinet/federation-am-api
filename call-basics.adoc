@@ -338,11 +338,11 @@ If the transition from one state to another fails, the sliver shall remain in it
 
 Several AM API methods can be described in terms of transitions among allocation states.
 
-- <<Allocate>> moves 1 or more slivers from +:unallocated+ (state 1) to +:allocated+ (state 2). This method can be described as creating an instance of the state machine for each sliver. If the aggregate cannot fully satisfy the request, the whole request fails. This is a change from the AM API V2 CreateSliver, which also provisioned the resources, and 'started' them. That is <<Allocate>> does one of the three things that CreateSliver did previously.
-- <<Delete>> moves 1 or more slivers from either state 2 or 3 (+:allocated+ or +:provisioned),+ back to state 1 (+:unallocated).+ This is similar to the AM API AM API V2 DeleteSliver.
+- <<Allocate>> moves 1 or more slivers from +:unallocated+ (state 1) to +:allocated+ (state 2). This method can be described as creating an instance of the state machine for each sliver. If the aggregate cannot fully satisfy the request, the whole request fails.
+- <<Delete>> moves 1 or more slivers from either state 2 or 3 (+:allocated+ or +:provisioned),+ back to state 1 (+:unallocated).+
 - <<Renew>>, when given slivers in state 2 (+:allocated+ state), requests an extended timeout.
 - <<Renew>>, when given slivers in state 3 (+:provisioned+ state) will request and extended sliver expiration timeout. That is, this method's semantics can be the same as RenewSliver from AM API v2.
-- <<Provision>> moves 1 or more slivers from state 2 (+:allocated)+ to state 3 (+:provisioned).+ This is some of what AM API V2 CreateSliver did. Note however that this does not 'start' the resources, or otherwise change their operational state (<<PerformOperationalAction>> does that). This method only fully instantiates the resources in the slice. This may be a no-op for some aggregates or resources. 
+- <<Provision>> moves 1 or more slivers from state 2 (+:allocated)+ to state 3 (+:provisioned).+ Note that this does not 'start' the resources, or otherwise change their operational state (<<PerformOperationalAction>> does that). This method only fully instantiates the resources in the slice. This may be a no-op for some aggregates or resources. 
 
 When <<Provision>> fails for only some slivers, and +:best_effort+ option was supplied, the aggregate will return the status of each requested sliver individually. The +:allocation_state+ for slivers that failed will remain +:allocated.+ This typically suggests that the experimenter may retry the call. For some aggregates or resource types, the sliver may be 'dead', and <<Provision>> may never succeed. Experimenters should check +:error+ for more information.
 
