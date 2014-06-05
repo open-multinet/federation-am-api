@@ -4,25 +4,573 @@ TODO_ADD_Federation_AM_API_Author
 v0.1, April 2014: First draft
 :language: python
 
-*TODO refer to other 4 documents*
+The federation AM API consists of multiple documents. 
+
+This document describes basic RSpec concepts and describes how the geni RSpec version 3 is typically used.
+
+Other documents:
 
 - link:federation-am-api.html[AM API]
 - link:credential-sfa.html[SFA Credentials]
 - link:credential-abac.html[ABAC Credentials]
 - link:general.html[General] Architecture & Concepts, Identifiers (URN etc.), "where does AM fit into this?"
 
-*TODO bvermeul: in this document I would describe 3 types of RSpec (advertisement, request, manifest), put the schemas also in this standard, and then 
-maybe refer to example repositories which are known, e.g. http://fed4fire-testbeds.ilabt.iminds.be/ilabt-documentation/urnsrspecs.html *
+== Links
 
-== User login information - Manifest Rspec Extension
+General links:
 
-*TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
+* http://groups.geni.net/geni/wiki/GENIExperimenter/RSpecs
+* http://groups.geni.net/geni/wiki/GeniRspec
+* http://www.protogeni.net/ProtoGeni/wiki/RSpec
+* schema: http://www.geni.net/resources/rspec
+
+RSpec example repositories:
+
+* http://www.protogeni.net/ProtoGeni/wiki/RSpecExamples
+* http://fed4fire-testbeds.ilabt.iminds.be/ilabt-documentation/urnsrspecs.html
+
+== RSpec Basics
+
+RSpec, or "Resource Specification", are XML documents, following certain schemas, used to describe resources.
+There are 3 (closely related) types of RSpec:
+
+Advertisement RSpec:: These describe the resources present at an aggregate. 
+They information used by clients to choose resources (components). 
+Other kinds of information (MAC addresses, hostnames, etc.) which are not used to select resources should not be in the Advertisement. 
+Request RSpec:: These are used to request resources from an aggregate. 
+They do not necessarily request specific resources. 
+They do not need to repeat all information known about the specific resources they request, 
+a resource ID in the form of an URN is enough to identify specific resources.
+Manifest RSpec:: These are returned when an aggregate fulfills a request from a client. 
+They contain useful information about the allocated sliver(s).
+This involves information that may not be known until the sliver is actually created (i.e. dynamically assigned IP addresses, hostnames), or additional configuration options provided to a client.
++
+Manifest RSpecs are not necessarily static before the resources are fully ready. 
++
+When an aggregate converts a request RSpec to a manifest RSpec, it must keep elements of any RSpec extension it does not know intact, 
+see the <<RSpecExtensions, RSpec extension section>> for additional information about this.
+
+=== Multi Aggregate RSpecs
+
+Advertisement RSpecs typically contain all resources (or only the available resources) within one single aggregate. 
+
+Request and manifest RSpecs can contain resources within multiple aggregates. 
+Aggregates must ignore resources belonging to other aggregates in a request RSpec, and repeat these resources unmodified in manifest RSpecs.
+Clients will have to merge manifest RSpecs they receive from multiple aggregates to create one combined manifest RSpec.
+
+
+== Geni RSpec version 3 details
+
+***********************************
+Geni RSpec version 3 
+[horizontal]
+namespace:: +http://www.geni.net/resources/rspec/3+
+advertisement schema:: http://www.geni.net/resources/rspec/3/ad.xsd
+request schema:: http://www.geni.net/resources/rspec/3/request.xsd
+manifest schema:: http://www.geni.net/resources/rspec/3/manifest.xsd
+extension schemas:: http://www.geni.net/resources/rspec/ext
+***********************************
+
+////////////////////////
+TODO: add this info:
+All core rspec tags are within the rspec namespace. The core schema expects verifies only tags in the core rspec namespace and accepts any elements or attributes outside of that namespace as valid.
+
+All timestamps are formatted to be RFC 3339 compliant.
+
+RSpec and extension versions are specified by the namespace URN. 
+////////////////////////
+
+=== +<rspec>+
+
+All valid RSpecs contain one +<rspec>+ element. The most basic element is:
+[source]
+------------------
+<rspec type="request" xmlns="http://www.geni.net/resources/rspec/3">
+   ...
+</rspec>
+------------------
+
+With schema location for a request RSpec added this becomes:
+[source]
+------------------
+<rspec 
+    type="request" 
+    xsi:schemaLocation="http://www.geni.net/resources/rspec/3 http://www.geni.net/resources/rspec/3/request.xsd" 
+    xmlns="http://www.geni.net/resources/rspec/3" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   ...
+</rspec>
+------------------
+
+The possible attributes are described in the sections below.
+
+The RSpec element can contain node and link elements (0 or multiple). 
+It is not required that the RSpec contains a node or link:
+An empty RSpec can be used to decribe "nothing", 
+or the information might all be contained in an extension.
+
+==== attribute +type+
+
+***********************************
+[horizontal]
+required:: true
+type:: +xs:token+ "request", "advertisement" or "manifest"
+***********************************
+
+This is a required attribute, there are 3 possible values, corresponding to the 3 RSpec types:
+
+* request
+* advertisement
+* manifest
+
+==== attribute +generated+
+
+***********************************
+[horizontal]
+required:: false
+type:: +xs:dateTime+
+***********************************
+
+The date at which the RSpec was generated, in the xml +xs:dateTime+ format (see http://www.w3.org/TR/xmlschema-2/#dateTime). 
+Note that this format is very similar to RFC3339 format. In fact, these dates can be parsed correctly by a parser that handles RFC3339. However, not every string that is valid RFC3339 is also valid +xs:dateTime+.
+
+==== attribute +generated_by+
+
+***********************************
+[horizontal]
+required:: false
+type:: +xs:string+
+***********************************
+
+The name of the aggregate software or client tool that generated the request.
+
+=== +<node>+
+
++<node>+ is used to describe various types of "computing node" resources. 
+
+The specific resource depends on the testbed.
+
++<node>+ is typically used for physical machines or virtual machines, that run an OS and have at least 1 IP interface.
+
+[source]
+------------------
+<node client_id="node0" component_manager_id="urn:publicid:IDN+example.com+authority+cm" exclusive="true">
+    <sliver_type name="raw-pc"/>
+    <interface client_id="node0:if0"/>
+</node>
+------------------
+
+The possible attributes and elements that define a +node+ are described in the sections below.
+
+==== attribute +component_manager_id+
+
+***********************************
+[horizontal]
+In advertisement:: required
+In request:: required
+In manifest:: required
+type:: +xs:string+ containing URN
+***********************************
+
+This contains the URN of the component manager that manages the node. Each aggregate typically manages at least one component manager. 
+If an aggregate receives a request which contains nodes that reference a component manager that the aggregate does not control, 
+it must ignore the node and copy it unmodified into the manifest RSpec.
+
+The URN of the component manager(s) handled by an aggregate typically have:
+
+* the same authority as the aggregate
+* the type "authority"
+* the name "cm"
+
+Example: +urn:publicid:IDN+example.com+authority+cm+
+
+==== attribute +client_id+
+
+***********************************
+[horizontal]
+In advertisement:: no
+In request:: required
+In manifest:: required
+type:: +xs:string+
+***********************************
+
+The +client_id+ attribute is an ID added by the client that should not
+be changed at all by the aggregate. It is how the client can know the
+relationship between the nodes that it specified in the request RSpec,
+and the nodes that it receives in the manifest RSpec. So the client
+sets +client_id+ and expects that the aggregate manager does not
+change it at all.
+
+Each +client_id+ must be globally unique: no other node in the same RSpec may have the same +client_id+.
+
+==== attribute +component_id+
+
+***********************************
+[horizontal]
+In advertisement:: required
+In request:: optional
+In manifest:: optional
+type:: +xs:string+ containing URN
+***********************************
+
+In the advertisement and manifest RSpec, the +component_id+ attribute 
+contains the URN that is used as identifier for the specific node.
+
+In the request RSpec, the +component_id+ attribute is set to a specific URN 
+if the client wishes to bind to a specific node. 
+The client typically retrieves the possible URNs from the advertisement RSpec.
+
+If the +component_id+ attribute is not added in the request RSpec node, the node is
+unbound and the aggregate should pick a node. 
+The resulting manifest will contain the +component_id+ of the chosen node.
+
+==== element +sliver_type+
+
+***********************************
+[horizontal]
+In advertisement:: required (multiple allowed)
+In request:: required (only 1 allowed)
+In manifest:: required (only 1 allowed)
+type:: +xs:string+
+***********************************
+
+The sliver type has a name attribute, which specifies the specific type of computing node.
+The possible node types are aggregate specific. A few examples:
+
+[horizontal]
+raw-pc:: A dedicated physical machines
+xo.small:: A "small" virtual machine at ExoGeni
+plab-vserver:: A planetlab virtual machine
+emulab-xen:: A xen virtual machine at emulab
+emulab-openvz:: An openvz virtual machine at emulab
+
+In the advertisement RSpec, all possible sliver types are listed in the node. 
+In the request RSpec, the single chosen sliver type must be added.
+In the manifest RSpec, the single chosen sliver type from the request must be present.
+
+==== attribute +exclusive+
+
+***********************************
+[horizontal]
+In advertisement:: required
+In request:: optional
+In manifest:: optional
+type:: +xs:boolean+
+***********************************
+
+This attribute contains either "false" or "true". 
+The meaning is aggregate and resource specific.
+
+The rest of this section is an description of the typical use of +exclusive+.
+
+In general, if true, the node is exclusively reserved for the user, if false it is not.
+
+This distinction is not very useful for physical machines, 
+as they are typically always reserved exclusively.
+
++exclusive+ has more meaning for virtual machines. 
+If exclusive is false for virtual machines, 
+the virtual machine can be hosted on a node shared with other users.
+If exclusive is true for virtual machines, 
+a dedicated physical machine (or multiple machines) will host the 
+virtual machines for this user.
+
+If +exclusive+ is set to true in a request RSpec, 
+the request will typically fail if the aggregate cannot reserve an exclusive node.
+However, if +exclusive+ is set to false in the request RSpec,
+the aggregate might chance it to true (and return this in the manifest) and succeed in the request.
+
+TODO: describe exclusive in advertisement
+
+==== element +<services>+ +<login>+
+
+***********************************
+[horizontal]
+In advertisement:: no
+In request:: no
+In manifest:: optional
+***********************************
+
+Most compute nodes allow experimenters to log in to them in order to control them. The aggregate should in these cases add a +<login>+ elements to the manifest RSpec, to inform the client about the type of remote login (typically ssh), the port, and the username.
+
+attribute +authentication+:: (string) This field describes the authentication mechanism for logging in via shell. Currently the only mechanism supported is 'ssh-keys' which uses the keys passed in via CreateSliver or RedeemTicket. Other authentication mechanisms can be defined and information about them can be added as part of an extension. 
+
+attribute +hostname+:: (string) (optional) The hostname used to contact this node when logging in. Note that this hostname need not be unique to this node. For instance, an AM could have a separate SSH server set up which proxies to serial consoles on the backend. 
+
+attribute +port+:: (int) (optional) The port to contact when ssh'ing to this node. If absent, the default is port 22. 
+
+.Example
+[source]
+------------------
+    <services> 
+        <login authentication="ssh-keys" hostname="node0.example.com" port="22" username="tester"/> 
+    </services>
+------------------
+
+==== element +<services>+ +<execute>+
+
+***********************************
+[horizontal]
+In advertisement:: no
+In request:: optional
+In manifest:: copy of request
+***********************************
+
+multiple +<execute>+ elements may be added to the +<services>+ element.
+These describes the execution environment for running automated startup commmands on this node. These commands might notify you when they are up, start a web server for configuration, etc.
+
+attribute +shell+:: (string) The shell used to execute the startup command. Should usually be 'sh' but may be different if the shell is being provided on a non-unix system for instance. 
+
+attribute +command+:: (string) The actual command to execute. This command is often executed as a sudoer so that the command can use 'sudo' to execute as root if need be. Make sure to fully qualify paths where possible here. 
+
+==== element +<services>+ +<install>+
+
+***********************************
+[horizontal]
+In advertisement:: no
+In request:: optional
+In manifest:: copy of request
+***********************************
+
+An AM may allow you to specify software to be installed on a node from a particular web location. Any software installation done with this tag happens before scripts are executed via the +<execute>+ tag.
+
+////////////////////
+Is this used in practice?
+attribute +file_type+:: (string) This should describe the extension of archival formats accepted by an AM or requested by a user. Currently file types are 'tar.gz' or 'tar.bz2'. 
+////////////////////
+
+attribute +url+:: (string: url) The URL which contains the archive to be installed on the node. The archive may be downloaded just once by the AM during slice creation if multiple nodes specify the same URL. 
+
+attribute +install_path+:: (string) The path where the archive will be unpacked. 
+
+
+==== element +hardware_type+
+
+TODO
+
+[source]
+------------------
+<hardware_type name="switch"/>
+------------------
+
+
+==== element +available+
+
+***********************************
+[horizontal]
+In advertisement:: optional
+In request:: no
+In manifest:: no
+***********************************
+
+Has a required attribute "now" which is an +xs:boolean+.
+If true, the node is available. If not, the node is not available.
+
+[source]
+------------------
+<available now="true"/>
+------------------
+
+==== element +location+
+
+***********************************
+[horizontal]
+In advertisement:: optional
+In request:: no
+In manifest:: no
+***********************************
+
+///////////////////////
+from geni site:
+We included the location of each node based on WGS84 standard definition of longitude and lattitude. 
+
+Different countries may have different laws about permissible activities on nodes. In addition, we can use the standard two-letter ISO 3166 code to distinguish them consistently.
+///////////////////////
+
+[source]
+------------------
+<location country="BE" latitude="51.036145" longitude="3.734761"/>
+------------------
+
+attribute +country+:: The two-letter ISO 3166 country code which the node is located in. This is required because users may need to conform to applicable law for that country. 
+attributes +longitude+ and +latitude+:: the coordinates of the node using the WGS 84 standard. If a CM does not wish to disclose this information, these should be omitted. 
+
+=== element +node+ +interface+
+
+***********************************
+[horizontal]
+In advertisement:: not typical
+In request:: 0, 1 or more per node
+In manifest:: 0, 1 or more per node (same as request)
+***********************************
+
+The +interface+ elements represent a physical or virtual network interface of the node it belong to.
+
+Interfaces are defined within nodes (+interface+ element) and referenced by links (+interface_ref+ element). 
+Configuration and other information about interfaces is contained in the +interface+ element,
+ +interface_ref+ may contain only the id (+client_id+) of that interface.
+
+The +client_id+ attribute is used to identify the interface.
+Each +client_id+ must be globally unique: no other interface in the same RSpec may have the same +client_id+.
+
+The +interface+ element can contain elements with more information. Such as for example IP address information:
+[source]
+------------------
+<ip address="10.0.0.2" netmask="255.255.255.0" type="ipv4"/>
+------------------
+TODO: add more info on this
+
+=== +<link>+
+
++<link>+ elements are typically used to describe hardware links between nodes.
+They are used to connect nodes that have physical interfaces to each other or other resources (networks etc).
+
+Typically the aggregate manager controls a configurable switch to setup the requested links.
+
+[source]
+------------------
+<link client_id="link0">
+    <component_manager name="urn:publicid:IDN+example.com+authority+cm"/>
+    <link_type name="lan"/>
+    <interface_ref client_id="node1:if0"/>
+    <interface_ref client_id="node0:if0"/>
+    <interface_ref client_id="node2:if0"/>
+</link>
+------------------
+
+==== attribute +client_id+
+
+***********************************
+[horizontal]
+In advertisement:: no
+In request:: required
+In manifest:: required
+type:: +xs:string+
+***********************************
+
+This is similar to the +client_id+ in node. It is used only by the client as a fixed identifier for the link.
+Each +client_id+ must be globally unique: no other link in the same RSpec may have the same +client_id+.
+
+==== element +component_manager+
+
+***********************************
+[horizontal]
+In advertisement:: required
+In request:: required
+In manifest:: required
+type:: +xs:string+ containing URN
+occurances:: 1 or more
+***********************************
+
++component_manager+ is an element for links, and not an attribute, 
+as link between different sites have multiple component managers. 
+
+This contains the URN of the component manager that manages the link.
+
+See the similar +component_manager_id+ attribute of +<node>+ for more details.
+
+==== element +link_type+
+
+***********************************
+[horizontal]
+In advertisement:: no
+In request:: optional
+In manifest:: optional
+type:: +xs:string+
+***********************************
+
++link_type+ is used in requests RSpec to specify the type of link needed.
+
+Its meaning is aggregate specific. Below are some typical values and usages.
+
+No link type given for direct L2 links between 2 nodes. 
+For L2 links between more than 2 nodes, the link type "lan" is used.
+
+The link type "gre-tunnel" is used for creating a virtual link between 2 sites, which uses a GRE tunnel.
+No link type is used for "stitched" L2 links between 2 sites.
+
+==== element +interface_ref+
+
+The +interface_ref+ element is used to specify which interfaces the link connects. 
+This element only specifies the +client_id+, the identifier for the link. 
+All other link details are specified in the corresponding +interface+ element inside the +node+ element.
+
+==== element +property+
+
+***********************************
+[horizontal]
+In advertisement:: no
+In request:: optional
+In manifest:: optional
+***********************************
+
+Link properties can be specified using the +property+ element. 
+The +source_id+ and +dest_id+ ID attributes are used to refer to a +client_id+ of +interface+ elements.
++capacity+ specifies the requested link bandwidth in kbit/s. 
++latency+ specifies the requested delay in ms. 
++packet_loss+ specifies the requested random packet loss in percent.
+Note that the properties are specific for one direction of traffic from one interface to another.
+
+Default properties are chosen by he aggregate when no or partial properties are specified in the request.
+
+[source]
+------------------
+<property source_id="node1:if0" dest_id="node0:if1" capacity="1000" latency="10" packet_loss="1.0"/>
+------------------
+
+
+[[RSpecExtensions]]
+=== RSpec extensions
+
+As it is impossible to predict what resources will need to be described in RSpecs, the core RSpec can be extended easily. 
+To extend an RSpec, new XML schemas are added, and new elements from these schemas are added to the RSpec.
+To support this, the core RSpec schema allows this adding of any attribute or elements to all of iets elements.
+Each extension must be in a unique namespace different from the main RSpec namespace. 
+It is therefore possible to validate just the portion of an RSPec document which conforms to the core specification independently of any extensions. 
+
+It is required that actors that do not support an extension can intereact with actors that do support an extension. 
+Thus the information added in an extension must be ignorable. 
+This means:
+* When an extension is used in a request, aggregate managers that do not support it, must copy it unmodified into the manifest whenever possible.
+* When an extensions is used in an advertisement or manifest, clients that do not support it must ignore it. They should not fail because an unknown extension is present.
+
+There are 2 typical types of extensions: client extensions and resource extensions.
+
+Client extensions are used by clients to store additional information in RSpecs. An example of such information are the coordinates to show resources on the screen. 
+Aggregates do not need to know about these extensions. By following the rule above, they will just copy unknown extensions into the manifest RSpec unmodified. Keeping this information in the manifest makes it possible for clients that do no longer have the request information to recover the client specific data.
+
+Resource extensions are used to describe additional resources and information about them, without modifying the core RSpec.
+These extensions can add new details to existing resources such as nodes or links, or they can add completely new resources and concepts. 
+In order to be useful, they need to be understood by both the client and the aggregate. 
+Clients can only request new resource types if both they and the aggregate support the extension. 
+Aggregates ignore extensions they do not know, and so might do nothing with requests using unknown extensions.
+Servers can add additional resource details or new types of resources in the manifest and advertisement RSpec. 
+Because of this, clients should ignore any extension they do not know.
+
+////////////////////////////////
+Do we need this additional info from http://www.protogeni.net/ProtoGeni/wiki/RSpecExtensions2 :
+
+Anyone can define an extension by specifying a namespace for that extension and hosting a schema document. The schema document they host is independent of the core rspec schema and any other extension schema.
+
+We use XML Document Schema Instance directives to specify which namespaces must be validated against which schemas. This allows the use of nearly every XML validator and parser currently available. The only disadvantage is that it is not possible to associate a particular symbol in the extension schema with a particular context in the RSpec schema and enforce validation. This means that it is possible for an incorrect document to allow an extension to pass validation even if it uses an element meant to extend nodes in a link context or vice versa. To make errors of this kind more evident, all extensions should prefix their start symbols with 'foo_' where foo is the context name. 
+////////////////////////////////
+
+==== User login information - Manifest Rspec Extension
+
+***********************************
+RSpec extension
+[horizontal]
+namespace:: +http://www.geni.net/resources/rspec/ext/user/1+
+schema:: http://www.geni.net/resources/rspec/ext/user/1/manifest.xsd
+***********************************
+
+This extension adds extra info to the +<node>+ +<services>+ +<login>+ element.
 
 Many GENI reservable resources allow experimenters to log in to the resource to control it. Aggregates shall use a new RSpec extension to include all login information in manifest RSpecs. This extension is version controlled in the GENI RSpec git repository. This extension is hosted at geni.net.
 
 The extension adds information to the <services> tag, which already has the <login> tag.
 
-The <login> tag tells you the kind of authentication (ssh), the port, and the username. The new extension adds an entry per login username
+The +<login>+ tag tells you the kind of authentication (ssh), the port, and the username. The new extension adds an entry per login username
 
 - URN of the user
 - 1 or more public SSH keys that can be used under that login 
@@ -64,9 +612,3 @@ Services = element services_user {
 # Both of the above are start elements.
 start = Services
 ------------------
-
-
-== More Rspec details?
-
-NOTE: *TODO* add info from http://www.protogeni.net/ProtoGeni/wiki/RSpec here?
-
