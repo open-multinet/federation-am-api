@@ -503,10 +503,10 @@ type:: +xs:string+ containing URN
 occurances:: 1 or more
 ***********************************
 
-+component_manager+ is an element for links, and not an attribute, 
-as link between different sites have multiple component managers. 
+For +<link>+ elements, +component_manager+ is an elements, while for +<node>+ elements, +component_manager_id+ is an attribute.
+This is because links between different sites have multiple component managers.
 
-This contains the URN of the component manager that manages the link.
+This text element contains the URN of the component manager that manages the link.
 
 See the similar +component_manager_id+ attribute of +<node>+ for more details.
 
@@ -531,6 +531,13 @@ The link type "gre-tunnel" is used for creating a virtual link between 2 sites, 
 No link type is used for "stitched" L2 links between 2 sites.
 
 ==== element +interface_ref+
+
+***********************************
+[horizontal]
+In advertisement:: no
+In request:: required (?)
+In manifest:: required (?)
+***********************************
 
 The +interface_ref+ element is used to specify which interfaces the link connects. 
 This element only specifies the +client_id+, the identifier for the link. 
