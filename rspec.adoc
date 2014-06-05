@@ -113,7 +113,9 @@ or the information might all be contained in an extension.
 
 ***********************************
 [horizontal]
-required:: true
+In advertisement:: required
+In request:: required
+In manifest:: required
 type:: +xs:token+ "request", "advertisement" or "manifest"
 ***********************************
 
@@ -127,7 +129,9 @@ This is a required attribute, there are 3 possible values, corresponding to the 
 
 ***********************************
 [horizontal]
-required:: false
+In advertisement:: optional
+In request:: optional
+In manifest:: optional
 type:: +xs:dateTime+
 ***********************************
 
@@ -138,11 +142,14 @@ Note that this format is very similar to RFC3339 format. In fact, these dates ca
 
 ***********************************
 [horizontal]
-required:: false
+In advertisement:: optional
+In request:: optional
+In manifest:: optional
 type:: +xs:string+
 ***********************************
 
-The name of the aggregate software or client tool that generated the request.
+The name of the aggregate software or client tool that generated the RSpec. 
+This is typically the name of the client tool software for an RSpec request, and the name of the aggregate manager software for the RSpec advertisement and manifiest.
 
 === +<node>+
 
@@ -230,7 +237,7 @@ The resulting manifest will contain the +component_id+ of the chosen node.
 [horizontal]
 In advertisement:: required (multiple allowed)
 In request:: required (only 1 allowed)
-In manifest:: required (only 1 allowed)
+In manifest:: required, copy of request
 type:: +xs:string+
 ***********************************
 
@@ -346,7 +353,20 @@ attribute +install_path+:: (string) The path where the archive will be unpacked.
 
 ==== element +hardware_type+
 
-TODO
+***********************************
+[horizontal]
+In advertisement:: optional
+In request:: ?
+In manifest:: ?
+***********************************
+
+Describes the physical machine underlying the node.
+
+Hardware types can be generic or specific, so they can overlap. Because of this, there can be multiple hardware types listed in the advertisement RSpec for 1 node.
+
+TODO can these be used in requests?  (and are they in manifest?)
+
+TODO examples
 
 [source]
 ------------------
@@ -387,13 +407,17 @@ We included the location of each node based on WGS84 standard definition of long
 Different countries may have different laws about permissible activities on nodes. In addition, we can use the standard two-letter ISO 3166 code to distinguish them consistently.
 ///////////////////////
 
+Describes the location of the node.
+
+This element has 2 attributes:
+
+attribute +country+:: The two-letter ISO 3166 country code which the node is located in. This is required because users may need to conform to applicable law for that country. 
+attributes +longitude+ and +latitude+:: the coordinates of the node using the WGS 84 standard. If a CM does not wish to disclose this information, these should be omitted. 
+
 [source]
 ------------------
 <location country="BE" latitude="51.036145" longitude="3.734761"/>
 ------------------
-
-attribute +country+:: The two-letter ISO 3166 country code which the node is located in. This is required because users may need to conform to applicable law for that country. 
-attributes +longitude+ and +latitude+:: the coordinates of the node using the WGS 84 standard. If a CM does not wish to disclose this information, these should be omitted. 
 
 === element +node+ +interface+
 
@@ -401,7 +425,7 @@ attributes +longitude+ and +latitude+:: the coordinates of the node using the WG
 [horizontal]
 In advertisement:: not typical
 In request:: 0, 1 or more per node
-In manifest:: 0, 1 or more per node (same as request)
+In manifest:: 0, 1 or more per node (based on interfaces in request)
 ***********************************
 
 The +interface+ elements represent a physical or virtual network interface of the node it belong to.
@@ -410,15 +434,32 @@ Interfaces are defined within nodes (+interface+ element) and referenced by link
 Configuration and other information about interfaces is contained in the +interface+ element,
  +interface_ref+ may contain only the id (+client_id+) of that interface.
 
-The +client_id+ attribute is used to identify the interface.
+==== attribute client_id
+
+***********************************
+[horizontal]
+In advertisement:: no
+In request:: required
+In manifest:: required
+type:: +xs:string+
+***********************************
+
+This is similar to the +client_id+ in node. It is used only by the client as a fixed identifier for the interface.
 Each +client_id+ must be globally unique: no other interface in the same RSpec may have the same +client_id+.
 
-The +interface+ element can contain elements with more information. Such as for example IP address information:
+==== attribute component_id
+
+TODO
+
+==== element <ip>
+
+Describes IP address information for this interface. There can be 0, 1 or more +<ip>+ elements for each +<interface>+ element.
+The +address+ attribute is mandatory and contains the IP address itself. +netmask+ and +type+ are optional. "ipv4" is the default type.
+
 [source]
 ------------------
 <ip address="10.0.0.2" netmask="255.255.255.0" type="ipv4"/>
 ------------------
-TODO: add more info on this
 
 === +<link>+
 
