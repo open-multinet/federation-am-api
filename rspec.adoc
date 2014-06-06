@@ -4,6 +4,21 @@ TODO_ADD_Federation_AM_API_Author
 v0.1, April 2014: First draft
 :language: python
 
+[NOTE]
+====================================================
+.About this document
+This document is still a work in progress.
+
+The goal of this document is to describe the geni version 3 RSpec as it is currently used.
+
+Most of the text is original, based on available documents and expriences with real life RSpec use.
+These parts inparticular might still contain errors.
+Some text was copied from the AMv3 API or other sources.
+
+It still contains some TODOs. 
+More example should also still be added.
+====================================================
+
 The federation AM API consists of multiple documents. 
 
 This document describes basic RSpec concepts and describes how the geni RSpec version 3 is typically used.
@@ -287,7 +302,7 @@ the request will typically fail if the aggregate cannot reserve an exclusive nod
 However, if +exclusive+ is set to false in the request RSpec,
 the aggregate might chance it to true (and return this in the manifest) and succeed in the request.
 
-TODO: describe exclusive in advertisement
+*TODO*: describe the use of exclusive in advertisement RSpecs
 
 ==== element +<services>+ +<login>+
 
@@ -364,9 +379,9 @@ Describes the physical machine underlying the node.
 
 Hardware types can be generic or specific, so they can overlap. Because of this, there can be multiple hardware types listed in the advertisement RSpec for 1 node.
 
-TODO can these be used in requests?  (and are they in manifest?)
+*TODO* can these be used in requests?  (and are they in manifest?)
 
-TODO examples
+*TODO* examples
 
 [source]
 ------------------
@@ -449,7 +464,7 @@ Each +client_id+ must be globally unique: no other interface in the same RSpec m
 
 ==== attribute component_id
 
-TODO
+*TODO*
 
 ==== element <ip>
 
@@ -596,6 +611,7 @@ Servers can add additional resource details or new types of resources in the man
 Because of this, clients should ignore any extension they do not know.
 
 ////////////////////////////////
+TODO
 Do we need this additional info from http://www.protogeni.net/ProtoGeni/wiki/RSpecExtensions2 :
 
 Anyone can define an extension by specifying a namespace for that extension and hosting a schema document. The schema document they host is independent of the core rspec schema and any other extension schema.
@@ -604,6 +620,13 @@ We use XML Document Schema Instance directives to specify which namespaces must 
 ////////////////////////////////
 
 ==== User login information - Manifest Rspec Extension
+
+///////////////////////////////////////////////////////////
+This section is copied from the AMv3 specifiaction:
+http://groups.geni.net/geni/wiki/GAPI_AM_API_V3/CommonConcepts#Userlogininformation-ManifestRspecExtension
+
+It has been modified somewhat, mostly markup changes.
+///////////////////////////////////////////////////////////
 
 ***********************************
 RSpec extension
