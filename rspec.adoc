@@ -11,8 +11,8 @@ This document is still a work in progress.
 
 The goal of this document is to describe the geni version 3 RSpec as it is currently used.
 
-Most of the text is original, based on available documents and expriences with real life RSpec use.
-These parts inparticular might still contain errors.
+Most of the text is original, based on available documents and experiences with real life RSpec use.
+These parts in particular might still contain errors.
 Some text was copied from the AMv3 API or other sources.
 
 It still contains some TODOs. 
@@ -88,7 +88,7 @@ extension schemas:: http://www.geni.net/resources/rspec/ext
 
 ////////////////////////
 TODO: add this info:
-All core rspec tags are within the rspec namespace. The core schema expects verifies only tags in the core rspec namespace and accepts any elements or attributes outside of that namespace as valid.
+All core RSpec tags are within the RSpec namespace. The core schema expects verifies only tags in the core RSpec namespace and accepts any elements or attributes outside of that namespace as valid.
 
 All timestamps are formatted to be RFC 3339 compliant.
 
@@ -121,7 +121,7 @@ The possible attributes are described in the sections below.
 
 The RSpec element can contain node and link elements (0 or multiple). 
 It is not required that the RSpec contains a node or link:
-An empty RSpec can be used to decribe "nothing", 
+An empty RSpec can be used to describe "nothing", 
 or the information might all be contained in an extension.
 
 ==== attribute +type+
@@ -164,7 +164,7 @@ type:: +xs:string+
 ***********************************
 
 The name of the aggregate software or client tool that generated the RSpec. 
-This is typically the name of the client tool software for an RSpec request, and the name of the aggregate manager software for the RSpec advertisement and manifiest.
+This is typically the name of the client tool software for an RSpec request, and the name of the aggregate manager software for the RSpec advertisement and manifest.
 
 === +<node>+
 
@@ -339,7 +339,7 @@ In manifest:: copy of request
 ***********************************
 
 multiple +<execute>+ elements may be added to the +<services>+ element.
-These describes the execution environment for running automated startup commmands on this node. These commands might notify you when they are up, start a web server for configuration, etc.
+These describes the execution environment for running automated startup commands on this node. These commands might notify you when they are up, start a web server for configuration, etc.
 
 attribute +shell+:: (string) The shell used to execute the startup command. Should usually be 'sh' but may be different if the shell is being provided on a non-unix system for instance. 
 
@@ -417,7 +417,7 @@ In manifest:: no
 
 ///////////////////////
 from geni site:
-We included the location of each node based on WGS84 standard definition of longitude and lattitude. 
+We included the location of each node based on WGS84 standard definition of longitude and latitude. 
 
 Different countries may have different laws about permissible activities on nodes. In addition, we can use the standard two-letter ISO 3166 code to distinguish them consistently.
 ///////////////////////
@@ -515,7 +515,7 @@ In advertisement:: required
 In request:: required
 In manifest:: required
 type:: +xs:string+ containing URN
-occurances:: 1 or more
+occurrences:: 1 or more
 ***********************************
 
 For +<link>+ elements, +component_manager+ is an elements, while for +<node>+ elements, +component_manager_id+ is an attribute.
@@ -587,11 +587,11 @@ Default properties are chosen by he aggregate when no or partial properties are 
 
 As it is impossible to predict what resources will need to be described in RSpecs, the core RSpec can be extended easily. 
 To extend an RSpec, new XML schemas are added, and new elements from these schemas are added to the RSpec.
-To support this, the core RSpec schema allows this adding of any attribute or elements to all of iets elements.
+To support this, the core RSpec schema allows this adding of any attribute or elements to all of its elements.
 Each extension must be in a unique namespace different from the main RSpec namespace. 
-It is therefore possible to validate just the portion of an RSPec document which conforms to the core specification independently of any extensions. 
+It is therefore possible to validate just the portion of an RSpec document which conforms to the core specification independently of any extensions. 
 
-It is required that actors that do not support an extension can intereact with actors that do support an extension. 
+It is required that actors that do not support an extension can interact with actors that do support an extension. 
 Thus the information added in an extension must be ignorable. 
 This means:
 * When an extension is used in a request, aggregate managers that do not support it, must copy it unmodified into the manifest whenever possible.
@@ -619,10 +619,10 @@ Anyone can define an extension by specifying a namespace for that extension and 
 We use XML Document Schema Instance directives to specify which namespaces must be validated against which schemas. This allows the use of nearly every XML validator and parser currently available. The only disadvantage is that it is not possible to associate a particular symbol in the extension schema with a particular context in the RSpec schema and enforce validation. This means that it is possible for an incorrect document to allow an extension to pass validation even if it uses an element meant to extend nodes in a link context or vice versa. To make errors of this kind more evident, all extensions should prefix their start symbols with 'foo_' where foo is the context name. 
 ////////////////////////////////
 
-==== User login information - Manifest Rspec Extension
+==== User login information - Manifest RSpec Extension
 
 ///////////////////////////////////////////////////////////
-This section is copied from the AMv3 specifiaction:
+This section is copied from the AMv3 specification:
 http://groups.geni.net/geni/wiki/GAPI_AM_API_V3/CommonConcepts#Userlogininformation-ManifestRspecExtension
 
 It has been modified somewhat, mostly markup changes.
