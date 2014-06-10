@@ -76,10 +76,6 @@ struct value
 
 +GetVersion+ returns the standard return struct from all AM API methods (output, value, code). See <<ReturnStructure,Return Structure>>.
 
-However, next to the standard AM API +code+, +value+, and +output+ entries, +GetVersion+ adds a +geni_api+ integer version of this API (3) to the return structure. This information is also in the +value+ struct but is repeated here for backwards compatibility with AM API v1 clients.
-
-NOTE: *TODO Is the above still useful for this API, as it is not backward compatible? If so, what number do we fill in (a fake large one)?*
-
 +GetVersion+ is intended to provide information about the configuration of this aggregate, helping experimenter tools determine how to communicate with this aggregate.
 The information returned includes the version of the Aggregate Manager API running locally, the RSpec schemas supported, and the URLs where versions of the AM API are running.
 
