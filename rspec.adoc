@@ -19,16 +19,15 @@ It still contains some TODOs.
 More example should also still be added.
 ====================================================
 
-The federation AM API consists of multiple documents. 
+The Federation AM API consists of multiple documents. 
 
 This document describes basic RSpec concepts and describes how the geni RSpec version 3 is typically used.
 
-Other documents:
-
-- link:federation-am-api.html[AM API]
-- link:credential-sfa.html[SFA Credentials]
-- link:credential-abac.html[ABAC Credentials]
-- link:general.html[General] Architecture & Concepts, Identifiers (URN etc.), "where does AM fit into this?"
+Other related documents:
+- link:general.html[The General overview] contains info on the architecture & concepts, on the used Identifiers (URN etc.), describes how everything fits together, and where the Federation AM API fits in.
+- link:federation-am-api.html[The AM API] specifies all details needed to implement a Federation AM API conform Aggregate Manager.
+- link:credential-sfa.html[The SFA Credentials specification]
+- link:credential-abac.html[The ABAC Credentials specification]
 
 == Links
 

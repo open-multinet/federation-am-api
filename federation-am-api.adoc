@@ -8,18 +8,18 @@ v0.2, April 2014: First draft
 [NOTE]
 ====================================================
 .About this document
-Work in progress
-Note that this contains almost all text from the AMv3 API. Some has been edited, and a lot has been moved to other places, and everywhere markup has been fixed. Only some text has been removed (mostly duplicate content).
-
-Most text ended up somewhere. It will not yet all be in the best place, and there still may be some duplication. The reason for the duplicate content is that the original AMv3 API has a main page, a common concepts page and a details page, and there is some overlap between these pages.
+This is a work in progress
 ====================================================
 
-*TODO refer to other 4 documents*
+The Federation AM API consists of multiple documents.
 
-- link:rspec.html[Rspec]
-- link:credential-sfa.html[SFA Credentials]
-- link:credential-abac.html[ABAC Credentials]
-- link:general.html[General] Architecture & Concepts, Identifiers (URN etc.), "where does AM fit into this?"
+This document specifies all details needed to implement a Federation AM API conform Aggregate Manager.
+
+The other related documents in this API:
+- link:general.html[The General overview] contains info on the architecture & Concepts, on the used Identifiers (URN etc.), and describes how everything fits together, and where this Federation AM API fits in.
+- link:rspec.html[The RSpec Specification]
+- link:credential-sfa.html[The SFA Credentials specification]
+- link:credential-abac.html[The ABAC Credentials specification]
 
 include::call-basics.adoc[tabsize=4]
 

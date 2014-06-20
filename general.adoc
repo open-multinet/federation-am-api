@@ -1,11 +1,14 @@
 = General
 
-*TODO refer to other 4 documents*
+The Federation AM API consists of multiple documents. 
 
-- link:federation-am-api.html[AM API]
-- link:rspec.html[Rspec]
-- link:credential-sfa.html[SFA Credentials]
-- link:credential-abac.html[ABAC Credentials]
+This is an overview document, containing info on the architecture & concepts, on the used Identifiers (URN etc.), describes how everything fits together, and where this Federation AM API fits in.
+
+Documents that go into more details:
+- link:federation-am-api.html[The AM API] specifies all details needed to implement a Federation AM API conform Aggregate Manager.
+- link:rspec.html[The RSpec Specification]
+- link:credential-sfa.html[The SFA Credentials specification]
+- link:credential-abac.html[The ABAC Credentials specification]
 
 == Using the AM API
 
