@@ -132,19 +132,12 @@ SERVERBUSY::
    Calls;; all
    Meaning;; Server is (temporarily) too busy; try again later
 
-Note also that servers may respond with other HTTP error codes, and clients must be prepared to deal with those situations. Specifically, a server that is busy might return HTTP code 503, or just refuse the connection. 
+Note also that servers may respond with other HTTP error codes, and clients must be prepared to deal with those situations. 
+Specifically, a server that is busy might return HTTP code 503 or 504, or just refuse the connection. 
 
-[NOTE]
-=====================================================================
-*TODO* 
+*TODO* The layout below needs some work (a table isn't very nice either)
 
-- The differences between errors should be made as clear as possible.
-- The layout below might need some work (a table isn't very nice either)
-- Add some examples. These can be the same as examples later on in the document (but the corresponding example below will only include the date in the +value+ field).
-- Also add an example in full "raw" xml, matching one of the other examples.
-=====================================================================
-
-Detailed description of each error.
+Below is a detailed description of each error.
 
 SUCCESS::
 [horizontal]
@@ -254,6 +247,152 @@ INSUFFICIENT_BANDWIDTH::
    Calls;; ?
    Meaning;; Requested capacity for link(s) not available
 
+==== Examples
+
+Below is an example of a successful reply to a +Delete+ call.
+[source]
+------------------
+{ 
+   "output": "",
+   "code": 
+   { 
+      "geni_code": 0
+   },
+   "value": 
+   [ 
+       { 
+          "geni_sliver_urn": "urn:publicid:IDN+example.com+sliver+5042",
+          "geni_allocation_status": "geni_unallocated",
+          "geni_error": "",
+          "geni_expires": "2014-12-31T23:59:59Z"
+       } 
+   ] 
+}
+------------------
+
+And below is exactly the same reply, but showing the characters received over the TCP connection. This shows HTTP and Xml-RPC details.
+[source]
+------------------
+HTTP/1.1 200 OK
+Date: Thu, 19 Jun 2014 08:20:27 GMT
+Server: Apache/2.2.22 (FreeBSD)
+Keep-Alive: timeout=15, max=99
+Connection: Keep-Alive
+Transfer-Encoding: chunked
+Content-Type: text/xml
+Content-Length: 830
+
+<?xml version="1.0"?>
+<methodResponse>
+<params>
+<param><value><struct>
+<member><name>value</name><value><array><data>
+<value><struct>
+<member><name>geni_sliver_urn</name><value><string>urn:publicid:IDN+example.com+sliver+5042</string></value></member>
+<member><name>geni_expires</name><value><string>2014-12-31T23:59:59Z</string></value></member>
+<member><name>geni_error</name><value><string></string></value></member>
+<member><name>geni_allocation_status</name><value><string>geni_unallocated</string></value></member>
+</struct></value>
+</data></array></value>
+</member>
+<member><name>output</name><value><string></string></value></member>
+<member><name>code</name><value><struct>
+<member><name>geni_code</name><value><i4>0</i4></value></member>
+</struct></value>
+</member>
+</struct></value>
+</param>
+</params>
+</methodResponse>
+------------------
+
+Below are 3 possible answers when the server is busy:
+[source]
+------------------
+HTTP/1.1 504 Gateway Time-out
+Date: Mon, 02 Jun 2014 14:11:39 GMT
+Server: Apache/2.2.22 (FreeBSD)
+Content-Length: 328
+Keep-Alive: timeout=15, max=100
+Connection: Keep-Alive
+Content-Type: text/html; charset=iso-8859-1
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>504 Gateway Time-out</title>
+</head><body>
+<h1>Gateway Time-out</h1>
+<p>The gateway did not receive a timely response
+from the upstream server or application.</p>
+<hr>
+<address>Apache/2.2.22 (FreeBSD) Server at example.com Port 443</address>
+</body></html>
+------------------
+
+[source]
+------------------
+HTTP/1.1 200 OK
+Date: Mon, 02 Jun 2014 14:10:50 GMT
+Server: Apache/2.2.22 (FreeBSD)
+Keep-Alive: timeout=15, max=100
+Connection: Keep-Alive
+Content-Type: text/xml
+Content-Length: 277
+
+<?xml version="1.0"?>
+<methodResponse>
+<fault>
+<value><struct>
+<member><name>faultString</name><value><string>Server is WAY too busy; please try again later</string></value></member>
+<member><name>faultCode</name><value><i4>503</i4></value></member>
+</struct></value>
+</fault>
+------------------
+
+[source]
+------------------
+{ 
+   "output" -> "server is busy; try again later",
+   "code" ->
+   {
+        "geni_code" -> -32001
+   },
+   "value" -> 0
+}
+------------------
+
+Additionally, the resource or slice itself might also be busy:
+[source]
+------------------
+{ 
+   "output" -> "resource is busy; try again later",
+   "code" ->
+   {
+        "geni_code" -> 14,
+        "am_type" -> "protogeni",
+        "am_code" -> 14,
+        "protogeni_error_url" -> "https://example.com/spewlogfile.php3?logfile=fc117247506e8b19b973865446eaa928",
+        "protogeni_error_log" -> "urn:publicid:IDN+example.com+log+fc117247506e8b19b973865446eaa928"
+   },
+   "value" -> 0
+}
+------------------
+
+In all of these "busy" cases, the client should try again after some time.
+
+
+Finally, an example of an error reply to a +Status+ call.
+[source]
+------------------
+{ 
+   "output": "No such slice here",
+   "code": 
+   { 
+      "geni_code": 12
+   },
+   "value": 0 
+}
+------------------
 
 [[OperationsOnIndividualSlivers]]
 === Operations on Individual Slivers
