@@ -77,11 +77,10 @@ In particular, the notable differences with the link:http://groups.geni.net/geni
     Geni AM v2 API;; This method is what +ListResources+ does when called without a slice URN argument.
     Geni AM v3 API;; This API changes +rspec_version+ into a mandatory argument instead of a mandatory option.
 
-
 <<Describe>>::
     ProtoGENI;; This operation is similar to the +Resolve+ method.
     Geni AM v2 API;; This method is what +ListResources+ does when called with a slice URN argument.
-    Geni AM v3 API;; This API changes +rspec_version+ into a mandatory argument instead of a mandatory option.
+    Geni AM v3 API;; This API changes +rspec_version+ into a mandatory argument instead of a mandatory option. When given a slice URN without slivers, the return value in AMv3 needed to be an empty RSpec, while this API requires that a SEARCHFAILED error is returned.
 
 <<Status>>::
     ProtoGENI;;  This operation is similar to the +SliverStatus+ method.
