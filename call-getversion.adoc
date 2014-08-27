@@ -70,7 +70,12 @@ struct value
   ":am_code_version" : <string>,
   ":am_type" : [ <string>, ... ],
  (optional) ":single_allocation" : <boolean: default false>,
- (optional) ":allocate" : <string: default: ':single' (case insensitive)>
+ (optional) ":allocate" : <string: default: ':single' (case insensitive)>,
+ (optional) "geni_api" : <int>,
+ (optional) "geni_api_versions" : {
+      <string: version name> : <string: absolute URL>,
+      ...
+  }
 }
 ***********************************
 
@@ -91,9 +96,21 @@ The value contains an XML-RPC +struct+ struct, the fields are described below.
 [horizontal]
 Mandatory:: true
 XML-RPC type:: +int+
+Fixed value:: 1
 ***********************************
 
 An integer indicating the revision of the Aggregate Manager API that an aggregate supports. This page documents version 1 of the API. 
+
+===== +:geni_api+ 
+
+***********************************
+[horizontal]
+Mandatory:: false
+XML-RPC type:: +int+
+Fixed value:: 42
+***********************************
+
+This is for backward compatiblility with GetVersion from the AMv2 and AMv3 API. It lists a high version number, so that clients supporting only these APIs know that they cannot talk to this server. If +geni_api_versions+ is also added, these clients will be able to find an URL for an API they do support.
 
 ===== +:api_versions+
 ***********************************
@@ -116,14 +133,48 @@ When aggregates start supporting a new version of the API, they should keep runn
 
 Aggregates running multiple versions of the API must advertise the URLs and versions of the API supported in +:api_versions+, which is a +struct+ that has 1 or more entries. Each key indicates a supported version of the API, and the matching value is the absolute URL to the XML-RPC server where that version of the API is supported. There is always at least one entry in this list: The called version itself.
 
+Different version of this API have a colon followed by the version nr as version string. For example, this is version ":1".
+The Geni AM APIs have "geni:" followed by the version nr as version string. For example, for Geni AMv3, "geni:3" is used.
+
 .Example
 [source]
 ------------------
 ":api_versions" : {
+  "geni:1": "http://example.com/aggregate_manager/XML-RPC/geni_am/1.0",
+  "geni:2": "http://example.com/aggregate_manager/XML-RPC/geni_am/2.0",
+  "geni:3": "http://example.com/aggregate_manager/XML-RPC/geni_am/3.0",
+  ":1": "http://example.com/aggregate_manager/XML-RPC/faa_am/1.0"
+}
+------------------
+
+===== +geni_api_versions+
+***********************************
+[horizontal]
+Mandatory:: false
+XML-RPC type::
+[source]
+  "geni_api_versions" : {
+       <string: this API version> : <string: Absolute URL of this API version>,
+       (optional) <string: other API version> : <string: Absolute URL of other API version>,
+       ...
+  }
+***********************************
+
+This is the same info as in +:api_versions+, but in a slightly different format that is compatible with the Geni AM API GetVersion call. This means that if a client supporting only the Geni AM API calls GetVersion, it will get a reply it understands. It will then find the URL for a Geni AM API in +geni_api_versions+ and can then call the correct URL.
+
+In +geni_api_versions+, different version of this API are also listed with a colon followed by the version nr as version string. For example, this is version ":1".
+The Geni AM APIs have no prefix here, they use the version nr as version string. For example, for Geni AMv3, "3" is used.
+
+Note that this same format can be used by AMv2 and AMv3 server. A client supporting this API that contacts a server using an AMv2 or AMv3 URL, will see only +geni_api_versions+ in the reply, but if any version that start with a colon are present, it can use these to find an URL for this API. In this way, the GetVersion reply of the Geni AM APIs and this API refer to each other.
+
+.Example
+[source]
+------------------
+"geni_api_versions" : {
   "1": "http://example.com/aggregate_manager/XML-RPC/geni_am/1.0",
   "2": "http://example.com/aggregate_manager/XML-RPC/geni_am/2.0",
   "3": "http://example.com/aggregate_manager/XML-RPC/geni_am/3.0",
-  "faa1": "http://example.com/aggregate_manager/XML-RPC/faa_am/1.0"
+  ":1": "http://example.com/aggregate_manager/XML-RPC/faa_am/1.0"
 }
 ------------------
 
@@ -285,9 +336,14 @@ There are no special cases for the +GetVersion+ call.
      },
   "value" : 
       {
-        ":api" : "faa1",
+        ":api" : 1,
+        "geni_api" : 42,
         ":api_versions" : {
-             "faa1" : "http://example.com/aggregate_manager/XML-RPC/faa_am/1.0",
+             ":1" : "http://example.com/aggregate_manager/XML-RPC/faa_am/1.0",
+             "geni:3" : "http://example.com/aggregate_manager/XML-RPC/geni_am/3.0" #optional but included here
+        },
+        "geni_api_versions" : {
+             ":1" : "http://example.com/aggregate_manager/XML-RPC/faa_am/1.0",
              "3" : "http://example.com/aggregate_manager/XML-RPC/geni_am/3.0" #optional but included here
         },
         ":request_rspec_versions" : [{
