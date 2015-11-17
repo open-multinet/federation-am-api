@@ -682,3 +682,55 @@ Services = element services_user {
 # Both of the above are start elements.
 start = Services
 ------------------
+
+==== Configuring Experimenter Infrastructure OML Monitoring - Advertisement, Request and Manifest RSpec Extension
+
+This is an extension by http://www.fed4fire.eu/[Fed4FIRE]
+
+***********************************
+RSpec extension
+[horizontal]
+namespace:: +http://schemas.fed4fire.eu/schemas/rspec/ext/monitoring/1+
+advertisment schema:: http://doc.ilabt.iminds.be/fed4fire-monitoring/advertisement.xsd
+request schema:: http://doc.ilabt.iminds.be/fed4fire-monitoring/request.xsd
+manifest schema:: http://doc.ilabt.iminds.be/fed4fire-monitoring/manifest.xsd
+***********************************
+
+For more information about this extension, see http://doc.ilabt.iminds.be/fed4fire-monitoring/
+which is a build from the source at https://github.com/open-multinet/fed4fire_monitoring
+
+==== SSH Proxy - Manifest RSpec Extension
+
+This is an extension by http://www.fed4fire.eu/[Fed4FIRE]
+
+***********************************
+RSpec extension
+[horizontal]
+namespace:: +http://jfed.iminds.be/proxy/1.0+
+***********************************
+
+This extension adds information about SSH proxies (also "SSH gateways") to the login services of a node in the manifest. Proxies are often needed when the user cannot directly access a node, because it is behind a firewall, or because it does not have a public IP. The proxy node is not firewalled and has a public IP. Users have to setup an SSH connection to the proxy, and from the proxy they have to setup an SSH connection to the target node (either from an interactive session or using SSH port forwarding).
+
+This extension has been designed to be as much backward compatible as possible. Any client that does not understand the extension will still be able to find the login info for both the proxy and the node itself, because the proxy and node login info are provided in the default RSpec format.
+
+A new +<proxy>+ element is added to the +<services>+ element to specify which proxy to use for which node login. The +for+ attribute of this element refers to the login info of the node, while the +proxy+ attribute refers to the login info of the proxy.
+
+.Example
+[source]
+------------------
+   <services xmlns:proxy="http://jfed.iminds.be/proxy/1.0">
+      <proxy:proxy proxy="proxy@gateway.example.com:22" for="myuser@node.example.com:22"/>
+      <login authentication="ssh-keys" hostname="gateway.example.com" port="22" username="proxy"/>
+      <login authentication="ssh-keys" hostname="node.example.com" port="22" username="myuser"/>
+   </services>
+------------------
+
+.Example2
+[source]
+------------------
+   <services>
+      <proxy xmlns="http://jfed.iminds.be/proxy/1.0" proxy="myuser@gateway.example.com:2222" for="myuser@node.example.com:22"/>
+      <login authentication="ssh-keys" hostname="gateway.example.com" port="2222" username="myuser"/>
+      <login authentication="ssh-keys" hostname="node.example.com" username="myuser"/>
+   </services>
+------------------
