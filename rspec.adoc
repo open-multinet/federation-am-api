@@ -682,3 +682,19 @@ Services = element services_user {
 # Both of the above are start elements.
 start = Services
 ------------------
+
+==== Configuring Experimenter Infrastructure OML Monitoring - Advertisement, Request and Manifest RSpec Extension
+
+This is an extension by http://www.fed4fire.eu/[Fed4FIRE]
+
+***********************************
+RSpec extension
+[horizontal]
+namespace:: +http://schemas.fed4fire.eu/schemas/rspec/ext/monitoring/1+
+advertisment schema:: http://doc.ilabt.iminds.be/fed4fire-monitoring/advertisement.xsd
+request schema:: http://doc.ilabt.iminds.be/fed4fire-monitoring/request.xsd
+manifest schema:: http://doc.ilabt.iminds.be/fed4fire-monitoring/manifest.xsd
+***********************************
+
+For more information about this extension, see http://doc.ilabt.iminds.be/fed4fire-monitoring/
+which is a build from the source at https://github.com/open-multinet/fed4fire_monitoring
