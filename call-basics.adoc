@@ -246,6 +246,11 @@ INSUFFICIENT_BANDWIDTH::
    Error Nr;; 25
    Calls;; ?
    Meaning;; Requested capacity for link(s) not available
+INSUFFICIENT_RESOURCES::
+[horizontal]
+   Error Nr;; 26
+   Calls;; ?
+   Meaning;; One or more resources in the request could not be allocated, because all suitable resources are in use or reserved. Typical scenarios for this error are: no physical nodes available, no pyshical nodes with the requested number of interfaces available, not possible to create an additional VM. This might also occur when no link is possible between 2 nodes. There is also possible overlap between this error and INSUFFICIENT_BANDWIDTH.
 
 ==== Examples
 
