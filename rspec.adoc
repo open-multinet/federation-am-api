@@ -593,6 +593,7 @@ It is therefore possible to validate just the portion of an RSpec document which
 It is required that actors that do not support an extension can interact with actors that do support an extension. 
 Thus the information added in an extension must be ignorable. 
 This means:
+
 * When an extension is used in a request, aggregate managers that do not support it, must copy it unmodified into the manifest whenever possible.
 * When an extensions is used in an advertisement or manifest, clients that do not support it must ignore it. They should not fail because an unknown extension is present.
 
@@ -613,7 +614,7 @@ Because of this, clients should ignore any extension they do not know.
 TODO
 Do we need this additional info from http://www.protogeni.net/ProtoGeni/wiki/RSpecExtensions2 :
 
-Anyone can define an extension by specifying a namespace for that extension and hosting a schema document. The schema document they host is independent of the core rspec schema and any other extension schema.
+Anyone can define an extension by specifying a namespace for that extension and hosting a schema document. The schema document they host is independent of the core RSpec schema and any other extension schema.
 
 We use XML Document Schema Instance directives to specify which namespaces must be validated against which schemas. This allows the use of nearly every XML validator and parser currently available. The only disadvantage is that it is not possible to associate a particular symbol in the extension schema with a particular context in the RSpec schema and enforce validation. This means that it is possible for an incorrect document to allow an extension to pass validation even if it uses an element meant to extend nodes in a link context or vice versa. To make errors of this kind more evident, all extensions should prefix their start symbols with 'foo_' where foo is the context name. 
 ////////////////////////////////

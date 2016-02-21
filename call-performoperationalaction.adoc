@@ -95,5 +95,6 @@ EXPIRED:: The sliver has expired.
 SEARCHFAILED:: The slice or sliver does not exist at this AM.
 BUSY:: Slice or sliver is temporarily locked, try again later
 INPROGRESS::  Requested operation is already in progress 
+REFUSED::  When requesting an +:update_users+ action while the sliver is in the wrong operational state.
 
 

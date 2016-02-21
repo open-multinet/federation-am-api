@@ -541,15 +541,13 @@ Some AM cannot know if a resource is ready or has stopped, or even in which stat
 [[SliverOperationalActions]]
 === Sliver Operational Actions
 
-NOTE: *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
-
 Operational actions are commands that the aggregate exposes, allowing an experimenter tool to modify or act on a sliver from outside of the sliver (i.e. without logging in to a machine), without modifying the sliver reservation. Actions may cause changes to sliver operational state.
 
 The API defines a few operational actions: these need not be supported. AMs are encouraged to support these if possible, but only if they can be supported following the defined semantics.
 
 AMs may have their own operational states/state-machine internally. AMs are however required to advertise such states and actions that experimenters may see or use, by using an advertisement RSpec extension (if an AM does not advertise operational states, then tools can not know whether any actions are available). Operational states which the experimenter never sees, need not be advertised. Operational states and actions are generally by resource type. The standard RSpec extension attaches such definitions to the sliver_type element of RSpecs.
 
-The standard advertisement RSpec extension for advertising operational states and actions can be found here, with an example with comments  here.
+The standard advertisement RSpec extension for advertising operational states and actions can be found link:rspec.html#RSpecExtensions[here].
 
 Tools must use the operational states and actions advertisement to determine what operational actions to offer to experimenters, and what actions to perform for the experimenter. Tools may choose to offer actions which the tool itself does not understand, relying on the experimenter to understand the meaning of the new action.
 
@@ -970,7 +968,7 @@ XML-RPC type::
      ":allocation_status": <string>,
      ":operational_status": <string>,
      ":expires": <string.dateTime.rfc3339: sliver expiration time>,
-     (optional) ":error": <string: explaining any failure to Provision>
+     (optional) ":error": <string: explaining any failure of a Provision or PerformOperationalAction on the slice>
      (optional) ":resource_status" : <string: resource-specific status>,
     },
     ...
@@ -982,8 +980,10 @@ The +:operational_status+ in the sliver info list is required, unless these 2 co
 * +:operational_status+ is +:pending_allocation+
 * +:allocation_status+ is not +:provisioned+. 
 
-+:error+ may be omitted entirely but may not be null/None.
-+:resource_status+ can be used to describe the resource specific status in more detail than +:operational_status+.
++:error+ is a free form string and may be omitted entirely or be an empty +string+, but it may not be null/None. 
+The aggregate manager should set this to a string that could be presented to a researcher to give more detailed information about the state of the sliver if an operation failed for a given sliver. 
+
++:resource_status+ is optional and can be used to describe the resource specific status in more detail than +:operational_status+.
 
 <<PerformOperationalAction>>, <<Renew>> and <<Delete>> directly return the basic sliver info list +array+ described above.
 <<Allocate>>, <<Provision>>, <<Describe>> and <<Status>> return a +struct+, which contains a sliver info list +array+ and additional info.
@@ -1071,5 +1071,4 @@ Additional rules:
 
 NOTE: *TODO this section was copied from the AMv3 spec with only minor changes (mostly markup). This sections content might still be moved to better places.*
 
-A free form string (not null or None), optionally returned per sliver from several method returns (<<Describe>>, <<Provision>>, <<Renew>>, <<Status>>, <<PerformOperationalAction>>, <<Delete>>). The aggregate manager should set this to a string that could be presented to a researcher to give more detailed information about the state of the sliver if this operation fails for a given sliver. This option is used in particular where an aggregate may successfully perform the operation for some slivers, but not others. See the +:best_effort+ option above. In particular, it is not returned from <<Allocate>>, which is always all-or-nothing. Note that this field may be omitted entirely from the return in most cases, but is required in the return from <<Status>>, though it may be empty. The field if present must be a valid string, not null/None.
 
