@@ -53,14 +53,14 @@ This section compares the methods of this API to other API's, such as the link:h
 In particular, the notable differences with the link:http://groups.geni.net/geni/wiki/GAPI_AM_API_V3[Geni AM v3 API], on which this API is based, are listed. General differences, like replacing the +geni_+ prefix with a colon +:+ are not mentioned for each command.
 
 <<GetVersion>>::
-    ProtoGENI;; The +GetVersion+ methods have a same name and purpose, but the information returned is in a completely different format.
-    Geni AM v2 API;; This is the same as +GetVersion+ but contains more information.
-    Geni AM v3 API;; This is mostly the same, however, the format is not compatible due to dropping the +geni_+ prefix. Also, some extra info is added by this API: +:am_code_version+ and +:am_type+
+    ProtoGENI;; The +GetVersion+ method has the same name and purpose, but the information returned is in a completely different format.
+    Geni AM v2 API;; +GetVersion+ is mostly the same, but int this API a lot more information is returned.
+    Geni AM v3 API;; The +GetVersion+ call is still mostly the same, however, the format is not compatible due to dropping the +geni_+ prefix in this API. Also, some extra info is added by this API: +:am_code_version+ and +:am_type+
 
 <<Allocate>>::
     ProtoGENI;; This operation is similar to the +GetTicket+ operation.
     Geni AM v2 API;; This is the first part of what +CreateSliver+ does. The second part is done by <<Provision>>, and the final part is done by <<PerformOperationalAction>>. So +CreateSliver+ also provisions the resources, and 'starts' them.
-    Geni AM v3 API;; This API changes +rspec_version+ into a mandatory argument instead of a mandatory option. 
+    Geni AM v3 API;; This API changes +rspec_version+ into a mandatory argument instead of a mandatory option.
 
 <<Provision>>::
     ProtoGENI;; This operation is similar to the +RedeemTicket+ method.
@@ -77,11 +77,10 @@ In particular, the notable differences with the link:http://groups.geni.net/geni
     Geni AM v2 API;; This method is what +ListResources+ does when called without a slice URN argument.
     Geni AM v3 API;; This API changes +rspec_version+ into a mandatory argument instead of a mandatory option.
 
-
 <<Describe>>::
     ProtoGENI;; This operation is similar to the +Resolve+ method.
     Geni AM v2 API;; This method is what +ListResources+ does when called with a slice URN argument.
-    Geni AM v3 API;; This API changes +rspec_version+ into a mandatory argument instead of a mandatory option.
+    Geni AM v3 API;; This API changes +rspec_version+ into a mandatory argument instead of a mandatory option. When given a slice URN without slivers, the return value in AMv3 needed to be an empty RSpec, while this API requires that a SEARCHFAILED error is returned.
 
 <<Status>>::
     ProtoGENI;;  This operation is similar to the +SliverStatus+ method.
