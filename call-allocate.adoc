@@ -10,7 +10,8 @@ At some aggregates, experimenter tools may call Allocate multiple times, to add 
 ----------------
 Allocate(string slice_urn,
          struct credentials[],
-         string.rspec rspec,
+         struct request_rspec,
+         struct manifest_rspec_version,
          struct options)
 ----------------
 
@@ -28,25 +29,43 @@ String content type::  URN
 
 The URN of the slice to which the resources specified in rspec will be allocated. For details on URN identifiers, see link:general.html[this document].
 
-==== Argument 2: +rspec+
+==== Argument 2: +credentials+
+
+The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
+
+==== Argument 3: +request_rspec+
 
 ***********************************
 [horizontal]
 Supported by the server:: Mandatory
 Included by client:: Mandatory
-XML-RPC type::  +string+
-String content type::  <<StringRspecDataType, +string.rspec+>>
+XML-RPC type:: 
+[source]
+  {
+      "type" : <string: (case insensitive, matching '^[a-zA-Z0-9][a-zA-Z0-9-_\.:]*$')>,
+      "version" : <string: (case insensitive, matching '^[a-zA-Z0-9][a-zA-Z0-9-_\.:]*$')>,
+      "rspec" : <string.rspec rspec>
+  }
+
+"rspec" String content type::  <<StringRspecDataType, +string.rspec+>>
 ***********************************
 
-An RSpec containing the resources that the caller is requesting for allocation to the slice specified in slice_urn. These are expected to be consistent with the resources returned by a previous invocation of <<ListResources>>. If this RSpec is in a format not listed as supported by <<GetVersion>>, then the aggregate will return an error of +BADVERSION (4)+.
+A request RSpec containing the resources that the caller is requesting for allocation to the slice specified in +slice_urn+. 
+These are expected to be consistent with the resources returned by a previous invocation of <<ListResources>>. 
+
+The format of the request RSpec is specified in the "version" and "type" fields, the request RSpec itself is specified in "rspec".
+If this RSpec is in a format not listed as supported by <<GetVersion>>, then the aggregate will return an error of +BADVERSION (4)+.
 
 For more details on RSpecs and RSpec versions, see the type <<StringRspecDataType, +string.rspec+>> and the link:rspec.html[Rspec Document].
 
-==== Argument 3: +credentials+
+==== Argument 4: +manifest_rspec_version+
 
-The standard authorization argument. See <<CommonArgumentCredentials, the Credentials section>>.
+The version of (manifest) RSpec that the client would like to receive in the reply to this call.
+If this is not a format listed as supported by <<GetVersion>>, then the aggregate will return an error of +BADVERSION (4)+.
 
-==== Argument 4:  +options+
+See the <<CommonArgumentRspecVersion, +rspec_version+ argument>> for details.
+
+==== Argument 5:  +options+
 
 A struct containing optional arguments, indexed by name. See <<OptionsArgument,General Options Argument Section>>.
 
