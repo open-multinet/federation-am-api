@@ -411,7 +411,7 @@ If true, the node is available. If not, the node is not available.
 [horizontal]
 In advertisement:: optional
 In request:: no
-In manifest:: no
+In manifest:: optional
 ***********************************
 
 ///////////////////////
